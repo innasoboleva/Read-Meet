@@ -10,7 +10,7 @@ class User:
     def __init__(self, name, email, password, zipcode, address='',age=0):
         self.name = name
         self.email = email
-        self.paaword = password
+        self.password = password
         self.zipcode = zipcode
         self.address = address
         self.age = age
