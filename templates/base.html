@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="video-block-container">
+        <h1>Media Recorder<h1>
+            <div>
+                <button id="start-recording"> Start video recording </button>
+                <button id="stop-recording" disabled> Stop video recording </button>  
+            </div>
+            
+            <video id="video-block" autoplay muted>
+                Your browser doesn't support the video tag
+            </video>
+            <video id="your-video" controls></video>
+    </div>
+
+    <script src="static/js/mediastream_api.js"></script>
+</body>
+</html>
