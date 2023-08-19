@@ -16,8 +16,9 @@ class User(db.Model):
     address = db.Column(db.String)
     age = db.Column(db.Integer)
 
-    lists = db.relatioship("List", back_populates="user")
-    meetings = db.relationship("Meeting", secondary="guests", back_populates="guests")
+    host_meetings = db.relationship("Meeting", back_populates="host")
+    lists = db.relationship("List", back_populates="user")
+    guest_meetings = db.relationship("Meeting", secondary="guests", back_populates="attending_guests")
 
     @classmethod
     def create(cls, email, password, name, zipcode, address=None, age=None):
@@ -43,14 +44,15 @@ class Meeting(db.Model):
     language = db.Column(db.String, nullable=False)
     video_note = db.Column(db.String)
     overview = db.Column(db.Text)
-    host_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    host_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
-    guests = db.relationship("User", secondary="guests", back_populates="meetings")
+    host = db.relationship("User", back_populates="host_meetings", nullable=False)
+    attending_guests = db.relationship("User", secondary="guests", back_populates="guest_meetings")
 
     @classmethod
-    def create(cls, book, day, offline, host_id, video_note=None, overview=None, place=None, address=None, language="EN"):
+    def create(cls, book, day, offline, host, video_note=None, overview=None, place=None, address=None, language="EN"):
        """ Create and return a new meeting instance. """
-       return cls(book=book, day=day, place=place, address=address, host_id=host_id, \
+       return cls(book=book, day=day, place=place, address=address, host=host, \
                   offline=offline, active=True, language=language, video_note=video_note, overview=overview)
 
     def __repr__(self):
