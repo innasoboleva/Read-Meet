@@ -1,4 +1,4 @@
-// Select element in html page
+// Handling video stream
 const localVideo = document.getElementById('video-container');
 
 // Need to be able to have permissions for audio and video
@@ -20,9 +20,10 @@ const mediaStreamConstraints = {
    const yourVideo = document.getElementById('your-video');
 
    const mediaRecorder = new MediaRecorder(resultingMediaStream);
-   // data goes into this array
+   // video data goes into this array
    let chunks = [];
-   // listeners for saving video
+
+   // listeners for creating video
    record.addEventListener('click', (ev) => {
     mediaRecorder.start()
     ev.target.disabled = true;
@@ -46,7 +47,7 @@ const mediaStreamConstraints = {
     // cleaning array
     chunks =[];
     let videoURL = URL.createObjectURL(blob);
-    // showing user made video
+    // showing video made by user
     yourVideo.src = videoURL;
    };
 
@@ -56,6 +57,5 @@ const mediaStreamConstraints = {
     console.error('Permissions for audio and video were denied.');
 })
 .catch(error => {
-    // Handle error here, such as permission denied or unsupported
     console.error('Error accessing audio and video:', error);
 });
