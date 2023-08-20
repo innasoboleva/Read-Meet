@@ -1,6 +1,5 @@
 
-Read & Meet
-:-:
+<h1 align="center">Read & Meet</h1>
 ---
 
 ## About The Project
