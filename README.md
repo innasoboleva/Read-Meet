@@ -1,4 +1,8 @@
+:-:
 # Read & Meet
+---
+
+## About The Project
 Introducing **Read&Meet**: Your Gateway to One-Time Book Clubs! **Read&Meet** is a revolutionary app designed to empower book enthusiasts to connect, engage, and discuss their favorite books in a dynamic and convenient environment. 
 
 ### Here's what you can do with BookMeet:
@@ -25,3 +29,18 @@ Enjoy a user-friendly interface that makes creating and managing meetings a bree
 **Read&Meet** aims to provide a platform that bridges the gap between book lovers and engaging discussions. Whether you're an avid reader, a casual book enthusiast, or someone looking to explore new literary horizons, **Read&Meet** offers a space for you to connect, share insights, and expand your reading experience.
 
 Experience the joy of discussing your favorite books with others who share your enthusiasm. With **Read&Meet**, every book discussion becomes an opportunity for insightful conversations, new friendships, and unforgettable reading experiences. Join us today and let the world of books come alive like never before!
+
+### Data Model
+**Reed&Meet** is using a PostgreSQL database and SQLAlchemy as an ORM.
+![ Detailed data model](url_to_image)
+
+### Project Tech Stack
+Python, JavaScript, HTML5, CSS3, Flask, SQLAlchemy,  PostgreSQL, AJAX, Jinja2, React, Bootstrap, JSON
+
+### APIs Used
+Google Books API, Yelp API, MediaStream API, Google Places API, Selenium
+
+## Usage
+
+### Show Your Support
+Please, :+1: or :star: if it was helpful.
