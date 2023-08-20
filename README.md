@@ -6,6 +6,7 @@ Introducing **Read&Meet**: Your Gateway to One-Time Book Clubs! **Read&Meet** is
 
 ### Here's what you can do with BookMeet:
 1. _Book Discussion Meetings:_
+
 Create and host book discussion meetings centered around your favorite books.
 Choose the date, time, and location for your meeting.
 2. _Meeting Discovery:_
