@@ -1,6 +1,5 @@
-
 <h1 align="center">Read & Meet</h1>
----
+
 
 ## About The Project
 Introducing **Read&Meet**: Your Gateway to One-Time Book Clubs! **Read&Meet** is a revolutionary app designed to empower book enthusiasts to connect, engage, and discuss their favorite books in a dynamic and convenient environment. 
