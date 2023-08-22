@@ -1,11 +1,15 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager # to automatically download and set up the appropriate version of ChromeDriver
+
 from selenium.webdriver.common.by import By # for searching tags by condition
 from selenium.webdriver.support.wait import WebDriverWait # for waiting to load the Selenium request
 from selenium.webdriver.support import expected_conditions as EC    # adding condition
 from selenium.common.exceptions import TimeoutException  # exception when loading
+from datetime import datetime
 
 # getting Goodreads reviews and choice of books
-best_books = "https://www.goodreads.com/choiceawards/best-books-2022"
+new_books = "https://www.goodreads.com/book/popular_by_date/{}/{}" # insert a year like 2023 and month as 1 - Jan, 2 - Feb
 book_page = "https://www.goodreads.com/search?q=" # insert book's ISBN
 book_reviews = "https://www.goodreads.com/book/show/{}/reviews?" # Goodreads book ID goes here
 
@@ -25,7 +29,10 @@ def find_page_selenium(isbn):
         if header.get_property('innerText') == 'Search':
             return { 'status': 'error', 'code': 204, 'message': 'Book was not found on Goodreads', 'url': None }
     except:
-        pass
+        return { 'status': 'error', 'code': 404, 'message': 'Page for getting Goodreads ID was not loaded.', 'url': None }
+    finally:
+            if driver:
+                driver.quit()
     try:
         WebDriverWait(driver, 30).until(EC.url_changes(base_url))
         # redirected url, for the ID on Goodreads for exact book 
@@ -34,6 +41,9 @@ def find_page_selenium(isbn):
         return { 'status': 'success', 'code': 200, 'message': 'OK', 'url': new_url }
     except:
         return { 'status': 'error', 'code': 404, 'message': 'Page for getting Goodreads ID was not loaded.', 'url': None }
+    finally:
+            if driver:
+                driver.quit()
 
 
 def find_book_number_selenium(url_data):
@@ -107,4 +117,44 @@ def get_reviews(isbn):
     reviews = find_reviews_selenium(id)
     return reviews
 
-# print(get_reviews('9780735276482'))
+
+def get_popular_books(current_date):
+    """ 
+    Returns list of tuples with about 15 popular books for the requested month.
+    Current date is a tuple, containing year (first) and month (second).
+    
+    """
+    base_url = new_books.format(current_date[0], current_date[1])
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    driver.get(base_url)
+    titles = []
+    authors = []
+    try:
+        books_titles = WebDriverWait(driver, 130).until(lambda x: x.find_elements(By.CLASS_NAME, 'Text__title3'))
+        books_authors = WebDriverWait(driver, 130).until(lambda x: x.find_elements(By.CLASS_NAME, 'Text__h3'))
+        longest = min(len(books_titles), len(books_authors))
+        for i in range(longest): # iterating as many times as we got book title or authors
+            title = books_titles[i].text
+            titles.append(title)
+            author = books_authors[i].text
+            authors.append(author)
+        return { 'status': 'success', 'code': 200, 'message': 'OK', 'titles': list(zip(titles, authors)) }
+    except TimeoutException:
+            return { 'status': 'error', 'code': 404, 'message': 'Page for popular books did not load.', 'url': None }
+    except:
+        { 'status': 'error', 'code': 404, 'message': 'Unexpected error loading elements (popular books). Not found.' }
+    finally:
+        if driver:
+                driver.quit()
+
+
+def get_current_date():
+    """ Returns tuple with current year and current month. """
+
+    today = datetime.now()
+    year = today.year
+    month = today.month
+    return (year, month)
+
+
+print(get_popular_books(get_current_date()))
