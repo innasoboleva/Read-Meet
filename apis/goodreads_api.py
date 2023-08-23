@@ -31,8 +31,7 @@ def find_page_selenium(isbn):
     except:
         return { "status": "error", "code": 404, "message": "Page for getting Goodreads ID was not loaded.", "url": None }
     finally:
-            if driver:
-                driver.quit()
+            driver.quit()
     try:
         WebDriverWait(driver, 30).until(EC.url_changes(base_url))
         # redirected url, for the ID on Goodreads for exact book 
@@ -42,8 +41,7 @@ def find_page_selenium(isbn):
     except:
         return { "status": "error", "code": 404, "message": "Page for getting Goodreads ID was not loaded.", "url": None }
     finally:
-            if driver:
-                driver.quit()
+            driver.quit()
 
 
 def find_book_number_selenium(url_data):
@@ -66,8 +64,8 @@ def find_reviews_selenium(data, occurance=1):
         driver.get(book_reviews.format(goodreads_book_id))
         try:
             # waiting for rating stars to load as indicator that all needed info has been loaded
-            WebDriverWait(driver, 200).until(lambda x: x.find_elements(By.CLASS_NAME, 'RatingStars'))
-            review_cards = WebDriverWait(driver, 130).until(lambda x: x.find_elements(By.CLASS_NAME, 'ReviewCard'))
+            WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'RatingStars'))
+            review_cards = WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'ReviewCard'))
             reviews_for_book = []
             for card in review_cards:
                 review = {}
@@ -102,8 +100,7 @@ def find_reviews_selenium(data, occurance=1):
         except:
             return { "status": "error", "code": 404, "message": "Target element for reviews did not render.", "url": None }
         finally:
-            if driver:
-                driver.quit()
+            driver.quit()
     else:
         return data
     
@@ -130,8 +127,8 @@ def get_popular_books(current_date):
     titles = []
     authors = []
     try:
-        books_titles = WebDriverWait(driver, 130).until(lambda x: x.find_elements(By.CLASS_NAME, 'Text__title3'))
-        books_authors = WebDriverWait(driver, 130).until(lambda x: x.find_elements(By.CLASS_NAME, 'Text__h3'))
+        books_titles = WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'Text__title3'))
+        books_authors = WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'Text__h3'))
         longest = min(len(books_titles), len(books_authors))
         for i in range(longest): # iterating as many times as we got book title or authors
             title = books_titles[i].text
@@ -144,8 +141,7 @@ def get_popular_books(current_date):
     except:
         return { "status": "error", "code": 404, "message": "Unexpected error loading elements (popular books). Not found." }
     finally:
-        if driver:
-                driver.quit()
+        driver.quit()
 
 
 def get_current_date():
@@ -157,4 +153,12 @@ def get_current_date():
     return (year, month)
 
 
-print(get_popular_books(get_current_date()))
+def get_books_for_carousel():
+    """
+    Returns json with a list of tuples with about 15 popular books for the requested month.
+    """
+    today = get_current_date()
+    result = get_popular_books(today)
+    return result
+
+# print(get_popular_books(get_current_date()))

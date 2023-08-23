@@ -1,9 +1,9 @@
 # File for seeding the database
 import json
 from models import *
+from crud import *
 
-# collection of our users (not real)
-users = []
+
 
 def get_users():
     users_data = []
