@@ -44,9 +44,9 @@ class Meeting(db.Model):
     language = db.Column(db.String, nullable=False)
     video_note = db.Column(db.String)
     overview = db.Column(db.Text)
-    host_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    host_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    host = db.relationship("User", back_populates="host_meetings", nullable=False)
+    host = db.relationship("User", back_populates="host_meetings")
     attending_guests = db.relationship("User", secondary="guests", back_populates="guest_meetings")
 
     @classmethod
@@ -75,18 +75,19 @@ class Book(db.Model):
 
     ISBN = db.Column(db.String, primary_key=True)
     title = db.Column(db.String, nullable=False)
+    subtitle = db.Column(db.String)
     authors = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
-    book_url = db.Column(db.String, nullable=False)
     image_url = db.Column(db.String)
     popular_book = db.Column(db.Date)
 
     lists = db.relationship("List", secondary="books_lists", back_populates="books")
 
     @classmethod
-    def create(cls, isbn, title, authors, book_url, image_url=None, description=None):
+    def create(cls, isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None):
        """ Create and return a new book. """
-       return cls(ISBN=isbn, title=title, authors=authors, book_url=book_url, image_url=image_url, description=description)
+       return cls(ISBN=isbn, title=title, subtitle=subtitle, authors=authors, \
+                  image_url=image_url, description=description, popular_book=popular_book)
 
     def __repr__(self):
         return f"<Book ISBN={self.ISBN} title={self.title} authors={self.authors}>"

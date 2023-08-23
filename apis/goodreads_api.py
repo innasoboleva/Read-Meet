@@ -15,7 +15,7 @@ book_reviews = "https://www.goodreads.com/book/show/{}/reviews?" # Goodreads boo
 
 
 # isbn considered as a string here
-def find_page_selenium(isbn):
+def _find_page_selenium(isbn):
     """
     Gets Goodreads page and makes search for the book by it's isbn. If book exists, method returns dict with key 'url' that has local Goodreads ID.
     If book doesn't exist, method returns dict with status = error.
@@ -44,7 +44,7 @@ def find_page_selenium(isbn):
             driver.quit()
 
 
-def find_book_number_selenium(url_data):
+def _find_book_number_selenium(url_data):
     """
     Strips url from dict url_data, if exists, to get Goodreads local ID for the required book. If no url, returns the url_data.
     """
@@ -54,7 +54,7 @@ def find_book_number_selenium(url_data):
         return { "status": "success", "code": 200, "message": "OK", "goodreads_book_id": goodreads_number }
     return url_data
 
-def find_reviews_selenium(data, occurance=1):
+def _find_reviews_selenium(data, occurance=1):
     """ 
     Provides review information for given book number in Goodreads app, if book present on Goodreads. If not, returns data back.
     """
@@ -107,15 +107,15 @@ def find_reviews_selenium(data, occurance=1):
 
 def get_reviews(isbn):
     """
-    Getting reviews for a book.
+    Public method for getting reviews for a book.
     """
-    url = find_page_selenium(isbn)
-    id = find_book_number_selenium(url)
-    reviews = find_reviews_selenium(id)
+    url = _find_page_selenium(isbn)
+    id = _find_book_number_selenium(url)
+    reviews = _find_reviews_selenium(id)
     return reviews
 
 
-def get_popular_books(current_date):
+def _get_popular_books(current_date):
     """ 
     Returns list of tuples with about 15 popular books for the requested month.
     Current date is a tuple, containing year (first) and month (second).
@@ -144,7 +144,7 @@ def get_popular_books(current_date):
         driver.quit()
 
 
-def get_current_date():
+def _get_current_date():
     """ Returns tuple with current year and current month. """
 
     today = datetime.now()
@@ -155,10 +155,10 @@ def get_current_date():
 
 def get_books_for_carousel():
     """
-    Returns json with a list of tuples with about 15 popular books for the requested month.
+    Public method for getting json with a list of tuples with about 15 popular books for the current month.
     """
-    today = get_current_date()
-    result = get_popular_books(today)
+    today = _get_current_date()
+    result = _get_popular_books(today)
     return result
 
-# print(get_popular_books(get_current_date()))
+
