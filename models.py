@@ -79,6 +79,7 @@ class Book(db.Model):
     description = db.Column(db.Text)
     book_url = db.Column(db.String, nullable=False)
     image_url = db.Column(db.String)
+    popular_book = db.Column(db.Date)
 
     lists = db.relationship("List", secondary="books_lists", back_populates="books")
 

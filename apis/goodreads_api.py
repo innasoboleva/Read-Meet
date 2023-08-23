@@ -27,9 +27,9 @@ def find_page_selenium(isbn):
     try:
         header = driver.find_element(By.TAG_NAME, 'h1')
         if header.get_property('innerText') == 'Search':
-            return { 'status': 'error', 'code': 204, 'message': 'Book was not found on Goodreads', 'url': None }
+            return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", "url": None }
     except:
-        return { 'status': 'error', 'code': 404, 'message': 'Page for getting Goodreads ID was not loaded.', 'url': None }
+        return { "status": "error", "code": 404, "message": "Page for getting Goodreads ID was not loaded.", "url": None }
     finally:
             if driver:
                 driver.quit()
@@ -38,9 +38,9 @@ def find_page_selenium(isbn):
         # redirected url, for the ID on Goodreads for exact book 
         new_url = driver.current_url
         driver.quit()
-        return { 'status': 'success', 'code': 200, 'message': 'OK', 'url': new_url }
+        return { "status": "success", "code": 200, "message": "OK", "url": new_url }
     except:
-        return { 'status': 'error', 'code': 404, 'message': 'Page for getting Goodreads ID was not loaded.', 'url': None }
+        return { "status": "error", "code": 404, "message": "Page for getting Goodreads ID was not loaded.", "url": None }
     finally:
             if driver:
                 driver.quit()
@@ -53,7 +53,7 @@ def find_book_number_selenium(url_data):
     if url_data['status'] == 'success':
         last_part = url_data['url'].split('/')[-1]
         goodreads_number = last_part.split('-')[0]
-        return { 'status': 'success', 'code': 200, 'message': 'OK', 'goodreads_book_id': goodreads_number }
+        return { "status": "success", "code": 200, "message": "OK", "goodreads_book_id": goodreads_number }
     return url_data
 
 def find_reviews_selenium(data, occurance=1):
@@ -95,12 +95,12 @@ def find_reviews_selenium(data, occurance=1):
                     continue
                 reviews_for_book.append(review)
             
-            return { 'status': 'success', 'code': 200, 'message': 'OK', 'reviews': reviews_for_book }
+            return { "status": "success", "code": 200, "message": "OK", "reviews": reviews_for_book }
 
         except TimeoutException:
-            return { 'status': 'error', 'code': 404, 'message': 'Page for reading elements for reviews did not load.', 'url': None }
+            return { "status": "error", "code": 404, "message": "Page for reading elements for reviews did not load.", "url": None }
         except:
-            return { 'status': 'error', 'code': 404, 'message': 'Target element for reviews did not render.', 'url': None }
+            return { "status": "error", "code": 404, "message": "Target element for reviews did not render.", "url": None }
         finally:
             if driver:
                 driver.quit()
@@ -138,11 +138,11 @@ def get_popular_books(current_date):
             titles.append(title)
             author = books_authors[i].text
             authors.append(author)
-        return { 'status': 'success', 'code': 200, 'message': 'OK', 'titles': list(zip(titles, authors)) }
+        return { "status": "success", "code": 200, "message": "OK", "titles": list(zip(titles, authors)) }
     except TimeoutException:
-            return { 'status': 'error', 'code': 404, 'message': 'Page for popular books did not load.', 'url': None }
+        return { "status": "error", "code": 404, "message": "Page for popular books did not load.", "url": None }
     except:
-        { 'status': 'error', 'code': 404, 'message': 'Unexpected error loading elements (popular books). Not found.' }
+        return { "status": "error", "code": 404, "message": "Unexpected error loading elements (popular books). Not found." }
     finally:
         if driver:
                 driver.quit()
