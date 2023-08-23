@@ -64,8 +64,8 @@ class Guests(db.Model):
     
     __tablename__ = "guests"
 
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meetings.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meetings.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     
 
 class Book(db.Model):
@@ -120,8 +120,8 @@ class BookList(db.Model):
 
     __tablename__ = "books_lists"
 
-    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), nullable=False)
-    list_id = db.Column(db.Integer, db.ForeignKey("lists.id"), nullable=False)
+    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), primary_key=True)
+    list_id = db.Column(db.Integer, db.ForeignKey("lists.id"), primary_key=True)
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///meetbookclub", echo=True):
