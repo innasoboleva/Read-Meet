@@ -20,7 +20,7 @@ def find_page_selenium(isbn):
     Gets Goodreads page and makes search for the book by it's isbn. If book exists, method returns dict with key 'url' that has local Goodreads ID.
     If book doesn't exist, method returns dict with status = error.
     """
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     # searching for book by it's isbn, passing query parameter in url
     base_url = book_page + isbn
     driver.get(base_url)
@@ -60,7 +60,7 @@ def find_reviews_selenium(data, occurance=1):
     """
     goodreads_book_id = data.get('goodreads_book_id', None)
     if goodreads_book_id:
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         driver.get(book_reviews.format(goodreads_book_id))
         try:
             # waiting for rating stars to load as indicator that all needed info has been loaded
