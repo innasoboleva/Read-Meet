@@ -1,0 +1,26 @@
+
+.row {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+nav {
+    background-color: rgb(175, 192, 136);
+}
+
+.navbar-brand {
+    color: black;
+}
+
+.nav-link {
+    color: white;
+}
+
+.search-bar {
+    margin: 0;
+}
+
+#navbarSupportedContent {
+    display: flex;
+    align-items: center;
+}
