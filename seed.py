@@ -1,12 +1,13 @@
 # File for seeding the database
 import os
 import json
+from datetime import datetime, timedelta
+import random
+import string
 
-import models
-import crud
-import server
-from apis import books_api, yelp_api, goodreads_api
-from datetime import datetime
+import models, server
+from apis import books_api, goodreads_api
+
 
 os.system('dropdb readmeet')
 os.system('createdb readmeet')
@@ -14,7 +15,13 @@ os.system('createdb readmeet')
 models.connect_to_db(server.app)
 models.db.create_all()
 
+# generates random string
+def generate_random_string(length):
+    characters = string.ascii_lowercase  # Use any character set you prefer
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
 
+# filling User table with JSON data
 users_data = []
 with open('users.json', 'r') as file:
     users_data = json.load(file)
@@ -25,6 +32,7 @@ for user in users_data:
 
 models.db.session.commit()
 
+# getting popular books, filling book table for now
 popular_books = goodreads_api.get_books_for_carousel()
 status = popular_books.get("status")
 if status == "success":
@@ -48,4 +56,26 @@ if status == "success":
                 models.db.session.add(new_book)
 
 models.db.session.commit()
+
+# creating lists for users
+users = models.User.query.all()
+for user in users:
+    name = generate_random_string(6)
+    number = random.randint(0, 100)
+    list_name = name + str(number)
+    new_list = models.List.create(list_name, user)
+    models.db.session.add(new_list)
+
+# creates meetings
+books = models.Book.query.all()
+for index, user in enumerate(users):
+    date_now = datetime.now().date() + timedelta(days=1) # adding one more day to now
+    random_book = books[random.randint(0, len(books) - 1)]
+    new_meeting = models.Meeting.create(random_book, date_now, True, user) # book, day, offline, host, video_note=None, overview=None, place=None, address=None, language="EN"
+    models.db.session.add(new_meeting)
+    for _ in range(10):
+        num = random.randint(0, len(users)-1)
+        while num == index:
+            num = random.randint(0, len(users)-1)
+        new_meeting.attending_guests.append(users[num])
 
