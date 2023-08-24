@@ -19,9 +19,11 @@ def homepage():
 @app.route("/api/get_all_meetings")
 def get_all_meetings_data():
     """ Get all data from database for all meetings. """
-
+    meeting_dict = []
     all_meetings = crud.get_all_meetings()
-    meeting_dict = [meeting.to_dict() for meeting in all_meetings]
+    for meeting in all_meetings:
+        meeting_dict = meeting.to_dict()
+        meeting_dict["guests"] = len(meeting.attending_guests)
     return jsonify(meeting_dict)
 
 

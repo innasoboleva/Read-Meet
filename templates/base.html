@@ -1,75 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
 
-      <!-- Bootstrap CSS -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" \
-      rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" \
-      crossorigin="anonymous">
-      <!-- Bootstrap Icons -->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-      <!-- Load our stylesheet -->
-      <link rel="stylesheet" href="static/css/style.css">
+  <!-- Will load React dependencies on all pages for this app. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js" crossorigin></script>
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" \ rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" \ crossorigin="anonymous">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+  <!-- Load our stylesheet -->
+  <link rel="stylesheet" href="static/css/style.css">
 </head>
+
 <body>
-    <!-- NAVIGATION BAR -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">READ&MEET</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">About</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Contact</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Shop</a>
-                </li>
-              </ul>
-              
-              <ul class="search-bar align-items-center">
-                <form class="form-inline">
-                  <input type="search" placeholder="Searching...">
-                  <button type="submit">Go</button>
-                </form>
-              </ul>
-            
-              <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Setting</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Login</a>
-                </li>
-              </ul>
-          </div>
-        </div>
-      </nav>
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">READ&MEET</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Shop</a>
+          </li>
+        </ul>
 
-    {% block body %}
-    <div class="video-block-container">
-        <h1>Media Recorder<h1>
-            <div>
-                <button id="start-recording"> Start video recording </button>
-                <button id="stop-recording" disabled> Stop video recording </button>  
-            </div>
-            
-            <video id="video-block" autoplay muted>
-                Your browser doesn't support the video tag
-            </video>
-            <video id="your-video" controls></video>
+        <ul class="search-bar align-items-center">
+          <form class="form-inline">
+            <input type="search" placeholder="Searching...">
+            <button type="submit">Go</button>
+          </form>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Setting</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Login</a>
+          </li>
+        </ul>
+      </div>
     </div>
-    {% endblock %}
-    
+  </nav>
 
-    <script src="static/js/mediastream_api.js"></script>
+  {% block body %}
+  <div class="video-block-container">
+    <h1>Media Recorder<h1>
+        <div>
+          <button id="start-recording"> Start video recording </button>
+          <button id="stop-recording" disabled> Stop video recording </button>
+        </div>
+
+        <video id="video-block" autoplay muted>
+          Your browser doesn't support the video tag
+        </video>
+        <video id="your-video" controls></video>
+  </div>
+  {% endblock %}
+
+  <!-- Include any page-specific JavaScript using this block. -->
+  {% block js %}
+  <script src="static/js/mediastream_api.js"></script>
+  {% endblock %}
 </body>
+
 </html>
