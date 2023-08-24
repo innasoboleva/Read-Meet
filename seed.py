@@ -2,17 +2,17 @@
 import os
 import json
 
-from models import *
+import models
 import crud
 import server
 from apis import books_api, yelp_api, goodreads_api
 from datetime import datetime
 
-os.system('dropdb ratings')
-os.system('createdb ratings')
+os.system('dropdb readmeet')
+os.system('createdb readmeet')
 
-connect_to_db(server.app)
-db.create_all()
+models.connect_to_db(server.app)
+models.db.create_all()
 
 
 users_data = []
@@ -20,8 +20,10 @@ with open('users.json', 'r') as file:
     users_data = json.load(file)
 
 for user in users_data:
-    User(user['name'], user['email'], user['password'], user['zipcode'], user['address'], user['age'])
-    db.session.add(user)
+    new_user = models.User.create(user['email'], user['password'], user['name'], int(user['zipcode']), user['address'], int(user['age']))
+    models.db.session.add(new_user)
+
+models.db.session.commit()
 
 popular_books = goodreads_api.get_books_for_carousel()
 status = popular_books.get("status")
@@ -37,12 +39,13 @@ if status == "success":
                 title = books[0].get("title")
                 subtitle = books[0].get("subtitle")
                 authors = books[0].get("authors")
-                description =books[0].get("description")
-                ISBN = books[0].get("ISBN")
+                description = books[0].get("description")
+                books_ISBN = books[0].get("ISBN")
                 image = books[0].get("image")
                 popular_book = datetime.now().date()
-                new_book = Book(ISBN=ISBN, title=title, subtitle=subtitle, authors=authors, \
+                new_book = models.Book.create(isbn=books_ISBN, title=title, subtitle=subtitle, authors=authors, \
                   image_url=image, description=description, popular_book=popular_book)
-                db.session.add(new_book)
+                models.db.session.add(new_book)
 
-db.session.commit()
+models.db.session.commit()
+

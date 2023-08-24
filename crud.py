@@ -1,5 +1,5 @@
 """ CRUD operations. """
-from models import db, User, Meeting, Book, List, connect_to_db
+from models import db, User, Meeting, Book, List
 
 # Meetings
 def get_all_meetings():

@@ -17,7 +17,7 @@
     },
     {
         "name": "Michael Brown",
-        "email": "michael.brown@example.com",
+        "email": "michael1.brown@example.com",
         "password": "password3",
         "zipcode": "94102",
         "address": "789 Oak Street, Chicago, CA, 94102",
@@ -41,7 +41,7 @@
     },
     {
         "name": "Olivia Miller",
-        "email": "olivia.miller@example.com",
+        "email": "olivia3.miller@example.com",
         "password": "password6",
         "zipcode": "19101",
         "address": "321 Cedar Court, Philadelphia, CA, 19101",
@@ -49,7 +49,7 @@
     },
     {
         "name": "Robert Wilson",
-        "email": "robert.wilson@example.com",
+        "email": "robert.wilson@example.c3o5m",
         "password": "password7",
         "zipcode": "78201",
         "address": "555 Pine Avenue, San Antonio, CA, 78201",
@@ -57,7 +57,7 @@
     },
     {
         "name": "Ava Taylor",
-        "email": "ava.taylor@example.com",
+        "email": "ava.3taylor@example.com",
         "password": "password8",
         "zipcode": "94102",
         "address": "222 Oak Street, San Diego, CA, 94102",
@@ -65,7 +65,7 @@
     },
     {
         "name": "William Anderson",
-        "email": "william.anderson@example.com",
+        "email": "wi5lliam.anderson@example.com",
         "password": "password9",
         "zipcode": "90210",
         "address": "777 Maple Avenue, Dallas, CA, 90210",
@@ -73,7 +73,7 @@
     },
     {
         "name": "Isabella Thomas",
-        "email": "isabella.thomas@example.com",
+        "email": "isabella.1thomas@example.com",
         "password": "password10",
         "zipcode": "90001",
         "address": "888 Elm Road, New York, CA, 90001",
@@ -81,7 +81,7 @@
     },
     {
         "name": "Michael Brown",
-        "email": "michael.brown@example.com",
+        "email": "michael.2brown@example.com",
         "password": "password11",
         "zipcode": "90210",
         "address": "654 Birch Lane, Los Angeles, CA, 90210",
@@ -89,7 +89,7 @@
     },
     {
         "name": "Sophia Jones",
-        "email": "sophia.jones@example.com",
+        "email": "sophia2.jones@example.com",
         "password": "password12",
         "zipcode": "94102",
         "address": "321 Cedar Court, Chicago, CA, 94102",
@@ -97,7 +97,7 @@
     },
     {
         "name": "James Davis",
-        "email": "james.davis@example.com",
+        "email": "james.davi5s@example.com",
         "password": "password13",
         "zipcode": "77001",
         "address": "987 Elm Road, Houston, CA, 77001",
@@ -113,7 +113,7 @@
     },
     {
         "name": "Robert Wilson",
-        "email": "robert.wilson@example.com",
+        "email": "robert.wilson@examp2le.com",
         "password": "password15",
         "zipcode": "78201",
         "address": "222 Oak Street, Philadelphia, CA, 78201",
@@ -121,7 +121,7 @@
     },
     {
         "name": "Ava Taylor",
-        "email": "ava.taylor@example.com",
+        "email": "ava2.taylor@example.com",
         "password": "password16",
         "zipcode": "94102",
         "address": "777 Maple Avenue, San Antonio, CA, 94102",
@@ -129,7 +129,7 @@
     },
     {
         "name": "William Anderson",
-        "email": "william.anderson@example.com",
+        "email": "william.4anderson@example.com",
         "password": "password17",
         "zipcode": "90210",
         "address": "888 Elm Road, San Diego, CA, 90210",
@@ -145,7 +145,7 @@
     },
     {
         "name": "Michael Brown",
-        "email": "michael.brown@example.com",
+        "email": "michael.brown3@example.com",
         "password": "password19",
         "zipcode": "90210",
         "address": "456 Maple Avenue, New York, CA, 90210",
@@ -153,7 +153,7 @@
     },
     {
         "name": "Sophia Jones",
-        "email": "sophia.jones@example.com",
+        "email": "sophia.3jones@example.com",
         "password": "password20",
         "zipcode": "94102",
         "address": "789 Oak Street, Los Angeles, CA, 94102",
@@ -161,7 +161,7 @@
     },
     {
         "name": "James Davis",
-        "email": "james.davis@example.com",
+        "email": "j4ames.davis@example.com",
         "password": "password21",
         "zipcode": "77001",
         "address": "987 Elm Road, Chicago, CA, 77001",
@@ -169,7 +169,7 @@
     },
     {
         "name": "Olivia Miller",
-        "email": "olivia.miller@example.com",
+        "email": "olivia.mi7ller@example.com",
         "password": "password22",
         "zipcode": "19101",
         "address": "654 Birch Lane, Houston, CA, 19101",
@@ -185,7 +185,7 @@
     },
     {
         "name": "Ava Taylor",
-        "email": "ava.taylor@example.com",
+        "email": "ava.tayl1or@example.com",
         "password": "password24",
         "zipcode": "94102",
         "address": "555 Pine Avenue, Philadelphia, CA, 94102",
@@ -193,7 +193,7 @@
     },
     {
         "name": "William Anderson",
-        "email": "william.anderson@example.com",
+        "email": "william3.anderson@example.com",
         "password": "password25",
         "zipcode": "90210",
         "address": "222 Oak Street, San Antonio, CA, 90210",
@@ -201,7 +201,7 @@
     },
     {
         "name": "Isabella Thomas",
-        "email": "isabella.thomas@example.com",
+        "email": "isabella.thoma5s@example.com",
         "password": "password26",
         "zipcode": "90001",
         "address": "777 Maple Avenue, San Diego, CA, 90001",
@@ -209,7 +209,7 @@
     },
     {
         "name": "Michael Brown",
-        "email": "michael.brown@example.com",
+        "email": "michael.4brown@example.com",
         "password": "password27",
         "zipcode": "90210",
         "address": "888 Elm Road, Dallas, CA, 90210",
@@ -217,7 +217,7 @@
     },
     {
         "name": "Sophia Jones",
-        "email": "sophia.jones@example.com",
+        "email": "sophia4.jones@example.com",
         "password": "password28",
         "zipcode": "94102",
         "address": "123 Main Street, New York, CA, 94102",
@@ -225,7 +225,7 @@
     },
     {
         "name": "James Davis",
-        "email": "james.davis@example.com",
+        "email": "j3ames.davis@example.com",
         "password": "password29",
         "zipcode": "77001",
         "address": "456 Maple Avenue, Los Angeles, CA, 77001",
@@ -233,7 +233,7 @@
     },
     {
         "name": "Olivia Miller",
-        "email": "olivia.miller@example.com",
+        "email": "olivia.miller@ex6ample.com",
         "password": "password30",
         "zipcode": "19101",
         "address": "789 Oak Street, Chicago, CA, 19101",
@@ -241,7 +241,7 @@
     },
     {
         "name": "Robert Wilson",
-        "email": "robert.wilson@example.com",
+        "email": "robert.wilson@exampl5e.com",
         "password": "password31",
         "zipcode": "78201",
         "address": "654 Birch Lane, Houston, CA, 78201",
@@ -257,7 +257,7 @@
     },
     {
         "name": "William Anderson",
-        "email": "william.anderson@example.com",
+        "email": "william.2anderson@example.com",
         "password": "password33",
         "zipcode": "90210",
         "address": "555 Pine Avenue, Philadelphia, CA, 90210",
@@ -265,7 +265,7 @@
     },
     {
         "name": "Isabella Thomas",
-        "email": "isabella.thomas@example.com",
+        "email": "isabella.tho4mas@example.com",
         "password": "password34",
         "zipcode": "90001",
         "address": "777 Maple Avenue, San Antonio, CA, 90001",
@@ -273,7 +273,7 @@
     },
     {
         "name": "Michael Brown",
-        "email": "michael.brown@example.com",
+        "email": "michael5.brown@example.com",
         "password": "password35",
         "zipcode": "90210",
         "address": "888 Elm Road, San Diego, CA, 90210",
@@ -281,7 +281,7 @@
     },
     {
         "name": "Sophia Jones",
-        "email": "sophia.jones@example.com",
+        "email": "sophia5.jones@example.com",
         "password": "password36",
         "zipcode": "94102",
         "address": "123 Main Street, Dallas, CA, 94102",
@@ -289,7 +289,7 @@
     },
     {
         "name": "James Davis",
-        "email": "james.davis@example.com",
+        "email": "james.2davis@example.com",
         "password": "password37",
         "zipcode": "77001",
         "address": "456 Maple Avenue, New York, CA, 77001",
@@ -297,7 +297,7 @@
     },
     {
         "name": "Olivia Miller",
-        "email": "olivia.miller@example.com",
+        "email": "olivia.miller@exampl5e.com",
         "password": "password38",
         "zipcode": "19101",
         "address": "789 Oak Street, Los Angeles, CA, 19101",
@@ -305,7 +305,7 @@
     },
     {
         "name": "Robert Wilson",
-        "email": "robert.wilson@example.com",
+        "email": "robert.wilson@exampl1e.com",
         "password": "password39",
         "zipcode": "78201",
         "address": "654 Birch Lane, Chicago, CA, 78201",
@@ -313,7 +313,7 @@
     },
     {
         "name": "Ava Taylor",
-        "email": "ava.taylor@example.com",
+        "email": "ava5.taylor@example.com",
         "password": "password40",
         "zipcode": "94102",
         "address": "321 Cedar Court, Houston, CA, 94102",
@@ -321,7 +321,7 @@
     },
     {
         "name": "William Anderson",
-        "email": "william.anderson@example.com",
+        "email": "william1.anderson@example.com",
         "password": "password41",
         "zipcode": "90210",
         "address": "555 Pine Avenue, Phoenix, CA, 90210",
@@ -329,7 +329,7 @@
     },
     {
         "name": "Isabella Thomas",
-        "email": "isabella.thomas@example.com",
+        "email": "isabell3a.thomas@example.com",
         "password": "password42",
         "zipcode": "90001",
         "address": "777 Maple Avenue, Philadelphia, CA, 90001",
@@ -345,7 +345,7 @@
     },
     {
         "name": "Sophia Jones",
-        "email": "sophia.jones@example.com",
+        "email": "sophia6.jones@example.com",
         "password": "password44",
         "zipcode": "94102",
         "address": "123 Main Street, San Diego, CA, 94102",
@@ -353,7 +353,7 @@
     },
     {
         "name": "James Davis",
-        "email": "james.davis@example.com",
+        "email": "james1.davis@example.com",
         "password": "password45",
         "zipcode": "77001",
         "address": "456 Maple Avenue, Dallas, CA, 77001",
@@ -361,7 +361,7 @@
     },
     {
         "name": "Olivia Miller",
-        "email": "olivia.miller@example.com",
+        "email": "olivia.miller@4.com",
         "password": "password46",
         "zipcode": "19101",
         "address": "789 Oak Street, New York, CA, 19101",
@@ -369,7 +369,7 @@
     },
     {
         "name": "Robert Wilson",
-        "email": "robert.wilson@example.com",
+        "email": "robert.wilson@exampl3e.com",
         "password": "password47",
         "zipcode": "78201",
         "address": "654 Birch Lane, Los Angeles, CA, 78201",
@@ -377,7 +377,7 @@
     },
     {
         "name": "Ava Taylor",
-        "email": "ava.taylor@example.com",
+        "email": "ava.4taylor@example.com",
         "password": "password48",
         "zipcode": "94102",
         "address": "321 Cedar Court, Chicago, CA, 94102",
@@ -393,7 +393,7 @@
     },
     {
         "name": "Isabella Thomas",
-        "email": "isabella.thomas@example.com",
+        "email": "isabella.thomas2@example.com",
         "password": "password50",
         "zipcode": "90001",
         "address": "777 Maple Avenue, Phoenix, CA, 90001",

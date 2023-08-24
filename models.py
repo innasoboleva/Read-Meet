@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 db = SQLAlchemy()
 
@@ -8,7 +9,7 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('user_id_seq')"))
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
@@ -26,48 +27,9 @@ class User(db.Model):
        return cls(email=email, password=password, name=name, zipcode=zipcode, address=address, age=age)
 
     def __repr__(self):
-        return f'<User id={self.id} email={self.email} zipcode={self.zipcode}>'
+        return f'<User id={self.user_id} email={self.email} zipcode={self.zipcode}>'
     
-
-class Meeting(db.Model):
-    """ A meeting. """
-
-    __tablename__ = "meetings"
-
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    book = db.Column(db.String, db.ForeignKey("books.ISBN"), nullable=False)
-    day = db.Column(db.DateTime, nullable=False)
-    place = db.Column(db.String)
-    address = db.Column(db.String)
-    offline = db.Column(db.Boolean, nullable=False)
-    active = db.Column(db.Boolean, nullable=False)
-    language = db.Column(db.String, nullable=False)
-    video_note = db.Column(db.String)
-    overview = db.Column(db.Text)
-    host_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-
-    host = db.relationship("User", back_populates="host_meetings")
-    attending_guests = db.relationship("User", secondary="guests", back_populates="guest_meetings")
-
-    @classmethod
-    def create(cls, book, day, offline, host, video_note=None, overview=None, place=None, address=None, language="EN"):
-       """ Create and return a new meeting instance. """
-       return cls(book=book, day=day, place=place, address=address, host=host, \
-                  offline=offline, active=True, language=language, video_note=video_note, overview=overview)
-
-    def __repr__(self):
-        return f"<Meeting id={self.id} book={self.book} day={self.day} active={self.active}>"
     
-
-class Guests(db.Model):
-    """ Middle table for users and meetings. User can attend many meetings, meetings can have many guests (users). """
-    
-    __tablename__ = "guests"
-
-    meeting_id = db.Column(db.Integer, db.ForeignKey("meetings.id"), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    
-
 class Book(db.Model):
     """ A book. """
 
@@ -81,6 +43,7 @@ class Book(db.Model):
     image_url = db.Column(db.String)
     popular_book = db.Column(db.Date)
 
+    meetings = db.relationship("Meeting", back_populates="book")
     lists = db.relationship("List", secondary="books_lists", back_populates="books")
 
     @classmethod
@@ -93,14 +56,55 @@ class Book(db.Model):
         return f"<Book ISBN={self.ISBN} title={self.title} authors={self.authors}>"
     
 
+class Meeting(db.Model):
+    """ A meeting. """
+
+    __tablename__ = "meetings"
+
+    meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('meeting_id_seq')"))
+    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), nullable=False)
+    day = db.Column(db.DateTime, nullable=False)
+    place = db.Column(db.String)
+    address = db.Column(db.String)
+    offline = db.Column(db.Boolean, nullable=False)
+    active = db.Column(db.Boolean, nullable=False)
+    language = db.Column(db.String, nullable=False)
+    video_note = db.Column(db.String)
+    overview = db.Column(db.Text)
+    host_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+
+    book = db.relationship("Book", back_populates="meetings")
+    host = db.relationship("User", back_populates="host_meetings")
+    attending_guests = db.relationship("User", secondary="guests", back_populates="guest_meetings")
+
+    @classmethod
+    def create(cls, book, day, offline, host, video_note=None, overview=None, place=None, address=None, language="EN"):
+       """ Create and return a new meeting instance. """
+       return cls(book=book, day=day, place=place, address=address, host=host, \
+                  offline=offline, active=True, language=language, video_note=video_note, overview=overview)
+
+    def __repr__(self):
+        return f"<Meeting id={self.meeting_id} book={self.book} day={self.day} active={self.active}>"
+    
+
+class Guests(db.Model):
+    """ Middle table for users and meetings. User can attend many meetings, meetings can have many guests (users). """
+    
+    __tablename__ = "guests"
+
+    guest_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('guest_id_seq')"))
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meetings.meeting_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+
+
 class List(db.Model):
     """ A list of books. """
 
     __tablename__ = "lists"
 
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    list_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('list_id_seq')"))
     name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
 
     user = db.relationship("User", back_populates="lists")
     books = db.relationship("Book", secondary="books_lists", back_populates="lists")
@@ -120,11 +124,12 @@ class BookList(db.Model):
 
     __tablename__ = "books_lists"
 
-    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), primary_key=True)
-    list_id = db.Column(db.Integer, db.ForeignKey("lists.id"), primary_key=True)
+    booklist_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('booklist_id_seq')"))
+    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey("lists.list_id"), nullable=False)
 
 
-def connect_to_db(flask_app, db_uri="postgresql:///meetbookclub", echo=True):
+def connect_to_db(flask_app, db_uri="postgresql:///readmeet", echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -136,5 +141,10 @@ def connect_to_db(flask_app, db_uri="postgresql:///meetbookclub", echo=True):
 
 if __name__ == "__main__":
     from server import app
-    # echo=False: not to print out every query it executes.
-    connect_to_db(app)
+
+    # Call connect_to_db(app, echo=False) if your program output gets
+    # too annoying; this will tell SQLAlchemy not to print out every
+    # query it executes.
+
+    connect_to_db(app, echo=False)
+
