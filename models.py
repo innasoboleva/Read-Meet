@@ -25,6 +25,11 @@ class User(db.Model):
     def create(cls, email, password, name, zipcode, address=None, age=None):
        """ Create and return a new user. """
        return cls(email=email, password=password, name=name, zipcode=zipcode, address=address, age=age)
+    
+    def to_dict(self):
+        """ Returns dict with instance data. """
+        return { "id": self.user_id, "email": self.email, "name": self.name, \
+                "address": self.address, "zipcode": self.zipcode, "age": self.age }
 
     def __repr__(self):
         return f'<User id={self.user_id} email={self.email} zipcode={self.zipcode}>'
@@ -82,6 +87,12 @@ class Meeting(db.Model):
        """ Create and return a new meeting instance. """
        return cls(book=book, day=day, place=place, address=address, host=host, \
                   offline=offline, active=True, language=language, video_note=video_note, overview=overview)
+    
+    def to_dict(self):
+        """ Returns data of an instance in a dictionary. """
+        return { "id": self.meeting_id, "book_id": self.book_id, "date": self.day, \
+                "place": self.place, "address": self.address, "offline": self.offline, \
+                    "language": self.language, "video": self.video_note, "overview": self.overview, "host_id": self.host_id }
 
     def __repr__(self):
         return f"<Meeting id={self.meeting_id} book={self.book} day={self.day} active={self.active}>"
