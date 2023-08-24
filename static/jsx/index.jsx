@@ -4,7 +4,11 @@ function MeetingDataContainer() {
     React.useEffect(() => {
       fetch('/api/get_all_meetings')
         .then(response => response.json())
-        .then(data => setMeetings(data))
+        .then(data => {
+            if (data) {
+                setMeetings(data);
+            }
+            })
         .catch(error => console.error('Error fetching meetings:', error));
     }, []);
   
@@ -62,7 +66,7 @@ function MeetingRow({ meeting }) {
   
     return (
       <tr>
-        <td>{book.title}</td>
+        <td>{book.title}, <br></br>by {book.authors}</td>
         <td>{meeting.date}</td>
         <td>{meeting.place}</td>
         <td>{meeting.offline}</td>

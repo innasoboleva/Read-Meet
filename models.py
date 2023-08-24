@@ -56,6 +56,11 @@ class Book(db.Model):
        """ Create and return a new book. """
        return cls(ISBN=isbn, title=title, subtitle=subtitle, authors=authors, \
                   image_url=image_url, description=description, popular_book=popular_book)
+    
+    def to_dict(self):
+        """ Returns dict with instance data. """
+        return { "id": self.ISBN, "title": self.title, "subtitle": self.subtitle, \
+                "authors": self.authors, "description": self.description, "image_url": self.image_url }
 
     def __repr__(self):
         return f"<Book ISBN={self.ISBN} title={self.title} authors={self.authors}>"

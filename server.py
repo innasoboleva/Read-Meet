@@ -19,12 +19,14 @@ def homepage():
 @app.route("/api/get_all_meetings")
 def get_all_meetings_data():
     """ Get all data from database for all meetings. """
-    meeting_dict = []
+    meeting_list_of_dict = []
     all_meetings = crud.get_all_meetings()
-    for meeting in all_meetings:
-        meeting_dict = meeting.to_dict()
-        meeting_dict["guests"] = len(meeting.attending_guests)
-    return jsonify(meeting_dict)
+    if all_meetings:
+        for meeting in all_meetings:
+            meeting_dict = meeting.to_dict()
+            meeting_dict["guests"] = len(meeting.attending_guests)
+            meeting_list_of_dict.append(meeting_dict)
+    return jsonify(meeting_list_of_dict)
 
 
 @app.route("/api/get_user_by_id", methods=["POST"])
@@ -34,6 +36,17 @@ def get_user_by_id():
     if user_id:
         user = crud.get_user_by_id(user_id)
         return jsonify(user.to_dict())
+    else:
+        return {}
+    
+
+@app.route("/api/get_book_by_id", methods=["POST"])
+def get_book_by_id():
+    """ Get book data by id. """
+    book_id = request.get_json().get("book_id")
+    if book_id:
+        book = crud.get_book_by_id(book_id)
+        return jsonify(book.to_dict())
     else:
         return {}
 
