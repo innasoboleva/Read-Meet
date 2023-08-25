@@ -1,6 +1,10 @@
 body {
   font-family: sans-serif;
 }
+
+a {
+  cursor: pointer;
+}
 /* .row {
     margin-top: 30px;
     margin-bottom: 30px;
@@ -71,13 +75,15 @@ button#sgn:hover {
 }
 
 .modal-body {
+  max-height: calc(100vh - 40px); /* Adjust to leave space for header/footer */
+  overflow-y: auto;
   padding-top: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.modal-content .close {
+.modal-content button.close {
   position: absolute;
   text-align: left;
   top: 1.5px;
@@ -87,10 +93,10 @@ button#sgn:hover {
   cursor: pointer;
 }
 
-button#back {
-  float: left;
-  top: 10px;
-  left: 1px;
+button#modal-signin-back {
+  position: absolute;
+  left: 30%;
+  margin-top: 3px;
   font-size: 20px;
   z-index: 9999;
   cursor: pointer;
@@ -166,33 +172,3 @@ button#user-signin:hover {
   width: 100%; 
   height: auto;
 }
-
-
-/* .form-signin {
-  display: flex;
-}
-
-.form-email-signin {
-  display: none;
-}
-
-.form-signup {
-  display: none;
-} */
-
-/* #email-used-error {
-  display: none;
-} */
-
-/* .element button {
-  margin-top: 5px;
-  padding: 10px 0px;
-  font-size: 12px;
-} */
-
-/* .modal-jsx {
-  width: 200px;
-  height: 200px;
-  background-color: gray;
-  font-size: 30;
-} */

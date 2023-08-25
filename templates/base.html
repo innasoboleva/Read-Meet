@@ -26,24 +26,10 @@
 
 <body>
   <!-- NAVIGATION BAR -->
-  <!-- <nav class="top-bar">
-    <a class="navbar-brand" href="#">READ&MEET</a>
-    <form action="/search" class="search-form">
-        <input type="search" name="query">
-        <button class="search-button">
-            <span class="icon-search">S</span>
-        </button>
-    </form>
-    <a class="nav-item" href="#">Profile</a>
-    <button type="button" class="btn btn-primary" id='sgn' data-toggle="modal" data-target="#exampleModalCenter">
-        Sign in
-    </button>
-</nav> -->
-
 <nav class="navbar navbar-expand-lg navbar-light" id="top-bar">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
-      <img src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+      <img src="static/img/read-meet-logo.png" id="nav-logo" alt="" width="30" height="24" class="d-inline-block align-text-top">
       Read & Meet
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,51 +64,12 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Sign in</a>
+          <a class="nav-link" data-bs-toggle="modal" data-bs-target="#signInOptions">Sign in</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
-
-  <!-- <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">READ&MEET</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Shop</a>
-          </li>
-        </ul>
-
-        <ul class="search-bar align-items-center">
-          <form class="form-inline">
-            <input type="search" placeholder="Searching...">
-            <button type="submit">Go</button>
-          </form>
-        </ul>
-
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Setting</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Login</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav> -->
 
   {% block body %}
   <div class="video-block-container">

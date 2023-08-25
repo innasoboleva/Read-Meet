@@ -7,31 +7,6 @@
 
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Launch demo modal
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  
 <button id="signin-button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#signInOptions">Sign in</button>
 <!-- Modal first appearance -->
 <div class="modal fade" id="signInOptions" tabindex="-1" role="dialog" aria-labelledby="signInOptionsLabel"
@@ -49,11 +24,11 @@
                 <div class="sign-in-apple">sign-in-apple</div>
                 <div class="sign-in-facebook">sign-in-facebook</div>
                 <div class="sign-in-email">or
-                    <a href="" link="">Sign in with email</a>
+                    <a data-bs-toggle="modal" data-bs-target="#signInWithEmail" onclick="closeModalWithId('signInOptions')">Sign in with email</a>
                 </div>
                 <div class="modal-footer">
                     <span>New to Read and Meet?</span>
-                    <a href="" link="">Sign up</a>
+                    <a data-bs-toggle="modal" data-bs-target="#singUpForm" onclick="closeModalWithId('signInOptions')">Sign up</a>
                 </div>
             </div>
         </div>
@@ -61,21 +36,23 @@
 </div>
 
 <!-- Modal sign in with email -->
-<!-- <div class="modal fade hidden" id="signInWithEmail" tabindex="-1" role="dialog" aria-labelledby="signInWithEmail"
+<div class="modal fade hidden" id="signInWithEmail" tabindex="-1" role="dialog" aria-labelledby="signInWithEmail"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" id="modal-signin-back" data-bs-toggle="modal" data-bs-target="#signInOptions" onclick="closeModalWithId('signInWithEmail')">
+                <span aria-hidden="true"><i class="bi bi-arrow-return-left"></i></span>
+            </button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
                 some picture
             </div>
             <div class="modal-body">
-                <button type="button" id="back" class="close back" data-dismiss="modal" aria-label="Back">
-                    <span aria-hidden="true">< Back</span>
-                </button>
+                <!-- <button type="button" id="back" data-bs-toggle="modal" data-bs-target="#signInOptions" onclick="closeModalWithId('signInWithEmail')">
+                    <span aria-hidden="true"><i class="bi bi-arrow-return-left"></i></span>
+                </button> -->
                 <h5 class="modal-title">Sign in with email</h5>
                 <form class="signin">
                     <div class="element">
@@ -95,29 +72,28 @@
                 </form>
                 <div class="modal-footer">
                     <span>New to Read and Meet?</span>
-                    <a href="" link="">Sign up</a>
+                    <a data-bs-toggle="modal" data-bs-target="#singUpForm" onclick="closeModalWithId('signInWithEmail')">Sign up</a>
                 </div>
             </div>
         </div>
     </div>
-</div> -->
+</div>
 
 <!-- Modal sign up with email -->
-<!-- <div class="modal fade hidden" id="singUpForm" tabindex="-1" role="dialog" aria-labelledby="singUpForm"
+<div class="modal fade hidden" id="singUpForm" tabindex="-1" role="dialog" aria-labelledby="singUpForm"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" id="modal-signin-back" data-bs-toggle="modal" data-bs-target="#signInOptions" onclick="closeModalWithId('singUpForm')">
+                <span aria-hidden="true"><i class="bi bi-arrow-return-left"></i></span>
+            </button>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
                 some picture
             </div>
             <div class="modal-body">
-                <button type="button" id="back" class="close back" data-dismiss="modal" aria-label="Back">
-                    <span aria-hidden="true">< Back</span>
-                </button>
                 <h3 class="modal-title">Sign up with email</h3>
                 <form class="signin">
                     <div class="element">
@@ -147,16 +123,28 @@
                         </label>
                         <input class="input myInput" id="user_address" name="user_address" type="text">
                     </div>
-                    <button id="user-signin">Sing up</button>
+                    <div class="element">
+                        <label for="user_zipcode">
+                            Zipcode
+                        </label>
+                        <input class="input myInput" id="user_address" name="user_address" type="text">
+                    </div>
+                    <div class="element">
+                        <label for="user_address">
+                            Age
+                        </label>
+                        <input class="input myInput" id="user_address" name="user_address" type="text">
+                    </div>
+                    <button id="user-signin">Sign me up!</button>
                 </form>
                 
             </div>
         </div>
     </div>
-</div> -->
+</div>
 
 {% endblock %}
 
 {% block js %}
-<!-- <script src="static/js/script.js" type="text/jsx"></script> -->
+<script src="static/js/script.js" type="text/jsx"></script>
 {% endblock %}

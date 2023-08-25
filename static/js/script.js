@@ -1,26 +1,35 @@
-document.querySelector('#signin-button').addEventListener('click', showPopup);
-
-function showPopup(evt) {
-    evt.preventDefault()
-
-    const popup = document.querySelector('#signInOptions')
-    popup.style.display = "flex";
-    popup.style.justifyContent = "stretch";
+function closeModalWithId(modalId) {
+    var modalElement = document.querySelector(`#${modalId}`);
+    var modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+        modal.hide(); // Bootstrap's method
+    }
 }
+
+
+// document.querySelector('#signin-button').addEventListener('click', showPopup);
+
+// function showPopup(evt) {
+//     evt.preventDefault()
+
+//     const popup = document.querySelector('#signInOptions')
+//     popup.style.display = "flex";
+//     popup.style.justifyContent = "stretch";
+// }
 
 // document.querySelector('#new-user-signup').addEventListener('click', newUser);
 
-function newUser(evt) {
-    evt.preventDefault()
+// function newUser(evt) {
+//     evt.preventDefault()
 
-    const formInputs = {
-        'user_name': document.querySelector('#muser_name').value,
-        'user_email': document.querySelector('#user_email').value,
-        'user_password': document.querySelector('#user_password').value,
-        'user_address': document.querySelector('#user_address').value,
-        'user_age': document.querySelector('#user_age').value,
-        'user_zipcode': document.querySelector('#user_zipcode').value
-      }
+//     const formInputs = {
+//         'user_name': document.querySelector('#muser_name').value,
+//         'user_email': document.querySelector('#user_email').value,
+//         'user_password': document.querySelector('#user_password').value,
+//         'user_address': document.querySelector('#user_address').value,
+//         'user_age': document.querySelector('#user_age').value,
+//         'user_zipcode': document.querySelector('#user_zipcode').value
+//       }
       
     //   fetch('/api/new_user', {
     //     method: 'POST',
@@ -38,4 +47,4 @@ function newUser(evt) {
     //     }
       
     //   });
-}
+// }
