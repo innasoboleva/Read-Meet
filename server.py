@@ -1,6 +1,6 @@
 import os
 from apis import books_api, yelp_api, goodreads_api
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 from models import connect_to_db , db, User
 import crud
 
@@ -16,15 +16,27 @@ def homepage():
     return render_template("index.html")
 
 
+@app.route("/api/get_current_user")
+def get_current_user():
+    """ Get current user information if loged in."""
+    user = session.get("user_id", None)
+    name = session.get("name", None)
+    address = session.get("address", None)
+    zipcode = session.get("zipcode", None)
+    return jsonify({"user_id": user, "name": name, "address": address, "zipcode": zipcode })
+
+
 @app.route("/api/get_all_meetings")
-def get_all_meetings_data():
+def get_all_active_meetings_data():
     """ Get all data from database for all meetings. """
     meeting_list_of_dict = []
-    all_meetings = crud.get_all_meetings()
+    all_meetings = crud.get_all_active_meetings()
     if all_meetings:
         for meeting in all_meetings:
             meeting_dict = meeting.to_dict()
-            meeting_dict["guests"] = len(meeting.attending_guests)
+            list_of_guests = [guest.user_id for guest in meeting.attending_guests]
+            meeting_dict["guests_count"] = len(meeting.attending_guests)
+            meeting_dict["guests"] = list_of_guests
             meeting_list_of_dict.append(meeting_dict)
     return jsonify(meeting_list_of_dict)
 

@@ -6,7 +6,7 @@ def get_all_meetings():
     """ Returns list of all meetings. """
     return Meeting.query.all()
 
-def get_all_activate_meetings():
+def get_all_active_meetings():
     """ Returns list of all ACTIVE meetings. """
     return Meeting.query.filter(Meeting.active == True).all()
 
