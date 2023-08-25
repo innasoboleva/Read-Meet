@@ -14,6 +14,26 @@ def get_meeting_by_id(id):
     """ Returns meeting instance. """
     return Meeting.query.get(id)
 
+def join_meeting(user_id, meeting_id):
+    """ Adds user to meeting as a guest. """
+    meeting = Meeting.query.get(meeting_id)
+    user = User.query.get(user_id)
+    if user and meeting:
+        meeting.attending_guests.append(user)
+        return {"status": "success", "message": f"{user.name} joined meeting for '{meeting.book.title}' successfully!"}
+    else:
+        return {"status": "error", "message": "Can't find meeting or user data" }
+
+def drop_meeting(user_id, meeting_id):
+    """ Removes user from meeting if he is a guest. """
+    meeting = Meeting.query.get(meeting_id)
+    user = User.query.get(user_id)
+    if meeting and user:
+        meeting.attending_guests.remove(user)
+        return {"status": "success", "message": f"{user.name} dropped from meeting for '{meeting.book.title}' successfully!" } 
+    else:
+        return {"status": "error", "message": "Can't find meeting or user data" }
+
 # Users
 def get_host_meetings(user_id):
     """ Returns all meetings that user created as a host. """

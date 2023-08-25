@@ -1,3 +1,4 @@
+// creates a table displaying upcoming meetings
 function MeetingDataContainer() {
     const [meetings, setMeetings] = React.useState([]);
     const [user, setUser] = React.useState();
@@ -48,7 +49,7 @@ function MeetingDataContainer() {
       </React.Fragment>
     );
   }
-
+// each row of a meeting table
 function MeetingRow({ meeting, user }) {
     const [host, setHost] = React.useState({});
     const [book, setBook] = React.useState({});
@@ -62,19 +63,24 @@ function MeetingRow({ meeting, user }) {
     };
   
     React.useEffect(() => {
-        if (user && user.user_id && meeting.host_id && user.user_id != meeting.host_id) {
-            fetch('/api/get_user_by_id', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "host_id": meeting.host_id }),
-              })
-                .then(response => response.json())
-                .then(data => setHost(data))
-                .catch(error => console.error('Error fetching host:', error));
-        } else {
-            setHideJoinButton(true);
-            setHideDropButton(true);
-        };
+      if (meeting.guests.includes(user.user_id)) {
+        setHideJoinButton(true);
+        setHideDropButton(false);
+      };
+
+      if (user && user.user_id && meeting.host_id && user.user_id != meeting.host_id) { // check that user exists, has id and he is not a host
+          fetch('/api/get_user_by_id', {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ "host_id": meeting.host_id }),
+            })
+              .then(response => response.json())
+              .then(data => setHost(data))
+              .catch(error => console.error('Error fetching host:', error));
+      } else {
+          setHideJoinButton(true);
+          setHideDropButton(true);
+      };
       
       fetch('/api/get_book_by_id', {
         method: "POST",
@@ -85,6 +91,38 @@ function MeetingRow({ meeting, user }) {
         .then(data => setBook(data))
         .catch(error => console.error('Error fetching book:', error));
     }, [meeting]);
+
+    const joinMeeting = () => {
+      fetch('/api/join_meeting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
+        })
+          .then(response => response.json())
+          .then(data => {
+              if (data && data.status == "success") {
+                  setHideJoinButton(true);
+                  setHideDropButton(false);
+              }
+          })
+          .catch(error => console.error('Error joining meeting:', error));
+      };
+  
+      const dropMeeting = () => {
+      fetch('/api/drop_meeting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
+        })
+          .then(response => response.json())
+          .then(data => {
+              if (data && data.status == "success") {
+                  setHideDropButton(true);
+                  setHideJoinButton(false);
+              }
+          })
+          .catch(error => console.error('Error joining meeting:', error));
+      };
 
     return (
       <tr>
@@ -98,46 +136,15 @@ function MeetingRow({ meeting, user }) {
         <td>{host.name}</td>
         <td>{meeting.guests_count}/12</td>
         <td>
-            <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting(meeting.id, user.user_id)}>Join</button>
+            <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={() => joinMeeting(meeting.id, user.user_id)}>Join</button>
         </td>
         <td>
-            <button id="button-drop" className="btn btn-warning" disabled={hideDropButton} onClick={dropMeeting(meeting.id, user.user_id)}>Drop</button>
+            <button id="button-drop" className="btn btn-warning" disabled={hideDropButton} onClick={() => dropMeeting(meeting.id, user.user_id)}>Drop</button>
         </td>
       </tr>
     );
   }
 
-  function joinMeeting(meeting_id, user_id) {
-    fetch('/api/join_meeting', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "meeting_id": meeting_id, "user_id": user_id }),
-      })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status == "success") {
-                setHideJoinButton(true);
-                setHideDropButton(false);
-            }
-        })
-        .catch(error => console.error('Error joining meeting:', error));
-    };
-
-  function dropMeeting(meeting_id, user_id) {
-    fetch('/api/drop_meeting', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "meeting_id": meeting_id, "user_id": user_id }),
-      })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status == "success") {
-                setHideDropButton(true);
-                setHideJoinButton(false);
-            }
-        })
-        .catch(error => console.error('Error joining meeting:', error));
-    };
 
 
 ReactDOM.render(<MeetingDataContainer />, document.getElementById('container'));

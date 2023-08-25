@@ -16,6 +16,13 @@ def homepage():
     return render_template("index.html")
 
 
+@app.route("/login")
+def show_login_page():
+    """Show login page."""
+
+    return render_template("login.html")
+
+
 @app.route("/api/get_current_user")
 def get_current_user():
     """ Get current user information if loged in."""
@@ -61,6 +68,26 @@ def get_book_by_id():
         return jsonify(book.to_dict())
     else:
         return {}
+    
+
+@app.route("/api/join_meeting", methods=["POST"])
+def join_meeting():
+    """ Sends request to db to join meeting. """
+    user_id = request.get_json().get("user_id")
+    meeting_id = request.get_json().get("meeting_id")
+    message = crud.join_meeting(user_id, meeting_id)
+    db.session.commit()
+    return jsonify(message)
+
+
+@app.route("/api/drop_meeting", methods=["POST"])
+def drop_meeting():
+    """ Sends request to db to drop from meeting. """
+    user_id = request.get_json().get("user_id")
+    meeting_id = request.get_json().get("meeting_id")
+    message = crud.drop_meeting(user_id, meeting_id)
+    db.session.commit()
+    return jsonify(message)
 
 
 if __name__ == "__main__":

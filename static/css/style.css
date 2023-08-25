@@ -1,26 +1,198 @@
-
-.row {
+body {
+  font-family: sans-serif;
+}
+/* .row {
     margin-top: 30px;
     margin-bottom: 30px;
 }
+ */
 
-nav {
-    background-color: rgb(175, 192, 136);
+/* Styling for top bar, navigation */
+#top-bar {
+  background-color: rgb(235, 227, 212);
 }
 
-.navbar-brand {
-    color: black;
+#nav-search-input {
+  padding: 5px 35px 5px 15px;
+  background-color: white;
+  border-radius: 15px;
+  border-color: rgb(158, 185, 170);
+  border-width: 2px;
+  border-style: solid;
+  text-overflow: ellipsis;
+  outline: none;
 }
 
-.nav-link {
-    color: white;
+.search-button {
+  right: 17%;
+  align-self: center;
+  position: relative;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 }
 
-.search-bar {
-    margin: 0;
+ul.search-nav {
+  margin: 0 0 0 0;
 }
 
-#navbarSupportedContent {
-    display: flex;
-    align-items: center;
+/* styling buttons on the nav bar */
+
+/* button#sgn {
+  font-family: sans-serif;
+  font-weight: 400;
+  background-color: white;
+  color: black;
+  border-radius: 1em;
+  border-color: black;
+  transition: box-shadow 0.3s ease;
+  float: right;
 }
+
+button#sgn:hover {
+  box-shadow: inset 0 0 0 2px #565555;
+} */
+
+/* sign-ins and sing-ups */
+.modal-content {
+  display: grid;
+  grid-template-columns: 200px 1fr; 
+  gap: 20px; 
+}
+
+.modal-title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.modal-dialog {
+  max-width: 700px;
+  max-height: 600px;
+}
+
+.modal-body {
+  padding-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-content .close {
+  position: absolute;
+  text-align: left;
+  top: 1.5px;
+  right: 7px;
+  font-size: 32px;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+button#back {
+  float: left;
+  top: 10px;
+  left: 1px;
+  font-size: 20px;
+  z-index: 9999;
+  cursor: pointer;
+  width: 70px;
+}
+
+.modal-img {
+  background-color: rgb(124, 174, 156);
+  height: 400px;
+  width: 200px;
+}
+
+.element {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.element label {
+  font-weight: 500;
+  display: block;
+  font-size: 14px;
+  color: #222;
+  margin-bottom: 3px;
+}
+
+.element input {
+  width: 100%;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  outline: none;
+  border: 1px solid #aaa;
+  background: #eee;
+  border-radius: 2px;
+}
+
+.element .myInput {
+  background-color: white;
+  border-radius: 8px;
+  border-color: #aaa;
+}
+
+form.signin {
+  padding-bottom: 30px;
+}
+
+.status {
+  font-weight: 200;
+  font-size: .75rem;
+  color: rgba(52, 55, 53, 0.3)
+}
+
+button#user-signin {
+  border: none;
+  border-radius: 3px;
+  width: 100%;
+  font-family: sans-serif;
+  font-weight: 400;
+  background-color: rgb(115, 142, 124);
+  color: white;
+  transition: background-color .1s ease-in-out,color .1s ease-in-out;
+  padding: 7px 7px 7px 7px;
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+button#user-signin:hover {
+  background-color: #445549;
+} 
+
+/* Adjust the width of the modal image */
+.modal-img img {
+  width: 100%; 
+  height: auto;
+}
+
+
+/* .form-signin {
+  display: flex;
+}
+
+.form-email-signin {
+  display: none;
+}
+
+.form-signup {
+  display: none;
+} */
+
+/* #email-used-error {
+  display: none;
+} */
+
+/* .element button {
+  margin-top: 5px;
+  padding: 10px 0px;
+  font-size: 12px;
+} */
+
+/* .modal-jsx {
+  width: 200px;
+  height: 200px;
+  background-color: gray;
+  font-size: 30;
+} */
