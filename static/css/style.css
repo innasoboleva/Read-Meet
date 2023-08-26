@@ -149,7 +149,7 @@ form.signin {
   color: rgba(52, 55, 53, 0.3)
 }
 
-button#user-signin {
+button#user-signin, button#user-signup {
   border: none;
   border-radius: 3px;
   width: 100%;

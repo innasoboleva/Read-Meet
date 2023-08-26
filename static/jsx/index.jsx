@@ -57,18 +57,18 @@ function MeetingRow({ meeting, user }) {
     const [hideJoinButton, setHideJoinButton] = React.useState(false);
     const [hideDropButton, setHideDropButton] = React.useState(false);
 
-    if (meeting.guests.includes(user.user_id)) {
+    if (user.user_id && meeting.guests.includes(user.user_id)) {
         setHideJoinButton(true);
         setHideDropButton(false);
     };
   
     React.useEffect(() => {
-      if (meeting.guests.includes(user.user_id)) {
+      if (user.user_id && meeting.guests.includes(user.user_id)) {
         setHideJoinButton(true);
         setHideDropButton(false);
       };
 
-      if (user && user.user_id && meeting.host_id && user.user_id != meeting.host_id) { // check that user exists, has id and he is not a host
+      if (user.user_id && meeting.host_id && user.user_id != meeting.host_id) { // check that user exists, has id and he is not a host
           fetch('/api/get_user_by_id', {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -93,7 +93,8 @@ function MeetingRow({ meeting, user }) {
     }, [meeting]);
 
     const joinMeeting = () => {
-      fetch('/api/join_meeting', {
+      if (user.user_id) {
+        fetch('/api/join_meeting', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
@@ -107,22 +108,25 @@ function MeetingRow({ meeting, user }) {
           })
           .catch(error => console.error('Error joining meeting:', error));
       };
-  
+      }
+      
       const dropMeeting = () => {
-      fetch('/api/drop_meeting', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
-        })
-          .then(response => response.json())
-          .then(data => {
-              if (data && data.status == "success") {
-                  setHideDropButton(true);
-                  setHideJoinButton(false);
-              }
+        if (user.user_id) {
+          fetch('/api/drop_meeting', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
           })
-          .catch(error => console.error('Error joining meeting:', error));
-      };
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.status == "success") {
+                    setHideDropButton(true);
+                    setHideJoinButton(false);
+                }
+            })
+            .catch(error => console.error('Error joining meeting:', error));
+        };
+        }
 
     return (
       <tr>

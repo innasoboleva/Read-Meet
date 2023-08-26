@@ -7,44 +7,33 @@ function closeModalWithId(modalId) {
 }
 
 
-// document.querySelector('#signin-button').addEventListener('click', showPopup);
+document.querySelector("#user-signup").addEventListener("click", (evt) => {
+    
+    evt.preventDefault();
 
-// function showPopup(evt) {
-//     evt.preventDefault()
+    console.log(`HELLLLLLOOOOOO`);
+    const form = document.getElementById("sign-up-form");
+    const formInputs = {
+        user_name: document.querySelector('#user_name').value,
+        user_email: document.querySelector('#user_email').value,
+        user_password: document.querySelector('#user_password').value,
+        user_address: document.querySelector('#user_address').value,
+        user_zipcode: document.querySelector('#user_zipcode').value,
+        user_age: document.querySelector('#user_age').value,
+      };
 
-//     const popup = document.querySelector('#signInOptions')
-//     popup.style.display = "flex";
-//     popup.style.justifyContent = "stretch";
-// }
+    fetch("/api/create_new_user", {
+        method: "POST",
+        body: JSON.stringify(formInputs),
+        headers: { "Content-Type": "application/json" },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data["status"] == "error") {
+                document.querySelector('#error-message').innerText=data['message']; // displays error message
+            } else {
+                // window.location.replace("/"); // reloads the page if new user successfully created, current page's navigation history replaced
+            }
+    });
 
-// document.querySelector('#new-user-signup').addEventListener('click', newUser);
-
-// function newUser(evt) {
-//     evt.preventDefault()
-
-//     const formInputs = {
-//         'user_name': document.querySelector('#muser_name').value,
-//         'user_email': document.querySelector('#user_email').value,
-//         'user_password': document.querySelector('#user_password').value,
-//         'user_address': document.querySelector('#user_address').value,
-//         'user_age': document.querySelector('#user_age').value,
-//         'user_zipcode': document.querySelector('#user_zipcode').value
-//       }
-      
-    //   fetch('/api/new_user', {
-    //     method: 'POST',
-    //     body: JSON.stringify(formInputs),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     if (data['code'] == 'ERROR') {
-    //         document.querySelector('#email-used-error').style.display=""; // displays error message
-    //     } else {
-    //         window.location.replace('/'); // reloads the page if new user successfully created, current page's navigation history replaced
-    //     }
-      
-    //   });
-// }
+});

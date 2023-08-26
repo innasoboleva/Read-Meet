@@ -85,6 +85,12 @@
         <video id="your-video" controls></video>
   </div>
   {% endblock %}
+  <!-- Block for showing flashed messages -->
+  <ul>
+    {% for message in get_flashed_messages() %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
 
   <!-- Include any page-specific JavaScript using this block. -->
   {% block js %}

@@ -54,6 +54,10 @@ def get_user_lists(user_id):
     user = User.query.get(user_id)
     return user.lists
 
+def does_user_exist(email):
+    """ Returns True, if email is already in a database. """
+    return bool(User.query.filter(User.email == email).first())
+
 # Lists
 def get_list_by_id(id):
     """ Returns user's list by list id. """

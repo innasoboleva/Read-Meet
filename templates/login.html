@@ -50,11 +50,10 @@
                 some picture
             </div>
             <div class="modal-body">
-                <!-- <button type="button" id="back" data-bs-toggle="modal" data-bs-target="#signInOptions" onclick="closeModalWithId('signInWithEmail')">
-                    <span aria-hidden="true"><i class="bi bi-arrow-return-left"></i></span>
-                </button> -->
+               
                 <h5 class="modal-title">Sign in with email</h5>
                 <form class="signin">
+                    <div id="error-message"></div>
                     <div class="element">
                         <label for="user_email">
                             Email
@@ -95,7 +94,8 @@
             </div>
             <div class="modal-body">
                 <h3 class="modal-title">Sign up with email</h3>
-                <form class="signin">
+                <form id="sign-up-form" class="signin" method="POST">
+                    <!-- action="/api/create_new_user"  -->
                     <div class="element">
                         <label for="user_name">
                             Name
@@ -127,15 +127,15 @@
                         <label for="user_zipcode">
                             Zipcode
                         </label>
-                        <input class="input myInput" id="user_address" name="user_address" type="text">
+                        <input class="input myInput" id="user_zipcode" name="user_zipcode" type="text">
                     </div>
                     <div class="element">
-                        <label for="user_address">
+                        <label for="user_age">
                             Age
                         </label>
-                        <input class="input myInput" id="user_address" name="user_address" type="text">
+                        <input class="input myInput" id="user_age" name="user_age" type="text">
                     </div>
-                    <button id="user-signin">Sign me up!</button>
+                    <button id="user-signup">Sign me up!</button>
                 </form>
                 
             </div>
