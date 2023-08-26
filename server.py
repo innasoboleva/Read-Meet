@@ -45,9 +45,7 @@ def create_new_user():
         else:
             age = int(age)
         try:
-            print('GOT HERE', email, name, zipcode, password)
             new_user = User.create(email, password, name, zipcode, address, age)
-            print('user created.....')
             db.session.add(new_user)
             db.session.commit()
             print("NEW USER:", new_user)
@@ -59,8 +57,6 @@ def create_new_user():
                 session["address"] = address
             if zipcode:
                 session["zipcode"] = zipcode
-            if age:
-                session["age"] = age
         except:
             return jsonify({ "status": "error", "message": "There was a server problem. Please try again..."})
         return jsonify({ "status": "success", "new_user": \
@@ -74,9 +70,47 @@ def get_current_user():
     name = session.get("name", None)
     address = session.get("address", None)
     zipcode = session.get("zipcode", None)
-    print('SESSION FUNC: ', user, name, address, zipcode)
     return jsonify({"user_id": user, "name": name, "address": address, "zipcode": zipcode })
 
+
+@app.route("/api/login_user", methods=["POST"])
+def login():
+    """ Check if user exists in DB, add to session if he is. Returns status. 
+        Assums that email and password are not empty.
+    """
+    json_data = request.get_json()
+    email = json_data.get("user_email")
+    password = json_data.get("user_password")
+    user = crud.get_user_by_email(email)
+    if user:
+        if user.password == password:
+            session["user_id"] = user.user_id
+            session["name"] = user.name
+            session["zipcode"] = user.zipcode
+            if user.address is not None:
+                session["address"] = user.address
+            return jsonify({ "status": "success" })
+        else:
+            return jsonify({ "status": "error", "message": "Wrong password. Please try again..."})
+    else:
+        return jsonify({ "status": "error", "message": "There is no user with this email. Please try again..."})
+    
+
+@app.route("/api/logout_user")
+def logout():
+    """ Delets user from session. Returns status. 
+        Assums that user is not empty.
+    """
+    if "user_id" in session:
+        session["user_id"] = None
+        session["name"] = None
+        session["zipcode"] = None
+        if "address" in session:
+            session["address"] = None
+        return jsonify({ "status": "success" })
+    else:
+        return jsonify({ "status": "error", "message": "Could not log out, server is not responding."})
+    
 
 @app.route("/api/get_all_meetings")
 def get_all_active_meetings_data():

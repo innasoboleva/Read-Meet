@@ -59,6 +59,11 @@ def does_user_exist(email):
     user_to_check = User.query.filter(User.email == email).first()
     return bool(user_to_check)
 
+def get_user_by_email(email):
+    """ Returns user, if exists. """
+    return User.query.filter(User.email == email).first()
+
+
 # Lists
 def get_list_by_id(id):
     """ Returns user's list by list id. """
