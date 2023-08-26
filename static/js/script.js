@@ -6,12 +6,9 @@ function closeModalWithId(modalId) {
     }
 }
 
-
 document.querySelector("#user-signup").addEventListener("click", (evt) => {
-    
     evt.preventDefault();
 
-    console.log(`HELLLLLLOOOOOO`);
     const form = document.getElementById("sign-up-form");
     const formInputs = {
         user_name: document.querySelector('#user_name').value,
@@ -30,10 +27,11 @@ document.querySelector("#user-signup").addEventListener("click", (evt) => {
         .then((response) => response.json())
         .then((data) => {
             if (data["status"] == "error") {
-                document.querySelector('#error-message').innerText=data['message']; // displays error message
+                console.log(`${data['message']}`)
+                document.querySelector('#error-message-signup').innerText = data['message']; // displays error message
             } else {
-                // window.location.replace("/"); // reloads the page if new user successfully created, current page's navigation history replaced
+                // closeModalWithId("singUpForm");
+                window.location.replace("/"); // reloads the page if new user successfully created, current page's navigation history replaced
             }
     });
-
 });

@@ -26,23 +26,34 @@ def show_login_page():
 @app.route("/api/create_new_user", methods=["POST"])
 def create_new_user():
     """ If user's email is not present in DB, creates new user and returns status success. If exists, returns error."""
+    print("im here")
     json_data = request.get_json()
     email = json_data.get("user_email")
-
     if crud.does_user_exist(email):
         return jsonify({ "status": "error", "message": f"User with email {email} already exists. Please try again."})
     else:
+        print(json_data)
         name = json_data.get("user_name")
         address = json_data.get("user_address", None)
         zipcode = json_data.get("user_zipcode", None)
         age = json_data.get("user_age", None)
         password = json_data.get("user_password")
+        if address == "":
+            address = None
+        if age == "":
+            age = None
+        else:
+            age = int(age)
         try:
+            print('GOT HERE', email, name, zipcode, password)
             new_user = User.create(email, password, name, zipcode, address, age)
+            print('user created.....')
             db.session.add(new_user)
             db.session.commit()
-            flash(f"New user successfully created. You logged in with {email}!")
+            print("NEW USER:", new_user)
+            # flash(f"New user successfully created. You logged in with {email}!")
             session["user_id"] = new_user.user_id
+            print('SESSION, USER ID:_______', session.get("user_id"))
             session["name"] = name
             if address:
                 session["address"] = address
@@ -52,7 +63,8 @@ def create_new_user():
                 session["age"] = age
         except:
             return jsonify({ "status": "error", "message": "There was a server problem. Please try again..."})
-        return jsonify({ "status": "success" })
+        return jsonify({ "status": "success", "new_user": \
+                        { "user_id": new_user.user_id, "name": name, "address": address, "zipcode": zipcode } })
 
 
 @app.route("/api/get_current_user")
@@ -62,6 +74,7 @@ def get_current_user():
     name = session.get("name", None)
     address = session.get("address", None)
     zipcode = session.get("zipcode", None)
+    print('SESSION FUNC: ', user, name, address, zipcode)
     return jsonify({"user_id": user, "name": name, "address": address, "zipcode": zipcode })
 
 

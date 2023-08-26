@@ -24,6 +24,8 @@ class User(db.Model):
     @classmethod
     def create(cls, email, password, name, zipcode, address=None, age=None):
        """ Create and return a new user. """
+       print("MODELS PY: USer: ", email, password, name, zipcode)
+       print('Trying to create user:,,,,,')
        return cls(email=email, password=password, name=name, zipcode=zipcode, address=address, age=age)
     
     def to_dict(self):
@@ -145,7 +147,7 @@ class BookList(db.Model):
     list_id = db.Column(db.Integer, db.ForeignKey("lists.list_id"), nullable=False)
 
 
-def connect_to_db(flask_app, db_uri="postgresql:///readmeet", echo=True):
+def connect_to_db(flask_app, db_uri="postgresql:///readmeet", echo=False):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -157,10 +159,5 @@ def connect_to_db(flask_app, db_uri="postgresql:///readmeet", echo=True):
 
 if __name__ == "__main__":
     from server import app
-
-    # Call connect_to_db(app, echo=False) if your program output gets
-    # too annoying; this will tell SQLAlchemy not to print out every
-    # query it executes.
-
-    connect_to_db(app, echo=False)
+    connect_to_db(app)
 

@@ -16,11 +16,10 @@ function MeetingDataContainer() {
         .then(data => {
             if (data) {
                 setMeetings(data);
-            }
+              }
             })
         .catch(error => console.error('Error fetching meetings:', error));
     }, [user]);
-
 
     return (
       <React.Fragment>
@@ -54,21 +53,25 @@ function MeetingRow({ meeting, user }) {
     const [host, setHost] = React.useState({});
     const [book, setBook] = React.useState({});
     // for correct displaying join meeting button and drop meeting button
-    const [hideJoinButton, setHideJoinButton] = React.useState(false);
-    const [hideDropButton, setHideDropButton] = React.useState(false);
-
-    if (user.user_id && meeting.guests.includes(user.user_id)) {
-        setHideJoinButton(true);
-        setHideDropButton(false);
-    };
-  
+    const [hideJoinButton, setHideJoinButton] = React.useState(true);
+    const [hideDropButton, setHideDropButton] = React.useState(true);
+    
     React.useEffect(() => {
-      if (user.user_id && meeting.guests.includes(user.user_id)) {
+      
+      if (user.user_id == meeting.host_id) {
+        // user is a host, disable buttons
+        setHideJoinButton(true);
+        setHideDropButton(true);
+      } else if (user.user_id && meeting.guests.includes(user.user_id)) {
+        // user is a guest, disable join
         setHideJoinButton(true);
         setHideDropButton(false);
+      } else {
+        setHideJoinButton(false);
+        setHideDropButton(true);
       };
 
-      if (user.user_id && meeting.host_id && user.user_id != meeting.host_id) { // check that user exists, has id and he is not a host
+      if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
           fetch('/api/get_user_by_id', {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -93,7 +96,7 @@ function MeetingRow({ meeting, user }) {
     }, [meeting]);
 
     const joinMeeting = () => {
-      if (user.user_id) {
+      if (user.user_id && (user.user_id != meeting.host_id)) {
         fetch('/api/join_meeting', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -111,7 +114,7 @@ function MeetingRow({ meeting, user }) {
       }
       
       const dropMeeting = () => {
-        if (user.user_id) {
+        if (user.user_id && (user.user_id != meeting.host_id)) {
           fetch('/api/drop_meeting', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -140,15 +143,14 @@ function MeetingRow({ meeting, user }) {
         <td>{host.name}</td>
         <td>{meeting.guests_count}/12</td>
         <td>
-            <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={() => joinMeeting(meeting.id, user.user_id)}>Join</button>
+            <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
         </td>
         <td>
-            <button id="button-drop" className="btn btn-warning" disabled={hideDropButton} onClick={() => dropMeeting(meeting.id, user.user_id)}>Drop</button>
+            <button id="button-drop" className="btn btn-warning" disabled={hideDropButton} onClick={dropMeeting}>Drop</button>
         </td>
       </tr>
     );
   }
-
 
 
 ReactDOM.render(<MeetingDataContainer />, document.getElementById('container'));

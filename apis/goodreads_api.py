@@ -149,7 +149,10 @@ def _get_current_date():
 
     today = datetime.now()
     year = today.year
-    month = today.month
+    month = today.month - 1
+    if month == 0:  # fix for January
+        month = 12
+        year -= 1
     return (year, month)
 
 

@@ -79,3 +79,4 @@ for index, user in enumerate(users):
             num = random.randint(0, len(users)-1)
         new_meeting.attending_guests.append(users[num])
 
+models.db.session.commit()

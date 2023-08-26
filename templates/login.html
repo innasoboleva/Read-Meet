@@ -6,8 +6,6 @@
 <div>HELLO WORLD!!!!!</div>
 
 
-<!-- Button trigger modal -->
-<button id="signin-button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#signInOptions">Sign in</button>
 <!-- Modal first appearance -->
 <div class="modal fade" id="signInOptions" tabindex="-1" role="dialog" aria-labelledby="signInOptionsLabel"
     aria-hidden="true">
@@ -53,19 +51,19 @@
                
                 <h5 class="modal-title">Sign in with email</h5>
                 <form class="signin">
-                    <div id="error-message"></div>
+                    <div id="error-message-signin"></div>
                     <div class="element">
-                        <label for="user_email">
+                        <label for="email">
                             Email
                         </label>
-                        <input class="input myInput" id="user_email" name="user_email" type="email">
+                        <input class="input myInput" id="email" name="email" type="email">
                     </div>
         
                     <div class="element">
-                        <label for="user_password">
+                        <label for="password">
                             Password
                         </label>
-                        <input class="input myInput" id="user_password" maxlength="50" name="user_password" type="password">
+                        <input class="input myInput" id="password" maxlength="50" name="password" type="password">
                     </div>
                     <button id="user-signin">Sing in</button>
                 </form>
@@ -83,7 +81,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <button type="button" id="modal-signin-back" data-bs-toggle="modal" data-bs-target="#signInOptions" onclick="closeModalWithId('singUpForm')">
+            <button type="button" id="modal-signup-back" data-bs-toggle="modal" data-bs-target="#signInOptions" onclick="closeModalWithId('singUpForm')">
                 <span aria-hidden="true"><i class="bi bi-arrow-return-left"></i></span>
             </button>
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -94,7 +92,11 @@
             </div>
             <div class="modal-body">
                 <h3 class="modal-title">Sign up with email</h3>
+                <div class="message" id="error-message-signup">
+                    
+                </div>
                 <form id="sign-up-form" class="signin" method="POST">
+                    
                     <!-- action="/api/create_new_user"  -->
                     <div class="element">
                         <label for="user_name">

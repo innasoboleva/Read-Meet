@@ -93,7 +93,7 @@ button#sgn:hover {
   cursor: pointer;
 }
 
-button#modal-signin-back {
+button#modal-signin-back, button#modal-signup-back {
   position: absolute;
   left: 30%;
   margin-top: 3px;
@@ -147,6 +147,11 @@ form.signin {
   font-weight: 200;
   font-size: .75rem;
   color: rgba(52, 55, 53, 0.3)
+}
+
+.message {
+  color: red;
+  font-weight: 200;
 }
 
 button#user-signin, button#user-signup {
