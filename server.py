@@ -48,15 +48,14 @@ def create_new_user():
             new_user = User.create(email, password, name, zipcode, address, age)
             db.session.add(new_user)
             db.session.commit()
-            print("NEW USER:", new_user)
-            # flash(f"New user successfully created. You logged in with {email}!")
+            flash("New user successfully created.")
             session["user_id"] = new_user.user_id
-            print('SESSION, USER ID:_______', session.get("user_id"))
             session["name"] = name
             if address:
                 session["address"] = address
             if zipcode:
                 session["zipcode"] = zipcode
+            flash(f"You logged in with {email}!")
         except:
             return jsonify({ "status": "error", "message": "There was a server problem. Please try again..."})
         return jsonify({ "status": "success", "new_user": \
@@ -89,7 +88,9 @@ def login():
             session["zipcode"] = user.zipcode
             if user.address is not None:
                 session["address"] = user.address
-            return jsonify({ "status": "success" })
+            flash(f"You successfully logged in with {email}!")
+            return jsonify({ "status": "success", \
+                            "user": { "user_id": user.user_id, "name": user.name, "address": user.address, "zipcode": user.zipcode } })
         else:
             return jsonify({ "status": "error", "message": "Wrong password. Please try again..."})
     else:
@@ -107,6 +108,7 @@ def logout():
         session["zipcode"] = None
         if "address" in session:
             session["address"] = None
+        flash("You logged out!")
         return jsonify({ "status": "success" })
     else:
         return jsonify({ "status": "error", "message": "Could not log out, server is not responding."})
@@ -152,21 +154,41 @@ def get_book_by_id():
 @app.route("/api/join_meeting", methods=["POST"])
 def join_meeting():
     """ Sends request to db to join meeting. """
-    user_id = request.get_json().get("user_id")
-    meeting_id = request.get_json().get("meeting_id")
-    message = crud.join_meeting(user_id, meeting_id)
-    db.session.commit()
-    return jsonify(message)
+    data = request.get_json()
+    user_id = data.get("user_id")
+    meeting_id = data.get("meeting_id")
+    print(meeting_id, user_id)
+    meeting = crud.get_meeting_by_id(meeting_id)
+    print(meeting)
+    if (meeting and (len(meeting.attending_guests) != meeting.max_guests) and (meeting.host_id != user_id)):
+        message = crud.join_meeting(user_id, meeting_id)
+        if message['status'] == 'success':
+            db.session.commit()
+        flash(message['message'])
+        return jsonify(message)
+    else:
+        return jsonify({"status": "error", "message": "Can't find meeting or user data." })
+    
 
 
 @app.route("/api/drop_meeting", methods=["POST"])
 def drop_meeting():
     """ Sends request to db to drop from meeting. """
-    user_id = request.get_json().get("user_id")
-    meeting_id = request.get_json().get("meeting_id")
+    data = request.get_json()
+    user_id = data.get("user_id")
+    meeting_id = data.get("meeting_id")
     message = crud.drop_meeting(user_id, meeting_id)
     db.session.commit()
+    flash(message['message'])
     return jsonify(message)
+
+
+@app.route("/api/get_popular_books")
+def get_popular_books():
+    """ Returns list of popular books for previous month. """
+    books = crud.get_popular_books()
+    result = [book.to_dict() for book in books]
+    return jsonify(result)
 
 
 if __name__ == "__main__":

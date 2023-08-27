@@ -50,7 +50,7 @@ if status == "success":
                 description = books[0].get("description")
                 books_ISBN = books[0].get("ISBN")
                 image = books[0].get("image")
-                popular_book = datetime.now().date()
+                popular_book = datetime.today().strftime("%Y-%m")
                 new_book = models.Book.create(isbn=books_ISBN, title=title, subtitle=subtitle, authors=authors, \
                   image_url=image, description=description, popular_book=popular_book)
                 models.db.session.add(new_book)
@@ -71,9 +71,11 @@ books = models.Book.query.all()
 for index, user in enumerate(users):
     date_now = datetime.now().date() + timedelta(days=1) # adding one more day to now
     random_book = books[random.randint(0, len(books) - 1)]
-    new_meeting = models.Meeting.create(random_book, date_now, True, user) # book, day, offline, host, video_note=None, overview=None, place=None, address=None, language="EN"
+    random_guests_num = random.randint(5, 25)
+    new_meeting = models.Meeting.create(random_book, date_now, True, user, random_guests_num) # book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"
     models.db.session.add(new_meeting)
-    for _ in range(10):
+    random_guests = random.randint(0, random_guests_num)
+    for _ in range(random_guests):
         num = random.randint(0, len(users)-1)
         while num == index:
             num = random.randint(0, len(users)-1)

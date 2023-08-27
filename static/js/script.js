@@ -12,20 +12,6 @@ function userIsLoggedOut() {
     signoutLink.style.display = "none";
 }
 
-fetch('/api/get_current_user')
-    .then(response => response.json())
-    .then( data => {
-        if ((data.user_id != "") && (data.user_id != null)) {
-            userIsLoggedIn();
-        }
-        else {
-            console.log("showing sign in")
-            userIsLoggedOut();
-        }
-    })
-    .catch(error => console.error('Error fetching current user:', error));
-
-
 function closeModalWithId(modalId) {
     var modalElement = document.querySelector(`#${modalId}`);
     var modal = bootstrap.Modal.getInstance(modalElement);
@@ -37,7 +23,6 @@ function closeModalWithId(modalId) {
 document.querySelector("#user-signup").addEventListener("click", (evt) => {
     evt.preventDefault();
 
-    const form = document.getElementById("sign-up-form");
     const formInputs = {
         user_name: document.querySelector('#user_name').value,
         user_email: document.querySelector('#user_email').value,
@@ -58,7 +43,9 @@ document.querySelector("#user-signup").addEventListener("click", (evt) => {
                 console.log(`${data['message']}`)
                 document.querySelector('#error-message-signup').innerText = data['message']; // displays error message
             } else {
-                window.location.replace("/"); // reloads the page if new user successfully created, current page's navigation history replaced
+                userIsLoggedIn();
+                window.updateUser(data.new_user);
+                closeModalWithId("singUpForm"); // no reloading the page, only tables
             }
     });
 });
@@ -83,7 +70,9 @@ document.querySelector("#user-signin").addEventListener("click", (evt) => {
                 console.log(`${data['message']}`)
                 document.querySelector('#error-message-signin').innerText = data['message']; // displays error message
             } else {
-                window.location.replace("/"); // reloads the page if new user successfully created, current page's navigation history replaced
+                userIsLoggedIn();
+                window.updateUser(data.user);   // no reloading the page, only tables
+                closeModalWithId("signInWithEmail");
             }
     });
 });
@@ -99,7 +88,8 @@ document.querySelector("#user-signout").addEventListener("click", (evt) => {
                 console.log(`${data['message']}`)
                 document.querySelector('#error-message-signin').innerText = data['message']; // displays error message
             } else {
-                window.location.replace("/"); // reloads the page if new user successfully created, current page's navigation history replaced
+                userIsLoggedOut();
+                window.updateUser({"user_id": "", "name": "", "address": "", "zipcode": "" });
             }
     });
 });

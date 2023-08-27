@@ -24,8 +24,6 @@ class User(db.Model):
     @classmethod
     def create(cls, email, password, name, zipcode, address=None, age=None):
        """ Create and return a new user. """
-       print("MODELS PY: USer: ", email, password, name, zipcode)
-       print('Trying to create user:,,,,,')
        return cls(email=email, password=password, name=name, zipcode=zipcode, address=address, age=age)
     
     def to_dict(self):
@@ -48,7 +46,7 @@ class Book(db.Model):
     authors = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
     image_url = db.Column(db.String)
-    popular_book = db.Column(db.Date)
+    popular_book = db.Column(db.String)
 
     meetings = db.relationship("Meeting", back_populates="book")
     lists = db.relationship("List", secondary="books_lists", back_populates="books")
@@ -84,22 +82,24 @@ class Meeting(db.Model):
     video_note = db.Column(db.String)
     overview = db.Column(db.Text)
     host_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    max_guests = db.Column(db.Integer, nullable=False)
 
     book = db.relationship("Book", back_populates="meetings")
     host = db.relationship("User", back_populates="host_meetings")
     attending_guests = db.relationship("User", secondary="guests", back_populates="guest_meetings")
 
     @classmethod
-    def create(cls, book, day, offline, host, video_note=None, overview=None, place=None, address=None, language="EN"):
+    def create(cls, book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"):
        """ Create and return a new meeting instance. """
        return cls(book=book, day=day, place=place, address=address, host=host, \
-                  offline=offline, active=True, language=language, video_note=video_note, overview=overview)
+                  offline=offline, max_guests=max_guests, active=True, language=language, video_note=video_note, overview=overview)
     
     def to_dict(self):
         """ Returns data of an instance in a dictionary. """
         return { "id": self.meeting_id, "book_id": self.book_id, "date": self.day, \
                 "place": self.place, "address": self.address, "offline": self.offline, \
-                    "language": self.language, "video": self.video_note, "overview": self.overview, "host_id": self.host_id }
+                    "language": self.language, "video": self.video_note, \
+                        "overview": self.overview, "host_id": self.host_id, "max_guests": self.max_guests }
 
     def __repr__(self):
         return f"<Meeting id={self.meeting_id} book={self.book} day={self.day} active={self.active}>"

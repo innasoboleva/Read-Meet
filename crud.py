@@ -1,5 +1,6 @@
 """ CRUD operations. """
 from models import db, User, Meeting, Book, List
+from datetime import datetime
 
 # Meetings
 def get_all_meetings():
@@ -19,7 +20,8 @@ def join_meeting(user_id, meeting_id):
     meeting = Meeting.query.get(meeting_id)
     user = User.query.get(user_id)
     if user and meeting:
-        meeting.attending_guests.append(user)
+        if user not in meeting.attending_guests and len(meeting.attending_guests) < meeting.max_guests:
+            meeting.attending_guests.append(user)
         return {"status": "success", "message": f"{user.name} joined meeting for '{meeting.book.title}' successfully!"}
     else:
         return {"status": "error", "message": "Can't find meeting or user data" }
@@ -29,8 +31,9 @@ def drop_meeting(user_id, meeting_id):
     meeting = Meeting.query.get(meeting_id)
     user = User.query.get(user_id)
     if meeting and user:
-        meeting.attending_guests.remove(user)
-        return {"status": "success", "message": f"{user.name} dropped from meeting for '{meeting.book.title}' successfully!" } 
+        if user in meeting.attending_guests:
+            meeting.attending_guests.remove(user)
+            return {"status": "success", "message": f"{user.name} dropped from meeting for '{meeting.book.title}' successfully!" } 
     else:
         return {"status": "error", "message": "Can't find meeting or user data" }
 
@@ -79,7 +82,10 @@ def get_book_by_id(isbn):
     """ Returns book. """
     return Book.query.get(isbn)
 
+def get_popular_books():
+    """ Returns list of popular books. """
+    day = datetime.today().strftime("%Y-%m")
+    return Book.query.filter(Book.popular_book == day).all()
 
-def get_popular_books(year, month):
-    pass
+
 

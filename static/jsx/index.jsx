@@ -2,11 +2,25 @@
 function MeetingDataContainer() {
     const [meetings, setMeetings] = React.useState([]);
     const [user, setUser] = React.useState();
+
+    window.updateUser = (newUser) => {
+      setUser(newUser);
+    }
   
     React.useEffect(() => {
         fetch('/api/get_current_user')
           .then(response => response.json())
-          .then(data => setUser(data))
+          .then(data => {
+            setUser(data)
+            if ((data.user_id != "") && (data.user_id != null)) {
+                console.log("no user")
+                userIsLoggedIn();
+            }
+            else {
+                console.log("showing sign in")
+                window.userIsLoggedOut();
+            }
+          })
           .catch(error => console.error('Error fetching current user:', error));
       }, []);
 
@@ -49,16 +63,27 @@ function MeetingDataContainer() {
     );
   }
 // each row of a meeting table
-function MeetingRow({ meeting, user }) {
+function MeetingRow(props) {
+    const { meeting, user } = props;
     const [host, setHost] = React.useState({});
     const [book, setBook] = React.useState({});
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(true);
     const [hideDropButton, setHideDropButton] = React.useState(true);
+
+    const [guestsCount, setGuestsCount] = React.useState(meeting.guests_count);
+
+    React.useEffect(() => {
+      if (guestsCount >= meeting.max_guests) {
+        setHideJoinButton(true);
+      } else {
+        setHideJoinButton(false);
+      }
+    }, [guestsCount])
     
     React.useEffect(() => {
       
-      if (user.user_id == meeting.host_id) {
+      if ((user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
         // user is a host, disable buttons
         setHideJoinButton(true);
         setHideDropButton(true);
@@ -96,17 +121,19 @@ function MeetingRow({ meeting, user }) {
     }, [meeting]);
 
     const joinMeeting = () => {
+      console.log(`${meeting.id}`)
       if (user.user_id && (user.user_id != meeting.host_id)) {
         fetch('/api/join_meeting', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
+          body: JSON.stringify({ "meeting_id": meeting.id, "user_id": user.user_id }),
         })
           .then(response => response.json())
           .then(data => {
               if (data && data.status == "success") {
                   setHideJoinButton(true);
                   setHideDropButton(false);
+                  setGuestsCount(prevGuestsCount => prevGuestsCount + 1);
               }
           })
           .catch(error => console.error('Error joining meeting:', error));
@@ -118,16 +145,17 @@ function MeetingRow({ meeting, user }) {
           fetch('/api/drop_meeting', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "meeting_id": meeting.meeting_id, "user_id": user.user_id }),
+            body: JSON.stringify({ "meeting_id": meeting.id, "user_id": user.user_id }),
           })
             .then(response => response.json())
             .then(data => {
                 if (data && data.status == "success") {
                     setHideDropButton(true);
                     setHideJoinButton(false);
+                    setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
                 }
             })
-            .catch(error => console.error('Error joining meeting:', error));
+            .catch(error => console.error('Error dropping meeting:', error));
         };
         }
 
@@ -141,7 +169,7 @@ function MeetingRow({ meeting, user }) {
         <td>{meeting.video}</td>
         <td>{meeting.language}</td>
         <td>{host.name}</td>
-        <td>{meeting.guests_count}/12</td>
+        <td>{guestsCount}/{meeting.max_guests}</td>
         <td>
             <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
         </td>
@@ -153,4 +181,63 @@ function MeetingRow({ meeting, user }) {
   }
 
 
-ReactDOM.render(<MeetingDataContainer />, document.getElementById('container'));
+ReactDOM.render(<MeetingDataContainer />, document.getElementById('container-data'));
+
+
+function CarouselDataContainer() {
+  // fetching popular books for carousel
+  const [popularBooks, setPopularBooks] = React.useState([]);
+
+  React.useEffect(() => {
+    // getting popular books for past month from the server
+    fetch('/api/get_popular_books')
+      .then(response => response.json())
+      .then(data => setPopularBooks(data))
+      .catch(error => console.error('Error fetching popular book:', error)
+      );
+    }, []);
+
+  // group books by 3
+  const groupBooks = [];
+  for (let i = 0; i < popularBooks.length; i += 3) {
+    groupBooks.push(popularBooks.slice(i, i + 3));
+  }
+
+  return (
+    <React.Fragment>
+    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+      <div className="carousel-inner">
+          { groupBooks.map((books, index) => (
+              <CarouselItems key={index} books={books} isActive={index===1}/> // if index is 1, it will set block to active for carousel
+          ))}
+      </div>
+      <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span className="visually-hidden">Previous</span>
+      </button>
+      <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span className="carousel-control-next-icon" aria-hidden="true"></span>
+        <span className="visually-hidden">Next</span>
+      </button>
+    </div>
+    </React.Fragment> 
+    )
+}
+
+
+function CarouselItems(props) {
+  const { books, isActive } = props;
+
+  return (
+    <React.Fragment>
+      <div className={`carousel-item d-block w-100 ${isActive ? 'active' : ''}`}>
+          { books.map((book) => (
+              <img key={book.id} src={book.image_url} alt={book.title} />
+          ))}
+       </div>
+    </React.Fragment>
+  )
+}
+
+
+ReactDOM.render(<CarouselDataContainer />, document.getElementById('container-carousel'));

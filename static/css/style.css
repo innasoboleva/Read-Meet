@@ -177,3 +177,8 @@ button#user-signin:hover {
   width: 100%; 
   height: auto;
 }
+
+/* CAROUSEL */
+.carousel-item img {
+  max-width: 200px;
+}
