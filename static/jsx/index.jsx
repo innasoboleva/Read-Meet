@@ -196,11 +196,12 @@ function CarouselDataContainer() {
       .catch(error => console.error('Error fetching popular book:', error)
       );
     }, []);
-
-  // group books by 3
+  
+  const filteredBooks = popularBooks.filter(book => !book.image_url.startsWith("/static/img"));
+  console.log(JSON.stringify(filteredBooks))
   const groupBooks = [];
-  for (let i = 0; i < popularBooks.length; i += 3) {
-    groupBooks.push(popularBooks.slice(i, i + 3));
+  for (let i = 0; i < filteredBooks.length; i += 3) {
+    groupBooks.push(filteredBooks.slice(i, i + 3));
   }
 
   return (
@@ -227,13 +228,18 @@ function CarouselDataContainer() {
 
 function CarouselItems(props) {
   const { books, isActive } = props;
-
+  
   return (
     <React.Fragment>
-      <div className={`carousel-item d-block w-100 ${isActive ? 'active' : ''}`}>
+      <div className={`carousel-item ${isActive ? 'active' : ''}`}>
+        <div className="carousel-img-block d-flex justify-content-between">
           { books.map((book) => (
-              <img key={book.id} src={book.image_url} alt={book.title} />
+            <div key={book.id} className="carousel-image">
+              <img src={book.image_url} className="img-fluid" alt={book.title} />
+            </div>
+              // <img key={book.id} src={book.image_url} className="d-block w-100" alt={book.title} />
           ))}
+          </div>
        </div>
     </React.Fragment>
   )

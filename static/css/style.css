@@ -1,15 +1,14 @@
+/* Base CSS styling */
+
 body {
   font-family: sans-serif;
+  background-color: #fdfaf5;
 }
 
 a {
   cursor: pointer;
 }
-/* .row {
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
- */
+
 
 /* Styling for top bar, navigation */
 #top-bar {
@@ -33,14 +32,13 @@ a {
   position: relative;
   background-color: transparent;
   border: none;
-  cursor: pointer;
 }
 
 ul.search-nav {
   margin: 0 0 0 0;
 }
 
-/* styling buttons on the nav bar */
+/* Styling for buttons on the nav bar */
 
 /* button#sgn {
   font-family: sans-serif;
@@ -57,7 +55,7 @@ button#sgn:hover {
   box-shadow: inset 0 0 0 2px #565555;
 } */
 
-/* sign-ins and sing-ups */
+/* Styling for sign-ins and sing-ups */
 .modal-content {
   display: grid;
   grid-template-columns: 200px 1fr; 
@@ -75,7 +73,7 @@ button#sgn:hover {
 }
 
 .modal-body {
-  max-height: calc(100vh - 40px); /* Adjust to leave space for header/footer */
+  max-height: calc(100vh - 40px); /* cna be changed for space for header/footer */
   overflow-y: auto;
   padding-top: 40px;
   display: flex;
@@ -172,13 +170,29 @@ button#user-signin:hover {
   background-color: #445549;
 } 
 
-/* Adjust the width of the modal image */
+/* Styling the modal image */
 .modal-img img {
   width: 100%; 
   height: auto;
 }
 
 /* CAROUSEL */
-.carousel-item img {
-  max-width: 200px;
+
+.carousel-inner {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.carousel-image {
+  flex: 1;
+  box-sizing: border-box;
+  height: 300px; /* height for the book cover */
+}
+
+.carousel-image img {
+  max-width: 100%;
+  height: 100%; 
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
 }

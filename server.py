@@ -23,6 +23,13 @@ def show_login_page():
     return render_template("login.html")
 
 
+@app.route("/books")
+def show_login_page():
+    """Show page with rendered books."""
+
+    return render_template("books.html")
+
+
 @app.route("/api/create_new_user", methods=["POST"])
 def create_new_user():
     """ If user's email is not present in DB, creates new user and returns status success. If exists, returns error."""
