@@ -34,8 +34,8 @@ def show_books_page():
 def get_books():
     """ Get books information with provided parameters. """
     search_req = request.args.get("search")
-    print('CURRENT SEARCH', search_req)
-    result = books_api.find_list_of_books(search_req)
+    page = request.args.get("page")
+    result = books_api.find_list_of_books(search_req, int(page) if page else 0)
     return jsonify(result)
 
 
@@ -43,13 +43,11 @@ def get_books():
 @app.route("/api/create_new_user", methods=["POST"])
 def create_new_user():
     """ If user's email is not present in DB, creates new user and returns status success. If exists, returns error."""
-    print("im here")
     json_data = request.get_json()
     email = json_data.get("user_email")
     if crud.does_user_exist(email):
         return jsonify({ "status": "error", "message": f"User with email {email} already exists. Please try again."})
     else:
-        print(json_data)
         name = json_data.get("user_name")
         address = json_data.get("user_address", None)
         zipcode = json_data.get("user_zipcode", None)
@@ -174,9 +172,7 @@ def join_meeting():
     data = request.get_json()
     user_id = data.get("user_id")
     meeting_id = data.get("meeting_id")
-    print(meeting_id, user_id)
     meeting = crud.get_meeting_by_id(meeting_id)
-    print(meeting)
     if (meeting and (len(meeting.attending_guests) != meeting.max_guests) and (meeting.host_id != user_id)):
         message = crud.join_meeting(user_id, meeting_id)
         if message['status'] == 'success':

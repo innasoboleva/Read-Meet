@@ -13,11 +13,11 @@ function MeetingDataContainer() {
           .then(data => {
             setUser(data)
             if ((data.user_id != "") && (data.user_id != null)) {
-                console.log("no user")
+                console.log("No user")
                 userIsLoggedIn();
             }
             else {
-                console.log("showing sign in")
+                console.log("User loged in")
                 window.userIsLoggedOut();
             }
           })
@@ -198,7 +198,6 @@ function CarouselDataContainer() {
     }, []);
   
   const filteredBooks = popularBooks.filter(book => !book.image_url.startsWith("/static/img"));
-  console.log(JSON.stringify(filteredBooks))
   const groupBooks = [];
   for (let i = 0; i < filteredBooks.length; i += 3) {
     groupBooks.push(filteredBooks.slice(i, i + 3));
