@@ -24,10 +24,20 @@ def show_login_page():
 
 
 @app.route("/books")
-def show_login_page():
+def show_books_page():
     """Show page with rendered books."""
-
+    
     return render_template("books.html")
+
+
+@app.route("/api/get_books")
+def get_books():
+    """ Get books information with provided parameters. """
+    search_req = request.args.get("search")
+    print('CURRENT SEARCH', search_req)
+    result = books_api.find_list_of_books(search_req)
+    return jsonify(result)
+
 
 
 @app.route("/api/create_new_user", methods=["POST"])

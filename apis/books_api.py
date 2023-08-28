@@ -70,7 +70,7 @@ book_isbn = "https://www.googleapis.com/books/v1/volumes?q=isbn:" # find form ac
 #          return { 'status': 'error', 'code': 404, 'message': 'Could not get Google books data, server does not respond.' }
 
 
-def get_search_result_for_params(param, on_page=20):
+def _get_search_result_for_params(param, on_page=20):
     """
     Using Google books API, get a response from Google books, with provided parameters. Returns JSON response.
     """
@@ -86,7 +86,7 @@ def get_search_result_for_params(param, on_page=20):
         return { "status": "error", "code": 404, "message": "Could not get Google books data, server does not respond." }
 
 
-def get_list_of_books_for_page(search_result, count=0):
+def _get_list_of_books_for_page(search_result, count=0):
     """
     With provided response, returns book information. Count = how many pages to skip.
     """
@@ -98,14 +98,14 @@ def get_list_of_books_for_page(search_result, count=0):
             on_page = search_result.get("on_page", 20)
             start = count * on_page
             end = count * on_page + on_page # to help splitting results / pagination -- every 20 results
-            return get_books_info_from_response(books, start, end)
+            return _get_books_info_from_response(books, start, end)
         except:
             return { 'status': 'error', 'code': 404, 'message': 'Exception. No data in response. Could not get Google books data.' }
     else:
         return search_result
 
 
-def get_books_info_from_response(items, start, stop):
+def _get_books_info_from_response(items, start, stop):
     """
     Returns desired ammount of books from response. Or json respose with status 'error'.
     Items - list from response from search query. Start - starting point of iteration, stop - it's end.
@@ -156,8 +156,8 @@ def find_popular_book(info):
     """
     if info:
         parameters = quote(f"intitle:{info[0]}+inauthor:{info[1]}")
-        response = get_search_result_for_params(parameters, on_page=1)
-        result = get_list_of_books_for_page(response)
+        response = _get_search_result_for_params(parameters, on_page=1) # only need 1 first book
+        result = _get_list_of_books_for_page(response)
         return result
     else:
         return { 'status': 'error', 'code': 404, 'message': 'No tuple with book information was provided for the search.' }
@@ -167,7 +167,7 @@ def find_list_of_books(params):
     """
     Using Google books API, looks for a list of books, adding parameters to a search query. Returns 20 books. 
     """
-    parameters = quote("params")
-    response = get_search_result_for_params(parameters)  # will show only first 20 books
-    result = get_list_of_books_for_page(response)
+    parameters = quote(params)
+    response = _get_search_result_for_params(parameters)  # will show only first 20 books
+    result = _get_list_of_books_for_page(response)
     return result

@@ -2,7 +2,7 @@
 
 body {
   font-family: sans-serif;
-  background-color: #fdfaf5;
+  background-color: #fff;
 }
 
 a {
@@ -195,4 +195,44 @@ button#user-signin:hover {
   object-fit: cover;
   display: block;
   margin: 0 auto;
+}
+
+/* Style for book search page, showing different books */
+.search-all-books {
+  display: flex;
+  flex-wrap: wrap;
+  font-family: sans-serif;
+}
+
+.search-book-div {
+  height: auto;
+  width: 20%;
+  border-style: solid;
+  border-width: 0.5px;
+  padding: 20px;
+  overflow: hidden;
+  text-overflow: clip;
+  cursor: pointer;
+}
+
+.title {
+  padding: 20px 0px 10px 0px;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.subtitle {
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.authors {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.text {
+  overflow: hidden; /* Hide any overflowed text */
+  white-space: nowrap; /* Prevent line breaks within the text */
+  text-overflow: ellipsis; 
 }
