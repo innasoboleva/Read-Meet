@@ -11,6 +11,10 @@ def get_all_active_meetings():
     """ Returns list of all ACTIVE meetings. """
     return Meeting.query.filter(Meeting.active == True).all()
 
+def get_all_meetings_for_book(book_id):
+    """ Returns list of all ACTIVE meetings for book with book_id. """
+    return Meeting.query.filter(Meeting.active == True, Meeting.book_id == book_id).all()
+
 def get_meeting_by_id(id):
     """ Returns meeting instance. """
     return Meeting.query.get(id)

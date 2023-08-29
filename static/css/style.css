@@ -279,3 +279,43 @@ button#user-signin:hover {
   background-color: #f4e7e2;
   z-index: 3; /* above other books */
 }
+
+.container-book-details {
+  display: flex;
+  align-items: flex-start;
+}
+
+.book-details-descr {
+  flex: 1;
+  overflow-y: scroll;
+  padding: 20px;
+  /* box-sizing: border-box; */
+}
+
+.book-details-descr .title {
+  font-weight: 800;
+}
+
+.book-details-descr .subtitle {
+  font-weight: 550;
+}
+
+.book-details-descr .authors {
+  color: #225b53;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.book-details-descr .descr {
+  padding: 20px;
+  text-align: justify;
+}
+
+.book-details-img {
+  flex: 0 0 300px; 
+  height: calc(100vh - 100px); 
+  padding: 20px;
+  box-sizing: border-box;
+  position: sticky;
+  top: 20px;
+}

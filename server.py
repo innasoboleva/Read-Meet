@@ -30,10 +30,10 @@ def show_books_page():
     return render_template("books.html")
 
 
-@app.route("/books/<book_id>")
-def show_book_details(book_id):
+# @app.route("/books/<book_id>")
+# def show_book_details(book_id):
 
-    return render_template("books.html")
+#     return render_template("books.html")
 
 
 @app.route("/api/get_books")
@@ -170,6 +170,17 @@ def get_book_by_id():
         return jsonify(book.to_dict())
     else:
         return {}
+    
+@app.route("/api/get_all_meetings_for_book", methods=["POST"])
+def get_meetings_for_book():
+    """ Returns all meeting data for a book with requested id. """
+    data = request.get_json()
+    book_id = data.get("book_id")
+    if book_id:
+        meetings = crud.get_all_meetings_for_book(book_id)
+        return jsonify({ "status": "success", "meetings": meetings})
+    else: 
+        return jsonify({ "status": "error", "message": f"Couldn't get any meetings data for {book_id}."})
     
 
 @app.route("/api/join_meeting", methods=["POST"])
