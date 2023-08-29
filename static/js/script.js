@@ -44,8 +44,8 @@ document.querySelector("#user-signup").addEventListener("click", (evt) => {
                 document.querySelector('#error-message-signup').innerText = data['message']; // displays error message
             } else {
                 userIsLoggedIn();
-                window.updateUser(data.new_user);
                 closeModalWithId("singUpForm"); // no reloading the page, only tables
+                window.updateUser(data.new_user);
             }
     });
 });
@@ -71,8 +71,8 @@ document.querySelector("#user-signin").addEventListener("click", (evt) => {
                 document.querySelector('#error-message-signin').innerText = data['message']; // displays error message
             } else {
                 userIsLoggedIn();
-                window.updateUser(data.user);   // no reloading the page, only tables
                 closeModalWithId("signInWithEmail");
+                window.updateUser(data.user);   // no reloading the page, only tables
             }
     });
 });

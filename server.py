@@ -30,6 +30,12 @@ def show_books_page():
     return render_template("books.html")
 
 
+@app.route("/books/<book_id>")
+def show_book_details(book_id):
+
+    return render_template("books.html")
+
+
 @app.route("/api/get_books")
 def get_books():
     """ Get books information with provided parameters. """

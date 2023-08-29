@@ -14,7 +14,7 @@ function MeetingDataContainer() {
             setUser(data)
             if ((data.user_id != "") && (data.user_id != null)) {
                 console.log("No user")
-                userIsLoggedIn();
+                window.userIsLoggedIn();
             }
             else {
                 console.log("User loged in")

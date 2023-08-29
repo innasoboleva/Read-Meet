@@ -43,8 +43,10 @@ function BooksSearchContainer() {
   React.useEffect(() => {
     // Getting url that is already rendered with search parameters
     const queryParamsString = window.location.search;
+
     // constructing fetch request with current params and page, starting is 0
     const newUrl = `/api/get_books${queryParamsString}&page=${page}`
+
     fetch(newUrl)
       .then(response => response.json())
       .then(data => {
@@ -71,27 +73,45 @@ function BooksSearchContainer() {
 
 
   function Book(props) {
-
     const { book } = props;
-  
+    const [showDetails, setShowDetails] = React.useState(false);
     function openBookDetails() {
       console.log(`${book.title} clicked!`);
+      setShowDetails(!showDetails);
+    }
+
+    function generateRandomHue() {
+      return Math.floor(Math.random() * 361); // Generates random hue between 0 and 360
     }
   
     return (
       <React.Fragment>
-        <div className="search-book-div" onClick={openBookDetails}>
-          <div>
+        <ReactRouterDOM.Link to={`/books/${book.ISBN}`}>
+        <div className="search-book-div">
+          <div className="book-image-background" style={{ backgroundColor: `hsl(${generateRandomHue()}, 40%, 95%)`}}></div>
+          <div className="image-block">
             <img src={book.image} className="img-fluid" alt={`Picture cover for ${book.title}`} />
           </div>
-          <div className="title">{book.title}</div>
-          {/* render subtitle only if present in the book */}
-          {/* { book.subtitle ? <span className="subtitle"><br></br>{book.subtitle}</span> : null } */}
-          <div className="authors">{book.authors}</div>
-          
+          <div className="book-contents">
+            <div className="title">{book.ISBN}</div>
+            {/* render subtitle only if present in the book */}
+            {/* { book.subtitle ? <span className="subtitle"><br></br>{book.subtitle}</span> : null } */}
+            <div className="authors">{book.title}</div>
+          </div>
         </div>
+        {/* { showDetails && <BookDetails key={book.ISBN} book={book} /> } */}
+        </ReactRouterDOM.Link>
       </React.Fragment>
     );
   }
-  
-  ReactDOM.render(<BooksSearchContainer />, document.getElementById('container-books'));
+
+
+function BookDetailsPage() {
+  // const { bookId } = ReactRouterDOM.useParams();
+  console.log("Well, im rendering here....")
+  return (
+    <React.Fragment>
+      <div className='details'>Figggnya</div>
+      {/* { bookId } */}
+    </React.Fragment>)
+}
