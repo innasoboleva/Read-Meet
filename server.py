@@ -127,8 +127,10 @@ def logout():
         if "address" in session:
             session["address"] = None
         flash("You logged out!")
+        print("You logged out!")
         return jsonify({ "status": "success" })
     else:
+        print("logged out: status: error")
         return jsonify({ "status": "error", "message": "Could not log out, server is not responding."})
     
 

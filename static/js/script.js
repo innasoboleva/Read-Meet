@@ -3,11 +3,15 @@ const signinLink = document.getElementById("sign-in-nav-link");
 const signoutLink = document.getElementById("sign-out-nav-link");
 
 function userIsLoggedIn() {
+    document.getElementById("user-signout").innerText = "Sign out"
+    console.log("User is logged IN")
     signinLink.style.display = "none";
     signoutLink.style.display = "block";
 }
 
 function userIsLoggedOut() {
+    document.getElementById("user-signin-nav").innerText = "Sign in"
+    console.log("User is logged OUT")
     signinLink.style.display = "block";
     signoutLink.style.display = "none";
 }

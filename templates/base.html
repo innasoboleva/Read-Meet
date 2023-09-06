@@ -64,10 +64,10 @@
         </li>
         
         <li class="nav-item" id="sign-in-nav-link">
-          <a class="nav-link" data-bs-toggle="modal" data-bs-target="#signInOptions">{% if session.get('user_is') is none %}Sign in{% endif %}</a>
+          <a class="nav-link" id="user-signin-nav" data-bs-toggle="modal" data-bs-target="#signInOptions">{% if session.get('user_id') is none %}Sign in{% endif %}</a>
         </li>
         <li class="nav-item" id="sign-out-nav-link">
-          <a class="nav-link" id="user-signout">{% if session.get('user_is') is not none %}Sign out{% endif %}</a>
+          <a class="nav-link" id="user-signout">{% if session.get('user_id') is not none %}Sign out{% endif %}</a>
         </li>
       </ul>
     </div>
