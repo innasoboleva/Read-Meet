@@ -1,6 +1,6 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager # to automatically download and set up the appropriate version of ChromeDriver
+# from selenium.webdriver.chrome.service import Service as ChromeService
+# from webdriver_manager.chrome import ChromeDriverManager # to automatically download and set up the appropriate version of ChromeDriver
 
 from selenium.webdriver.common.by import By # for searching tags by condition
 from selenium.webdriver.support.wait import WebDriverWait # for waiting to load the Selenium request
@@ -20,24 +20,23 @@ def _find_page_selenium(isbn):
     Gets Goodreads page and makes search for the book by it's isbn. If book exists, method returns dict with key 'url' that has local Goodreads ID.
     If book doesn't exist, method returns dict with status = error.
     """
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    driver = webdriver.Chrome()
+    # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     # searching for book by it's isbn, passing query parameter in url
     base_url = book_page + isbn
     driver.get(base_url)
     try:
-        header = driver.find_element(By.TAG_NAME, 'h1')
-        if header.get_property('innerText') == 'Search':
+        header = WebDriverWait(driver, 60).until(lambda x: x.find_element(By.TAG_NAME, 'h1'))
+        if header.text == 'Search':
+            print("BOOK IS NOT ON GOODREADS")
             return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", "url": None }
-    except:
-        return { "status": "error", "code": 404, "message": "Page for getting Goodreads ID was not loaded.", "url": None }
-    finally:
-            driver.quit()
-    try:
-        WebDriverWait(driver, 30).until(EC.url_changes(base_url))
-        # redirected url, for the ID on Goodreads for exact book 
-        new_url = driver.current_url
-        driver.quit()
-        return { "status": "success", "code": 200, "message": "OK", "url": new_url }
+        elif header.text == '404':
+            return { "status": "error", "code": 404, "message": "Goodreads does not respond" }
+        else:
+            # WebDriverWait(driver, 30).until(EC.url_changes(base_url))
+            # redirected url, for the ID on Goodreads for exact book 
+            new_url = driver.current_url
+            return { "status": "success", "code": 200, "message": "OK", "url": new_url }
     except:
         return { "status": "error", "code": 404, "message": "Page for getting Goodreads ID was not loaded.", "url": None }
     finally:
@@ -48,10 +47,12 @@ def _find_book_number_selenium(url_data):
     """
     Strips url from dict url_data, if exists, to get Goodreads local ID for the required book. If no url, returns the url_data.
     """
+    print("I got this URL data: ", url_data)
     if url_data['status'] == 'success':
         last_part = url_data['url'].split('/')[-1]
         goodreads_number = last_part.split('-')[0]
         return { "status": "success", "code": 200, "message": "OK", "goodreads_book_id": goodreads_number }
+    print(url_data)
     return url_data
 
 def _find_reviews_selenium(data, occurance=1):
@@ -60,9 +61,14 @@ def _find_reviews_selenium(data, occurance=1):
     """
     goodreads_book_id = data.get('goodreads_book_id', None)
     if goodreads_book_id:
-        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        driver = webdriver.Chrome()
+        # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         driver.get(book_reviews.format(goodreads_book_id))
         try:
+            header = WebDriverWait(driver, 30).until(lambda x: x.find_element(By.TAG_NAME, 'h1'))
+            if header.text == '404':
+                print("BOOK IS NOT ON GOODREADS")
+                return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", "url": None }
             # waiting for rating stars to load as indicator that all needed info has been loaded
             WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'RatingStars'))
             review_cards = WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'ReviewCard'))
@@ -92,7 +98,6 @@ def _find_reviews_selenium(data, occurance=1):
                     review['stars'] = ''
                     continue
                 reviews_for_book.append(review)
-            
             return { "status": "success", "code": 200, "message": "OK", "reviews": reviews_for_book }
 
         except TimeoutException:
@@ -122,7 +127,8 @@ def _get_popular_books(current_date):
     
     """
     base_url = new_books.format(current_date[0], current_date[1])
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    driver = webdriver.Chrome()
+    # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     driver.get(base_url)
     titles = []
     authors = []

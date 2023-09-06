@@ -91,5 +91,10 @@ def get_popular_books():
     day = datetime.today().strftime("%Y-%m")
     return Book.query.filter(Book.popular_book == day).all()
 
+def create_meeting(user_id, book_id):
+    """ Creates new meeting. """
+    new_meeting = Meeting.create()
+    # book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"
+
 
 

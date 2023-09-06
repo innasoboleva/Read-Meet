@@ -6,39 +6,46 @@ import urllib.parse # for URL encoding
 yelp_key = os.environ.get('YELP_KEY')
 yelp_url = "https://api.yelp.com/v3/businesses/search?location={}&term={}" # term is keyword as park or cafe, location can be address or zipcode
 
-def find_places(zipcode, type):
+def find_places(zipcode, type, page=0):
     """
     Using Yelp API, method gets information for local businesses and returns a list of dictionaries with the result.
     Need zipcode and type of business to search for, park or cafe for example.
     """
-    yelp_search_url = yelp_url.format(zipcode, type)
-    yelp_search_url_encoded = urllib.parse.quote(yelp_search_url)
+    result_count = 20   # number of results from request
+    offset = result_count * page
+    type_encoded = urllib.parse.quote(type)
+    # yelp_search_url = yelp_url.format(zipcode, type)
+    yelp_search_url_encoded = yelp_url.format(zipcode, type_encoded)
     headers = {
             'Content-type': 'application/json',
-            'Authorization': f'Bearer {yelp_key}'
+            'Authorization': f'Bearer {yelp_key}',
+            'offset': str(offset)
         }
-    response = requests.get(yelp_search_url_encoded, headers=headers).json()
-    if response.status_code == 200:
+    print(headers)
+    response_data = requests.get(yelp_search_url_encoded, headers=headers)
+    response = response_data.json()
+    if response.get("error") == None:
         places_to_display = []
         places = response.get('businesses', [])
-        # for pagination puposes
-        page_start = 0
-        page_end = 20
-        for place in places[page_start:page_end]:
-            place = {}
+        print("PLACES length: ", len(places))
+        for place in places:
+            place_to_add = {}
+            place_to_add["id"] = place.get("id")
             url = place.get('url', '')
-            place['url'] = url
+            place_to_add['url'] = url
             name = place.get('name', '')
-            place['name'] = name
+            place_to_add['name'] = name
             image_url = place.get('image_url', '')
-            place['image'] = image_url
+            place_to_add['image'] = image_url
             location = place.get('location', '')
             if location:
                 address = location.get('display_address', '')
-                place['address'] = address
+                place_to_add['address'] = ", ".join(address)
             else:
-                place['address'] = 'No address available'
-            places_to_display.append(place)
+                place_to_add['address'] = 'No address available'
+            rating = place.get('rating', '')
+            place_to_add['rating'] = rating
+            places_to_display.append(place_to_add)
         if places_to_display:
             return { 'status': 'success', 'code': 200, 'message': 'OK', 'places': places_to_display }
         else:

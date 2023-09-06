@@ -7,12 +7,14 @@ import crud
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_KEY')
+# MAP_KEY = os.environ.get('BOOK_KEY') # same Google API key
 
 
 @app.route("/")
 def homepage():
     """Show homepage."""
-
+    # check_map_key()
+    print("Index: ", session.get('user'))
     return render_template("index.html")
 
 
@@ -26,14 +28,9 @@ def show_login_page():
 @app.route("/books")
 def show_books_page():
     """Show page with rendered books."""
-    
+    # check_map_key()
+    print("Books user: ", session.get('user'))
     return render_template("books.html")
-
-
-# @app.route("/books/<book_id>")
-# def show_book_details(book_id):
-
-#     return render_template("books.html")
 
 
 @app.route("/api/get_books")
@@ -213,6 +210,15 @@ def drop_meeting():
     return jsonify(message)
 
 
+@app.route("/api/get_reviews_for_book", methods=["POST"])
+def get_reviews_for_book():
+    data = request.get_json()
+    book_id = data.get("book_id")
+    print("BOOK ", book_id)
+    result = goodreads_api.get_reviews(book_id)
+    return jsonify(result)
+
+
 @app.route("/api/get_popular_books")
 def get_popular_books():
     """ Returns list of popular books for previous month. """
@@ -221,7 +227,37 @@ def get_popular_books():
     return jsonify(result)
 
 
+@app.route("/api/create_meeting")
+def create_meeting():
+    """ Creates new meeting and returns data as JSON. """
+    data = request.get_json()
+    book_id = data.get("book_id")
+    user_id = data.get("user_id")
+    result = crud.create_meeting(user_id, book_id)
+    return jsonify(result)
+
+
+@app.route("/api/get_yelp_places", methods=["POST"])
+def get_yelp_businesses():
+    data = request.get_json()
+    term = data.get("place")
+    page = data.get("page", 0)
+    zipcode = session.get("zipcode")
+    print("got to this part")
+    if zipcode:
+        data = yelp_api.find_places(zipcode, term, page)
+        # print(data)
+        return jsonify(data)
+    else:
+        print("error")
+        return jsonify({ "status": "error", "message": "User is not logged in!"})
+
+# def check_map_key():
+#     if not session.get('MAP_KEY'):
+#         session['map_key'] = MAP_KEY
+
+
 if __name__ == "__main__":
     connect_to_db(app)
-    app.run(debug=True, host='localhost') # localhost preferable for video api
+    app.run(debug=True, host='127.0.0.1') # localhost preferable for video api
     
