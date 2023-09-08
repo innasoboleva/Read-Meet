@@ -104,9 +104,9 @@ def _get_books_info_from_response(items, start=None, stop=None):
             image_links = volume_info.get('imageLinks', None)
             if image_links:
                 image_link = image_links.get('thumbnail', '/static/img/basic_thumbnail.png') # if picture is not present, there is standart thumbnail
-                book_to_add['image'] = image_link
+                book_to_add['image_url'] = image_link
             else:
-                book_to_add['image'] = '/static/img/basic_thumbnail.png'
+                book_to_add['image_url'] = '/static/img/basic_thumbnail.png'
             books_to_render.append(book_to_add)
     if books_to_render:
         return { 'status': 'success', 'code': 200, 'message': 'OK', 'books': books_to_render }

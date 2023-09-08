@@ -24,7 +24,7 @@ function BookDetailsPage(props) {
               <ReviewsContainer book={book} />
             </div>
             <div className="book-details-img col-5 col-md-auto">
-              <img src={ book.image }/>
+              <img src={ book.image_url }/>
               <BookMeetingDataContainer book={book}/>
             </div>
           </div>
@@ -553,7 +553,6 @@ function BookDetailsPage(props) {
   
   function YelpRow(props) {
     const { place, index } = props;
-    // console.log(JSON.stringify(place.id))
 
     return (<React.Fragment>
       <div className="row yelp-row">

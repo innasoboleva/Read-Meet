@@ -73,7 +73,7 @@ button#sgn:hover {
 }
 
 .modal-body {
-  max-height: calc(100vh - 40px); /* cna be changed for space for header/footer */
+  max-height: calc(100vh - 40px); /* can be changed for space for header/footer */
   overflow-y: auto;
   padding-top: 40px;
   display: flex;
@@ -230,7 +230,6 @@ a {
   text-overflow: ellipsis;
   color: #225b53;
   overflow: hidden;
-  /* white-space: nowrap; */
 }
 
 .text {
@@ -260,10 +259,9 @@ a {
   padding: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* text-overflow: clip; */
   cursor: pointer;
   transition: box-shadow 0.2s ease;
-  position: relative; /* Relative positioning for absolute elements */
+  position: relative;
 }
 
 .search-book-div:hover {
@@ -300,7 +298,7 @@ a {
 
 .book-details {
   position: absolute;
-  margin-top: 10px; /* Create space above the details */
+  margin-top: 10px; 
   padding: 20px;
   background-color: #f4e7e2;
   z-index: 3; /* above other books */
@@ -347,7 +345,7 @@ a {
   top: 20px;
 }
 
-/* Rviews from GOODREADS */
+/* Reviews from GOODREADS */
 .reviews {
   flex: 1;
   overflow-y: scroll;

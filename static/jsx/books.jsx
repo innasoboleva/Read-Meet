@@ -85,7 +85,6 @@ function BooksSearchContainer() {
   function Book(props) {
     const { book } = props;
     // const [showDetails, setShowDetails] = React.useState(false);
-    
     function generateRandomHue() {
       return Math.floor(Math.random() * 361); // Generates random hue between 0 and 360
     }
@@ -93,7 +92,7 @@ function BooksSearchContainer() {
     return (
       <React.Fragment>
         <ReactRouterDOM.Link
-          key={book.id}
+          key={book.ISBN}
           to={{
             pathname: `/books/${book.ISBN}`,
             state: { book }
@@ -102,7 +101,7 @@ function BooksSearchContainer() {
         <div className="search-book-div">
           <div className="book-image-background" style={{ backgroundColor: `hsl(${generateRandomHue()}, 40%, 95%)`}}></div>
             <div className="image-block">
-              <img src={book.image} className="img-fluid" alt={`Picture cover for ${book.title}`} />
+              <img src={book.image_url} className="img-fluid" alt={`Picture cover for ${book.title}`} />
             </div>
           <div className="book-contents">
             <div className="title">{book.title}</div>

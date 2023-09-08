@@ -239,7 +239,6 @@ def get_yelp_businesses():
     term = data.get("place")
     page = data.get("page", 0)
     zipcode = session.get("zipcode")
-    print("got to this part")
     if zipcode:
         data = yelp_api.find_places(zipcode, term, page)
         return jsonify(data)

@@ -62,7 +62,7 @@ function MeetingDataContainer() {
       </React.Fragment>
     );
   }
-  
+
 // each row of a meeting table
 function MeetingRow(props) {
     const { meeting, user } = props;
@@ -225,16 +225,15 @@ function CarouselDataContainer() {
 
 function CarouselItems(props) {
   const { books, isActive } = props;
-  console.log(books)
   return (
     <React.Fragment>
       <div className={`carousel-item ${isActive ? 'active' : ''}`}>
         <div className="carousel-img-block d-flex justify-content-between">
           { books.map((book) => (
             
-            <div key={book.id} className="carousel-image">
-              <ReactRouterDOM.Link key={book.id} pathname={`{/books/${book.id}}`} to={{
-            pathname: `/books/${book.id}`,
+            <div key={book.ISBN} className="carousel-image">
+              <ReactRouterDOM.Link key={book.ISBN} pathname={`{/books/${book.ISBN}}`} to={{
+            pathname: `/books/${book.ISBN}`,
             state: { book }
             }}>
                 <img src={book.image_url} className="img-fluid" alt={book.title} />

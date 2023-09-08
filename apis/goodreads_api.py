@@ -45,7 +45,6 @@ def _find_book_number_selenium(url_data):
     """
     Strips url from dict url_data, if exists, to get Goodreads local ID for the required book. If no url, returns the url_data.
     """
-    print("I got this URL data: ", url_data)
     if url_data['status'] == 'success':
         last_part = url_data['url'].split('/')[-1]
         goodreads_number = last_part.split('-')[0]

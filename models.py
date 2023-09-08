@@ -59,7 +59,7 @@ class Book(db.Model):
     
     def to_dict(self):
         """ Returns dict with instance data. """
-        return { "id": self.ISBN, "title": self.title, "subtitle": self.subtitle, \
+        return { "ISBN": self.ISBN, "title": self.title, "subtitle": self.subtitle, \
                 "authors": self.authors, "description": self.description, "image_url": self.image_url }
 
     def __repr__(self):
