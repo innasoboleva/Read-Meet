@@ -18,25 +18,19 @@ def homepage():
     return render_template("index.html")
 
 
-@app.route("/login")
-def show_login_page():
-    """Show login page."""
-
-    return render_template("login.html")
-
-
 @app.route("/books")
 def show_books_page():
     """Show page with rendered books."""
     # check_map_key()
     print("Books user: ", session.get('user'))
-    return render_template("books.html")
+    return render_template("index.html")
+    # return render_template("books.html")
 
 
 @app.route("/api/get_books")
 def get_books():
     """ Get books information with provided parameters. """
-    search_req = request.args.get("search")
+    search_req = request.args.get("search", None)
     page = request.args.get("page")
     result = books_api.find_list_of_books(search_req, int(page) if page else 0)
     return jsonify(result)
@@ -248,7 +242,6 @@ def get_yelp_businesses():
     print("got to this part")
     if zipcode:
         data = yelp_api.find_places(zipcode, term, page)
-        # print(data)
         return jsonify(data)
     else:
         print("error")

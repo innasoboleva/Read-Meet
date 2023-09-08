@@ -181,7 +181,7 @@ function MeetingRow(props) {
   }
 
 
-ReactDOM.render(<MeetingDataContainer />, document.getElementById('container-data'));
+// ReactDOM.render(<MeetingDataContainer />, document.getElementById('container-data'));
 
 
 function CarouselDataContainer() {
@@ -227,17 +227,32 @@ function CarouselDataContainer() {
 
 function CarouselItems(props) {
   const { books, isActive } = props;
-  
+  console.log(books)
   return (
     <React.Fragment>
       <div className={`carousel-item ${isActive ? 'active' : ''}`}>
         <div className="carousel-img-block d-flex justify-content-between">
           { books.map((book) => (
+            
+            // <div key={book.id} className="carousel-image">
+            //   <ReactDOM.Link key={book.id} pathname={`{/books/${book.id}}`}>
+            //     <img src={book.image_url} className="img-fluid" alt={book.title} />
+            //   </ReactDOM.Link>
+            // </div>
+            // <ReactRouterDOM.Link
+            //   key={book.id}
+            //   to={{
+            //     pathname: `/books/${book.ISBN}`,
+            //     state: { book }
+            //   }}>
+       
             <div key={book.id} className="carousel-image">
               <img src={book.image_url} className="img-fluid" alt={book.title} />
             </div>
-              // <img key={book.id} src={book.image_url} className="d-block w-100" alt={book.title} />
+        
+            // </ReactRouterDOM.Link>
           ))}
+          
           </div>
        </div>
     </React.Fragment>
@@ -245,4 +260,4 @@ function CarouselItems(props) {
 }
 
 
-ReactDOM.render(<CarouselDataContainer />, document.getElementById('container-carousel'));
+// ReactDOM.render(<CarouselDataContainer />, document.getElementById('container-carousel'));

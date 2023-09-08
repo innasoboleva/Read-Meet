@@ -10,7 +10,7 @@ function BookDetailsPage(props) {
     }
   
     const book = state.book;
-    console.log(JSON.stringify(book));
+
     return (
       <React.Fragment>
         <MeetingForm book={book}/>
@@ -235,7 +235,9 @@ function BookDetailsPage(props) {
   function ReviewsContainer(props) {
     const { book } = props;
     const [reviews, setReviews] = React.useState([]);
-  
+    const [noReviewsMessage, setNoReviewsMessage] = React.useState("");
+    let message = "";
+
     React.useEffect(() => {
       
       fetch('/api/get_reviews_for_book', {
@@ -246,7 +248,15 @@ function BookDetailsPage(props) {
         .then(response => response.json())
         .then(data => {
             if (data && data.status == "success") {
+              console.log("There are some reviews")
+              setNoReviewsMessage("");
               setReviews(data["reviews"]);
+            }
+            else {
+              console.log("No reviews")
+              if (data.code == 204) {
+                setNoReviewsMessage(data.message);
+              }
             }
         })
         .catch(error => console.error('Error getting goodreads reviews for a book:', error));
@@ -259,9 +269,11 @@ function BookDetailsPage(props) {
           <h3>Reviews</h3>
           <h6>from Goodreads</h6>
           <ul>
-            { reviews.map((review, index) => (
+            { (noReviewsMessage.length != 0) ? (<div>{ noReviewsMessage }</div>) : 
+              reviews.map((review, index) => (
                 <li> <Review key={index} review={review}/></li>
-              ))}
+              ))
+            }
           </ul>
         </div>
       </React.Fragment>
@@ -271,12 +283,22 @@ function BookDetailsPage(props) {
   function Review(props) {
     const { review } = props;
     const [expanded, setExpanded] = React.useState(false);
+    const [overflowing, setOverflowing] = React.useState(false);
     // for expanding text review
     const toggleExpansion = () => {
       setExpanded(!expanded);
     };
   
     const textClass = expanded ? 'expanded' : 'review-text';
+    const expandedText = React.useRef(null);
+
+    React.useEffect(() => {
+      if (expandedText.current) {
+        if (expandedText.current.scrollHeight > (expandedText.current.clientHeight + 4)) {
+          setOverflowing(true);
+        }
+      }
+    }, [])
   
     return (
       <React.Fragment>
@@ -284,11 +306,14 @@ function BookDetailsPage(props) {
           <div className="review-name">
             { review.name }
           </div>
-          <div className={textClass} dangerouslySetInnerHTML={{ __html: review.text }}>
+          <div className={textClass} ref={expandedText} dangerouslySetInnerHTML={{ __html: review.text }}>
           </div>
-            <button className="read-more-btn" onClick={toggleExpansion}>
+          { overflowing ? <button className="read-more-btn" onClick={toggleExpansion}>
               {expanded ? 'Hide' : 'Read More...'}
-            </button>
+            </button> : "" }
+            {/* <button className="read-more-btn" onClick={toggleExpansion}>
+              {expanded ? 'Hide' : 'Read More...'}
+            </button> */}
         </div>
       </React.Fragment>
     )

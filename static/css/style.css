@@ -187,6 +187,7 @@ button#user-signin:hover {
   flex: 1;
   box-sizing: border-box;
   height: 300px; /* height for the book cover */
+  cursor: pointer;
 }
 
 .carousel-image img {
@@ -199,25 +200,42 @@ button#user-signin:hover {
 
 /* Style for book search page, showing different books */
 
+a {
+  text-decoration: none;
+}
+
 .title {
-  padding: 20px 0px 10px 0px;
+  padding: 5px 0px 5px 0px;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 98px;
+  color: black;
+
 }
 
 .subtitle {
   font-size: 10px;
   font-weight: 400;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .authors {
+  padding: 5px 0px 5px 0px;
+  max-height: 98px;
   font-size: 15px;
   font-weight: 400;
+  text-overflow: ellipsis;
+  color: #225b53;
+  overflow: hidden;
+  /* white-space: nowrap; */
 }
 
 .text {
   overflow: hidden; 
-  white-space: nowrap; /* prevent line breaks */
+  white-space: nowrap;
   text-overflow: ellipsis; 
 }
 
@@ -228,9 +246,10 @@ button#user-signin:hover {
 }
 
 .search-book-div {
+  width: 240px;
   justify-content: center;
   margin: 0px 10px 10px 10px;
-  height: auto;
+  height: 340px;
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: calc(20% - 30px);
@@ -240,7 +259,8 @@ button#user-signin:hover {
   border-color: #c6c6c6;
   padding: 20px;
   overflow: hidden;
-  text-overflow: clip;
+  text-overflow: ellipsis;
+  /* text-overflow: clip; */
   cursor: pointer;
   transition: box-shadow 0.2s ease;
   position: relative; /* Relative positioning for absolute elements */
@@ -264,6 +284,12 @@ button#user-signin:hover {
   box-shadow: 3px 3px 10px rgba(15, 14, 14, 0.25);
   position: relative;
   z-index: 2;
+  max-width: 100px;
+  max-height: 200px;
+}
+
+.image-block {
+  height: 180px;
 }
 
 .book-contents {
@@ -336,7 +362,7 @@ button#user-signin:hover {
   padding: 25px;
   font-size: 12px;
   font-weight: 300;
-  max-height: 200px;
+  max-height: 100px;
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -356,7 +382,7 @@ button#user-signin:hover {
   border: none;
   background: transparent;
   font-size: 11px;
-  color: rgb(77, 99, 92);
+  color: rgb(60, 122, 103);
 }
 
 /* Form for new meetings  */

@@ -21,19 +21,17 @@ def _find_page_selenium(isbn):
     If book doesn't exist, method returns dict with status = error.
     """
     driver = webdriver.Chrome()
-    # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     # searching for book by it's isbn, passing query parameter in url
     base_url = book_page + isbn
     driver.get(base_url)
     try:
-        header = WebDriverWait(driver, 60).until(lambda x: x.find_element(By.TAG_NAME, 'h1'))
+        header = WebDriverWait(driver, 20).until(lambda x: x.find_element(By.TAG_NAME, 'h1'))
         if header.text == 'Search':
             print("BOOK IS NOT ON GOODREADS")
             return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", "url": None }
         elif header.text == '404':
             return { "status": "error", "code": 404, "message": "Goodreads does not respond" }
         else:
-            # WebDriverWait(driver, 30).until(EC.url_changes(base_url))
             # redirected url, for the ID on Goodreads for exact book 
             new_url = driver.current_url
             return { "status": "success", "code": 200, "message": "OK", "url": new_url }
@@ -52,7 +50,6 @@ def _find_book_number_selenium(url_data):
         last_part = url_data['url'].split('/')[-1]
         goodreads_number = last_part.split('-')[0]
         return { "status": "success", "code": 200, "message": "OK", "goodreads_book_id": goodreads_number }
-    print(url_data)
     return url_data
 
 def _find_reviews_selenium(data, occurance=1):
@@ -68,9 +65,15 @@ def _find_reviews_selenium(data, occurance=1):
             header = WebDriverWait(driver, 30).until(lambda x: x.find_element(By.TAG_NAME, 'h1'))
             if header.text == '404':
                 print("BOOK IS NOT ON GOODREADS")
-                return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", "url": None }
+                return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", \
+                        "url": None, "message": "No reviews are available for this book." }
             # waiting for rating stars to load as indicator that all needed info has been loaded
-            WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'RatingStars'))
+            # WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'RatingStars'))
+            error = driver.find_elements(By.CLASS_NAME, 'ErrorCard')
+            if error:
+                print("Book has no reviews.")
+                return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", \
+                        "url": None, "message": "No one has reviewed this book yet." }
             review_cards = WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'ReviewCard'))
             reviews_for_book = []
             for card in review_cards:
@@ -102,8 +105,8 @@ def _find_reviews_selenium(data, occurance=1):
 
         except TimeoutException:
             return { "status": "error", "code": 404, "message": "Page for reading elements for reviews did not load.", "url": None }
-        except:
-            return { "status": "error", "code": 404, "message": "Target element for reviews did not render.", "url": None }
+        except Exception as error:
+            return { "status": "error", "code": 404, "message": f"Target element for reviews did not render. {str(error)}", "url": None }
         finally:
             driver.quit()
     else:
@@ -114,9 +117,30 @@ def get_reviews(isbn):
     """
     Public method for getting reviews for a book.
     """
-    url = _find_page_selenium(isbn)
+    url = None
+    count_url = 0 # trying to get page url 2 times
+    while count_url <= 2:
+        count_url += 1
+        url = _find_page_selenium(isbn)
+        if url.get("status") == "error" and url.get("code") != 204:
+            print("Trying to get url for getting reviews one more time...")
+            continue
+        else:
+            break
+    
     id = _find_book_number_selenium(url)
-    reviews = _find_reviews_selenium(id)
+
+    reviews = None
+    count_reviews = 0   # trying to get reviews 2 times
+
+    while id.get("status") == "success" and count_reviews <= 3:
+        count_reviews += 1
+        reviews = _find_reviews_selenium(id)
+        if reviews.get("status") == "error" and reviews.get("code") != 204:
+            print("Trying to get reviews one more time...")
+            continue
+        else:
+            break
     return reviews
 
 

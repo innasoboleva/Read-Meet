@@ -1,5 +1,6 @@
-import requests, os
+import requests, os, json
 from urllib.parse import quote # for encoding search queries
+import random
 
 # set up for books API requests
 book_key = os.environ.get('BOOK_KEY')
@@ -7,20 +8,34 @@ book_url = "https://www.googleapis.com/books/v1/volumes?q=" # add search args to
 book_isbn = "https://www.googleapis.com/books/v1/volumes?q=isbn:" # find form action=/search and add ISBN number
 
 
+def _get_random_search_param():
+    """ 
+    Returns random word from the call to free data. 
+    Using this list: https://github.com/bevacqua/correcthorse/blob/master/wordlist.json
+    """
+
+    words = []
+    with open('wordlist.json', 'r') as f:
+        words = json.load(f)
+    word = random.choice(words)
+    print("WORD: ", word)
+    return quote(word)
+
+
 def _get_search_result_for_params(param, page=0, on_page=None):
     """
     Using Google books API, get a response from Google books, with provided parameters. Need to specify page. Each has 40 results. Returns JSON response.
     """
+    search_param = param
+    if param is None:
+        search_param = _get_random_search_param()
     page_results = 40
     max_results = "&maxResults=40"
     s_page = page * page_results
     star_index = f"&startIndex={s_page}"
-    book_search_url = book_url + param + max_results + star_index
-    headers = {
-            'Content-type': 'application/json',
-            'Authorization': book_key
-        }
-    response = requests.get(book_search_url, headers=headers)
+    book_key_param = f'&key={book_key}'
+    book_search_url = book_url + search_param + max_results + star_index + book_key_param
+    response = requests.get(book_search_url)
     if (response.status_code == 200):
         return { "status": "success", "response": response.json(), "on_page": on_page }
     else:
@@ -68,7 +83,7 @@ def _get_books_info_from_response(items, start=None, stop=None):
             book_to_add['title'] = title
             subtitle = volume_info.get('subtitle', '')
             book_to_add['subtitle'] = subtitle
-            authors = volume_info.get('authors', ['No authors available.'])
+            authors = volume_info.get('authors', ['No authors available'])
             authors_str = ', '. join(authors)
             book_to_add['authors'] = authors_str
             description = volume_info.get('description', 'No description available.')
@@ -116,7 +131,9 @@ def find_list_of_books(params, page):
     """
     Using Google books API, looks for a list of books, adding parameters to a search query. Returns 20 books. 
     """
-    parameters = quote(params) # to fix all spaces
+    parameters = None
+    if params:
+        parameters = quote(params) # to fix all spaces
     response = _get_search_result_for_params(parameters, page)
     result = _get_list_of_books_for_page(response)
     return result

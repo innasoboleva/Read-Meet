@@ -47,8 +47,8 @@ function BooksSearchContainer() {
     const queryParamsString = window.location.search;
 
     // constructing fetch request with current params and page, starting is 0
-    const newUrl = `/api/get_books${queryParamsString}&page=${page}`
-
+    const newUrl = `/api/get_books${queryParamsString ? queryParamsString + '&' : '?'}page=${page}`
+    console.log("URL: ", newUrl)
     fetch(newUrl, {
       signal: signal
      })
@@ -57,6 +57,7 @@ function BooksSearchContainer() {
         if (data["status"] === "success") {
           setIsLoading(false);
           setBooks(prevBooks => [...prevBooks, ...data["books"]]); // Append new books to existing list
+          console.log("Books are set")
         }
       })
       .catch(error => console.error('Error fetching books with search query:', error));
@@ -83,7 +84,7 @@ function BooksSearchContainer() {
 
   function Book(props) {
     const { book } = props;
-    const [showDetails, setShowDetails] = React.useState(false);
+    // const [showDetails, setShowDetails] = React.useState(false);
     
     function generateRandomHue() {
       return Math.floor(Math.random() * 361); // Generates random hue between 0 and 360
@@ -92,10 +93,11 @@ function BooksSearchContainer() {
     return (
       <React.Fragment>
         <ReactRouterDOM.Link
-            to={{
-              pathname: `/books/${book.ISBN}`,
-              state: { book }
-            }}>
+          key={book.id}
+          to={{
+            pathname: `/books/${book.ISBN}`,
+            state: { book }
+          }}>
         {/* <ReactRouterDOM.Link to={`/books/${book.ISBN}`}> */}
         <div className="search-book-div">
           <div className="book-image-background" style={{ backgroundColor: `hsl(${generateRandomHue()}, 40%, 95%)`}}></div>
@@ -103,10 +105,10 @@ function BooksSearchContainer() {
               <img src={book.image} className="img-fluid" alt={`Picture cover for ${book.title}`} />
             </div>
           <div className="book-contents">
-            <div className="title">{book.ISBN}</div>
+            <div className="title">{book.title}</div>
             {/* render subtitle only if present in the book */}
             {/* { book.subtitle ? <span className="subtitle"><br></br>{book.subtitle}</span> : null } */}
-            <div className="authors">{book.title}</div>
+            <div className="authors">{book.authors}</div>
           </div>
         </div>
         {/* { showDetails && <BookDetails key={book.ISBN} book={book} /> } */}
