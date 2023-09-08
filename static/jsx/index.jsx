@@ -62,6 +62,7 @@ function MeetingDataContainer() {
       </React.Fragment>
     );
   }
+  
 // each row of a meeting table
 function MeetingRow(props) {
     const { meeting, user } = props;
@@ -181,9 +182,6 @@ function MeetingRow(props) {
   }
 
 
-// ReactDOM.render(<MeetingDataContainer />, document.getElementById('container-data'));
-
-
 function CarouselDataContainer() {
   // fetching popular books for carousel
   const [popularBooks, setPopularBooks] = React.useState([]);
@@ -234,23 +232,14 @@ function CarouselItems(props) {
         <div className="carousel-img-block d-flex justify-content-between">
           { books.map((book) => (
             
-            // <div key={book.id} className="carousel-image">
-            //   <ReactDOM.Link key={book.id} pathname={`{/books/${book.id}}`}>
-            //     <img src={book.image_url} className="img-fluid" alt={book.title} />
-            //   </ReactDOM.Link>
-            // </div>
-            // <ReactRouterDOM.Link
-            //   key={book.id}
-            //   to={{
-            //     pathname: `/books/${book.ISBN}`,
-            //     state: { book }
-            //   }}>
-       
             <div key={book.id} className="carousel-image">
-              <img src={book.image_url} className="img-fluid" alt={book.title} />
+              <ReactRouterDOM.Link key={book.id} pathname={`{/books/${book.id}}`} to={{
+            pathname: `/books/${book.id}`,
+            state: { book }
+            }}>
+                <img src={book.image_url} className="img-fluid" alt={book.title} />
+              </ReactRouterDOM.Link>
             </div>
-        
-            // </ReactRouterDOM.Link>
           ))}
           
           </div>
@@ -258,6 +247,3 @@ function CarouselItems(props) {
     </React.Fragment>
   )
 }
-
-
-// ReactDOM.render(<CarouselDataContainer />, document.getElementById('container-carousel'));

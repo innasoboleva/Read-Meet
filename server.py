@@ -247,10 +247,6 @@ def get_yelp_businesses():
         print("error")
         return jsonify({ "status": "error", "message": "User is not logged in!"})
 
-# def check_map_key():
-#     if not session.get('MAP_KEY'):
-#         session['map_key'] = MAP_KEY
-
 
 if __name__ == "__main__":
     connect_to_db(app)
