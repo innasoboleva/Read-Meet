@@ -1,9 +1,10 @@
 
 function BookDetailsPage(props) {
     // getting ISBN
-    const { bookId } = ReactRouterDOM.useParams();
+    // const { bookId } = ReactRouterDOM.useParams();
     const { state } = props.location;
-    const [books, setBooks] = React.useState([]);
+    // const [books, setBooks] = React.useState([]);
+    const [createMeeting, setCreateMeeting] = React.useState(false);
   
     if (!state || !state.book) {
       return <div>Book details not found.</div>;
@@ -11,21 +12,25 @@ function BookDetailsPage(props) {
   
     const book = state.book;
 
+    const newMeeting = () => {
+      setCreateMeeting(true);
+    }
+
     return (
       <React.Fragment>
-        <MeetingForm book={book}/>
+        <MeetingForm book={book} handleCreateMeeting={newMeeting}/>
         <div className='container-book-details'>
           <div className="row">
-            <div className="book-details-descr col-7">
+            <div className="book-details-descr col-5">
               <h2>Details for { book.title }</h2>
                 <span className="subtitle">{ book.subtitle } </span>
               <div className="authors"> Written by { book.authors }</div>
               <div className="descr"> { book.description }</div>
               <ReviewsContainer book={book} />
             </div>
-            <div className="book-details-img col-5 col-md-auto">
+            <div className="book-details-img col-7 col-md-auto">
               <img src={ book.image_url }/>
-              <BookMeetingDataContainer book={book}/>
+              <BookMeetingDataContainer book={book} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting}/>
             </div>
           </div>
         </div>
@@ -34,9 +39,56 @@ function BookDetailsPage(props) {
   }
   
   function BookMeetingDataContainer(props) {
-    const { book } = props;
+    const { book, createMeeting, setCreateMeeting } = props;
     const [meetings, setMeetings] = React.useState([]);
     const [user, setUser] = React.useState();
+
+    React.useEffect(() => {
+      if (createMeeting) {
+        console.log("Meeting called in meeting data container")
+        // Reset the state to prevent repeated actions
+        setCreateMeeting(false);
+
+        if (user.user_id) {
+          const formInputs = {
+            day: document.querySelector('#day').value,
+            offline: document.querySelector('input[type="radio"]:checked').id,
+            language: document.querySelector('#languages').value,
+            overview: document.querySelector('#overview').value,
+            place: document.querySelector('#autocomplete').value,
+            max_guests: document.querySelector('#max-guests').value,
+          };
+    
+          fetch('/api/create_meeting', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "book_id": book.ISBN, "user_id": user.user_id, "inputs": formInputs }),
+          })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.status == "success") {
+                  console.log("New meeting is created!")
+                  console.log(data["new_meeting"])
+                  console.log("Meetings before update:", meetings);
+
+                  setMeetings(prevMeetings => [...prevMeetings, ...data["new_meeting"]]);
+                  
+                  var modalElement = document.querySelector('#meetingForm');
+                  var modal = bootstrap.Modal.getInstance(modalElement);
+                  if (modal) {
+                      modal.hide(); // Bootstrap's method
+                  }
+                }
+                else {
+                  console.log("Error: meeting was not created")
+                  document.querySelector('#error-message-new-meeting').innerText = data['message']
+                }
+            })
+            .catch(error => console.error('Error creating new meeting:', error));
+          }
+
+      }
+    }, [createMeeting]);
   
   
     React.useEffect(() => {
@@ -83,25 +135,11 @@ function BookDetailsPage(props) {
       };
   
     }, [user]);
+
+    React.useEffect(() => {
+      console.log("Meetings after update:", meetings);
+    }, [meetings]);
   
-    
-  
-    // const createMeeting = () => {
-    //   if (user.user_id) {
-    //     fetch('/api/create_meeting', {
-    //       method: 'POST',
-    //       headers: { 'Content-Type': 'application/json' },
-    //       body: JSON.stringify({ "book_id": book.ISBN, "user_id": user.user_id }),
-    //     })
-    //       .then(response => response.json())
-    //       .then(data => {
-    //           if (data && data.status == "success") {
-    //             setMeetings(prevMeetings => [...prevMeetings, ...data["meeting"]]);
-    //           }
-    //       })
-    //       .catch(error => console.error('Error creating meeting:', error));
-    //     };
-    //   }
   
     return (
       <React.Fragment>
@@ -129,7 +167,7 @@ function BookDetailsPage(props) {
   // each row of a meeting table
   function BookMeetingRow(props) {
     const { meeting, user, book } = props;
-    const [host, setHost] = React.useState({});
+    // const [host, setHost] = React.useState({});
    
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(true);
@@ -140,8 +178,6 @@ function BookDetailsPage(props) {
     React.useEffect(() => {
       if (guestsCount >= meeting.max_guests) {
         setHideJoinButton(true);
-      } else {
-        setHideJoinButton(false);
       }
     }, [guestsCount])
     
@@ -160,21 +196,21 @@ function BookDetailsPage(props) {
         setHideDropButton(true);
       };
   
-      if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
-          fetch('/api/get_user_by_id', {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ "host_id": meeting.host_id }),
-            })
-              .then(response => response.json())
-              .then(data => setHost(data))
-              .catch(error => console.error('Error fetching host:', error));
-      } else {
-          setHideJoinButton(true);
-          setHideDropButton(true);
-      };
+    //   if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
+    //       fetch('/api/get_user_by_id', {
+    //           method: "POST",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify({ "host_id": meeting.host_id }),
+    //         })
+    //           .then(response => response.json())
+    //           .then(data => setHost(data))
+    //           .catch(error => console.error('Error fetching host:', error));
+    //   } else {
+    //       setHideJoinButton(true);
+    //       setHideDropButton(true);
+    //   };
       
-    }, [meeting]);
+     }, [meeting]);
   
     const joinMeeting = () => {
       console.log(`${meeting.id}`)
@@ -219,7 +255,7 @@ function BookDetailsPage(props) {
       <tr>
         <td>{meeting.date}</td>
         <td>{meeting.place}</td>
-        <td>{host.name}</td>
+        <td>{meeting.host_name}</td>
         <td>{guestsCount}/{meeting.max_guests}</td>
         <td>
             <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>+</button>
@@ -320,7 +356,7 @@ function BookDetailsPage(props) {
   }
   
   function MeetingForm(props) {
-    const { book } = props;
+    const { book, handleCreateMeeting } = props;
   
     const currentDate = () => {
       const now = new Date();
@@ -343,6 +379,12 @@ function BookDetailsPage(props) {
     const toggleYelpForm = () => {
       setExpanded(!expanded);
     }
+
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      
+      handleCreateMeeting(); 
+    };
   
     return (
       <React.Fragment>
@@ -357,6 +399,7 @@ function BookDetailsPage(props) {
                       <div className="message" id="error-message-signup"></div>
                       
                       <form id="create-meeting-form" className="signin" method="POST">
+                        <div className="message" id="error-message-new-meeting"></div>
                           <div className="element">
                               <label htmlFor="day">
                                   Chosee day and time:
@@ -370,18 +413,14 @@ function BookDetailsPage(props) {
                                   required />
                           </div>
                           <div className="radio-buttons">
-                          {/* <div className="form-check"> */}
                               <input className="form-check-input" type="radio" name="meetingOption" id="zoom" />
                               <label className="form-check-label" htmlFor="zoom">
                                 Zoom
                               </label>
-                              {/* </div> */}
-                              {/* <div className="form-check"> */}
                               <input className="form-check-input" type="radio" name="meetingOption" id="offline" defaultChecked />
                               <label className="form-check-label" htmlFor="offline">
                                 Meeting-In-Person
                               </label>
-                              {/* </div> */}
                           </div>
                           <div className="element">
                               <label htmlFor="languages">
@@ -407,10 +446,16 @@ function BookDetailsPage(props) {
                               <textarea className="input myInput" id="overview" name="overview" wrap="soft" />
                           </div>
                           <div className="element">
+                          <label htmlFor="max-guests">
+                                  Maximum attending guests
+                          </label>
+                            <input type="text" id="max-guests" required/>
+                          </div>
+                          <div className="element">
                           <label htmlFor="place">
                                   Place to meet
                           </label>
-                            <input type="text" id="autocomplete"/>
+                            <input type="text" id="autocomplete" required/>
                           </div>
                           <div>
                             <button id="search-yelp-form" onClick={toggleYelpForm}>Let's look for a place!</button>
@@ -419,7 +464,7 @@ function BookDetailsPage(props) {
                             <YelpSearchForm expanded={expanded}/>
                           )}
                           
-                          <button id="user-signup">Create!</button>
+                          <button id="meeting-create" onClick={handleSubmit}>Create!</button>
                       </form>
                       
                   </div>

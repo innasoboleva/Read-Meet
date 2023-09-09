@@ -1,30 +1,27 @@
 import os
 from apis import books_api, yelp_api, goodreads_api
 from flask import Flask, render_template, jsonify, request, session, flash
-from models import connect_to_db , db, User
+from models import connect_to_db , db, User, Meeting, Book
 import crud
+from datetime import datetime
 
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_KEY')
-# MAP_KEY = os.environ.get('BOOK_KEY') # same Google API key
 
 
 @app.route("/")
 def homepage():
     """Show homepage."""
-    # check_map_key()
-    print("Index: ", session.get('user'))
+    print("Index: ", session.get('user_id'))
     return render_template("index.html")
 
 
 @app.route("/books")
 def show_books_page():
     """Show page with rendered books."""
-    # check_map_key()
-    print("Books user: ", session.get('user'))
+    print("Books user: ", session.get('user_id'))
     return render_template("index.html")
-    # return render_template("books.html")
 
 
 @app.route("/api/get_books")
@@ -231,14 +228,61 @@ def get_popular_books():
     return jsonify(result)
 
 
-@app.route("/api/create_meeting")
+@app.route("/api/create_meeting", methods=["POST"])
 def create_meeting():
     """ Creates new meeting and returns data as JSON. """
     data = request.get_json()
     book_id = data.get("book_id")
     user_id = data.get("user_id")
-    result = crud.create_meeting(user_id, book_id)
-    return jsonify(result)
+
+    inputs = data.get("inputs")
+    raw_day = inputs.get('day')
+    day = datetime.fromisoformat(raw_day)
+    raw_offline = inputs.get('offline')
+    offline = True # check for zoom meeting or in person (offline) meeting
+    if raw_offline != "offline":
+        offline = False
+    language = inputs.get('language')
+    place = inputs.get('place')
+    max_guests = inputs.get('max_guests')
+    overview = inputs.get('overview', None)
+    
+    host = crud.get_user_by_id(user_id)
+    book = crud.get_book_by_id(book_id)
+    new_meeting = None
+   
+    # if book is not in a DB
+    if book is None:
+        new_book_response = books_api.find_book(book_id)
+        if new_book_response.get("status") == "success":
+            book = new_book_response['book']
+            isbn = book.get('ISBN')
+            title = book.get('title')
+            subtitle = book.get('subtitle')
+            image_url = book.get('image_url')
+            description = book.get('description')
+            authors = book.get('authors')
+            if isbn:
+                new_book = Book.create(isbn, title, authors, subtitle, \
+                                       image_url=image_url, description=description) # isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None
+                db.session.add(new_book)
+                new_meeting = Meeting.create(new_book, day, offline, host, max_guests, overview=overview, place=place, language=language)
+                db.session.add(new_meeting)
+    else:
+        new_meeting = Meeting.create(book, day, offline, host, max_guests, overview=overview, place=place, language=language)
+        db.session.add(new_meeting)
+    
+    db.session.commit()
+    
+    if new_meeting:
+        meeting_dict = new_meeting.to_dict()
+        list_of_guests = [guest.user_id for guest in new_meeting.attending_guests]
+        meeting_dict["guests_count"] = len(new_meeting.attending_guests)
+        meeting_dict["guests"] = list_of_guests
+        print(meeting_dict)
+        return jsonify({ "status": "success", "new_meeting": meeting_dict })
+    else:
+        return jsonify({"status": "error", "message": "Couldn't create new meeting, server error" })
 
 
 @app.route("/api/get_yelp_places", methods=["POST"])

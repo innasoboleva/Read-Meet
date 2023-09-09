@@ -56,7 +56,7 @@ function BooksSearchContainer() {
       .then(data => {
         if (data["status"] === "success") {
           setIsLoading(false);
-          setBooks(prevBooks => [...prevBooks, ...data["books"]]); // Append new books to existing list
+          setBooks(prevBooks => [...prevBooks, ...data["books"]]); // appending new books to existing list
           console.log("Books are set")
         }
       })

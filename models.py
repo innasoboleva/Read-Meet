@@ -99,7 +99,7 @@ class Meeting(db.Model):
         return { "id": self.meeting_id, "book_id": self.book_id, "date": self.day, \
                 "place": self.place, "address": self.address, "offline": self.offline, \
                     "language": self.language, "video": self.video_note, \
-                        "overview": self.overview, "host_id": self.host_id, "max_guests": self.max_guests }
+                        "overview": self.overview, "host_id": self.host_id, "max_guests": self.max_guests, "host_name": self.host.name }
 
     def __repr__(self):
         return f"<Meeting id={self.meeting_id} book={self.book} day={self.day} active={self.active}>"

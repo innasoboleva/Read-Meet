@@ -77,8 +77,6 @@ function MeetingRow(props) {
     React.useEffect(() => {
       if (guestsCount >= meeting.max_guests) {
         setHideJoinButton(true);
-      } else {
-        setHideJoinButton(false);
       }
     }, [guestsCount])
     
@@ -97,19 +95,19 @@ function MeetingRow(props) {
         setHideDropButton(true);
       };
 
-      if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
-          fetch('/api/get_user_by_id', {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ "host_id": meeting.host_id }),
-            })
-              .then(response => response.json())
-              .then(data => setHost(data))
-              .catch(error => console.error('Error fetching host:', error));
-      } else {
-          setHideJoinButton(true);
-          setHideDropButton(true);
-      };
+      // if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
+      //     fetch('/api/get_user_by_id', {
+      //         method: "POST",
+      //         headers: { "Content-Type": "application/json" },
+      //         body: JSON.stringify({ "host_id": meeting.host_id }),
+      //       })
+      //         .then(response => response.json())
+      //         .then(data => setHost(data))
+      //         .catch(error => console.error('Error fetching host:', error));
+      // } else {
+      //     setHideJoinButton(true);
+      //     setHideDropButton(true);
+      // };
       
       fetch('/api/get_book_by_id', {
         method: "POST",
@@ -169,7 +167,7 @@ function MeetingRow(props) {
         <td>{meeting.overview}</td>
         <td>{meeting.video}</td>
         <td>{meeting.language}</td>
-        <td>{host.name}</td>
+        <td>{meeting.host_name}</td>
         <td>{guestsCount}/{meeting.max_guests}</td>
         <td>
             <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>

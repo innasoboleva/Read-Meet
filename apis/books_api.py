@@ -137,3 +137,53 @@ def find_list_of_books(params, page):
     response = _get_search_result_for_params(parameters, page)
     result = _get_list_of_books_for_page(response)
     return result
+
+
+def find_book(isbn):
+    """
+    Return result of search for sertain ISBN.
+    """
+    book_search_url = book_isbn + isbn
+    response = requests.get(book_search_url)
+    
+    if (response.status_code == 200):
+        new_book = {}
+        response_data = response.json()
+        items = response_data.get('items', [])
+        if items:
+            volume_info = items[0].get('volumeInfo')
+
+            title = volume_info.get('title', '') # check if this is in a data from Books API
+            new_book['title'] = title
+            subtitle = volume_info.get('subtitle', '')
+            new_book['subtitle'] = subtitle
+            authors = volume_info.get('authors', ['No authors available'])
+            authors_str = ', '. join(authors)
+            new_book['authors'] = authors_str
+            description = volume_info.get('description', 'No description available.')
+            new_book['description'] = description
+            industry_identifiers = volume_info.get('industryIdentifiers', [])
+            if industry_identifiers != []:
+                ISBN_13 = None
+                ISBN_10 = None
+                ISBN_13 = [item for item in industry_identifiers if item.get('type') == 'ISBN_13']
+                ISBN_10 = [item for item in industry_identifiers if item.get('type') == 'ISBN_10']
+                if ISBN_13:
+                    new_book['ISBN'] = ISBN_13[0]["identifier"]
+                elif ISBN_10:
+                    new_book['ISBN'] = ISBN_10[0]["identifier"]
+                else: # can be something like 'type': 'OTHER', 'identifier': 'UOM:39015000639784'}
+                    new_book['ISBN'] = industry_identifiers[0]["identifier"]
+            else:
+                # no identifier
+                pass
+            image_links = volume_info.get('imageLinks', None)
+            if image_links:
+                image_link = image_links.get('thumbnail', '/static/img/basic_thumbnail.png') # if picture is not present, there is standart thumbnail
+                new_book['image_url'] = image_link
+            else:
+                new_book['image_url'] = '/static/img/basic_thumbnail.png'
+
+        return { "status": "success", "book": new_book }
+    else:
+        return { "status": "error", "code": 404, "message": f"Could not get book with {isbn}, server does not respond." }
