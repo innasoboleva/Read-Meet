@@ -1,9 +1,7 @@
 
 function BookDetailsPage(props) {
-    // getting ISBN
-    // const { bookId } = ReactRouterDOM.useParams();
+    // getting book
     const { state } = props.location;
-    // const [books, setBooks] = React.useState([]);
     const [createMeeting, setCreateMeeting] = React.useState(false);
   
     if (!state || !state.book) {
@@ -42,7 +40,8 @@ function BookDetailsPage(props) {
     const { book, createMeeting, setCreateMeeting } = props;
     const [meetings, setMeetings] = React.useState([]);
     const [user, setUser] = React.useState();
-
+    console.log("Meetings after update:", meetings);
+    
     React.useEffect(() => {
       if (createMeeting) {
         console.log("Meeting called in meeting data container")
@@ -71,7 +70,13 @@ function BookDetailsPage(props) {
                   console.log(data["new_meeting"])
                   console.log("Meetings before update:", meetings);
 
-                  setMeetings(prevMeetings => [...prevMeetings, ...data["new_meeting"]]);
+                  setMeetings((prevMeetings) => {
+                    console.log("Prev meeting: ", prevMeetings)
+                    console.log("Data for new meeting: ", data["new_meeting"])
+                    let result = [...prevMeetings, data["new_meeting"]];
+                    console.log(`result: ${result}`);
+                    return result
+                  }); // HERE
                   
                   var modalElement = document.querySelector('#meetingForm');
                   var modal = bootstrap.Modal.getInstance(modalElement);
@@ -89,7 +94,6 @@ function BookDetailsPage(props) {
 
       }
     }, [createMeeting]);
-  
   
     React.useEffect(() => {
       const controller = new AbortController();
@@ -135,10 +139,6 @@ function BookDetailsPage(props) {
       };
   
     }, [user]);
-
-    React.useEffect(() => {
-      console.log("Meetings after update:", meetings);
-    }, [meetings]);
   
   
     return (
@@ -156,7 +156,7 @@ function BookDetailsPage(props) {
           </thead>
           <tbody>
             { meetings.map((meeting) => (
-              <BookMeetingRow key={meeting.id} meeting={meeting} user={user} book={book}/>
+              <BookMeetingRow key={meeting.id} meeting={meeting} user={user}/>
             ))}
           </tbody>
         </table>
@@ -166,8 +166,7 @@ function BookDetailsPage(props) {
   
   // each row of a meeting table
   function BookMeetingRow(props) {
-    const { meeting, user, book } = props;
-    // const [host, setHost] = React.useState({});
+    const { meeting, user } = props;
    
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(true);
@@ -195,20 +194,6 @@ function BookDetailsPage(props) {
         setHideJoinButton(false);
         setHideDropButton(true);
       };
-  
-    //   if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
-    //       fetch('/api/get_user_by_id', {
-    //           method: "POST",
-    //           headers: { "Content-Type": "application/json" },
-    //           body: JSON.stringify({ "host_id": meeting.host_id }),
-    //         })
-    //           .then(response => response.json())
-    //           .then(data => setHost(data))
-    //           .catch(error => console.error('Error fetching host:', error));
-    //   } else {
-    //       setHideJoinButton(true);
-    //       setHideDropButton(true);
-    //   };
       
      }, [meeting]);
   
