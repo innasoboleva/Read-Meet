@@ -171,7 +171,15 @@ def get_meetings_for_book():
     book_id = data.get("book_id")
     if book_id:
         meetings = crud.get_all_meetings_for_book(book_id)
-        return jsonify({ "status": "success", "meetings": meetings})
+        meeting_list_of_dict = []
+        if meetings:
+            for meeting in meetings:
+                meeting_dict = meeting.to_dict()
+                list_of_guests = [guest.user_id for guest in meeting.attending_guests]
+                meeting_dict["guests_count"] = len(meeting.attending_guests)
+                meeting_dict["guests"] = list_of_guests
+                meeting_list_of_dict.append(meeting_dict)
+        return jsonify({ "status": "success", "meetings": meeting_list_of_dict})
     else: 
         return jsonify({ "status": "error", "message": f"Couldn't get any meetings data for {book_id}."})
     

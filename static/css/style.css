@@ -91,7 +91,7 @@ button#sgn:hover {
   cursor: pointer;
 }
 
-button#modal-signin-back, button#modal-signup-back {
+button#modal-signin-back, button#modal-signup-back, button#meeting-create {
   position: absolute;
   left: 30%;
   margin-top: 3px;
@@ -177,6 +177,25 @@ button#user-signin:hover {
 }
 
 /* CAROUSEL */
+
+#carouselExampleControls {
+  background-color: rgb(255, 253, 247);
+  padding: 20px 0 20px 0;
+  margin-bottom: 30px;
+}
+
+.carousel-control-next,
+.carousel-control-prev {
+    filter: invert(100%);
+}
+
+.carousel-control-prev {
+  left: -30px;
+}
+
+.carousel-control-next {
+  right: -30px;
+}
 
 .carousel-inner {
   display: flex;
