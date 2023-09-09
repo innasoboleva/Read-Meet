@@ -66,7 +66,7 @@ function MeetingDataContainer() {
 // each row of a meeting table
 function MeetingRow(props) {
     const { meeting, user } = props;
-    const [host, setHost] = React.useState({});
+    // const [host, setHost] = React.useState({});
     const [book, setBook] = React.useState({});
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(true);
@@ -81,8 +81,7 @@ function MeetingRow(props) {
     }, [guestsCount])
     
     React.useEffect(() => {
-      
-      if ((user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
+      if ((user.user_id == null) || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
         // user is a host, disable buttons
         setHideJoinButton(true);
         setHideDropButton(true);
@@ -94,20 +93,6 @@ function MeetingRow(props) {
         setHideJoinButton(false);
         setHideDropButton(true);
       };
-
-      // if (user.user_id && (user.user_id != meeting.host_id)) { // check that user exists, has id and he is not a host
-      //     fetch('/api/get_user_by_id', {
-      //         method: "POST",
-      //         headers: { "Content-Type": "application/json" },
-      //         body: JSON.stringify({ "host_id": meeting.host_id }),
-      //       })
-      //         .then(response => response.json())
-      //         .then(data => setHost(data))
-      //         .catch(error => console.error('Error fetching host:', error));
-      // } else {
-      //     setHideJoinButton(true);
-      //     setHideDropButton(true);
-      // };
       
       fetch('/api/get_book_by_id', {
         method: "POST",

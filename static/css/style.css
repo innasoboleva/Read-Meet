@@ -91,7 +91,7 @@ button#sgn:hover {
   cursor: pointer;
 }
 
-button#modal-signin-back, button#modal-signup-back, button#meeting-create {
+button#modal-signin-back, button#modal-signup-back {
   position: absolute;
   left: 30%;
   margin-top: 3px;
@@ -100,6 +100,24 @@ button#modal-signin-back, button#modal-signup-back, button#meeting-create {
   cursor: pointer;
   width: 70px;
 }
+
+button#user-signin, button#user-signup {
+  border: none;
+  border-radius: 3px;
+  width: 100%;
+  font-family: sans-serif;
+  font-weight: 400;
+  background-color: rgb(115, 142, 124);
+  color: white;
+  transition: background-color .1s ease-in-out,color .1s ease-in-out;
+  padding: 7px 7px 7px 7px;
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+button#user-signin:hover {
+  background-color: #445549;
+} 
 
 .modal-img {
   background-color: rgb(124, 174, 156);
@@ -152,23 +170,7 @@ form.signin {
   font-weight: 200;
 }
 
-button#user-signin, button#user-signup {
-  border: none;
-  border-radius: 3px;
-  width: 100%;
-  font-family: sans-serif;
-  font-weight: 400;
-  background-color: rgb(115, 142, 124);
-  color: white;
-  transition: background-color .1s ease-in-out,color .1s ease-in-out;
-  padding: 7px 7px 7px 7px;
-  margin-top: 7px;
-  margin-bottom: 7px;
-}
 
-button#user-signin:hover {
-  background-color: #445549;
-} 
 
 /* Styling the modal image */
 .modal-img img {
@@ -427,6 +429,27 @@ a {
   border: 1px solid rgb(186, 178, 178);
   box-shadow: 0px 0px 12px #EFEFEF;
 }
+
+button#meeting-create {
+  position: absolute;
+  left: 20%;
+  font-size: 15px;
+  cursor: pointer;
+  width: 40%;
+  border: none;
+  border-radius: 3px;
+  font-family: sans-serif;
+  font-weight: 200;
+  background-color: rgb(115, 142, 124);
+  color: white;
+  transition: background-color .1s ease-in-out,color .1s ease-in-out;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+button#meeting-create:hover {
+  background-color: #445549;
+ }
 
 /* Yelp table */
 

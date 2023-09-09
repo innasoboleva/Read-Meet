@@ -182,7 +182,7 @@ function BookDetailsPage(props) {
     
     React.useEffect(() => {
       
-      if ((user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
+      if ((user.user_id == null) || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
         // user is a host, disable buttons
         setHideJoinButton(true);
         setHideDropButton(true);
@@ -449,7 +449,7 @@ function BookDetailsPage(props) {
                             <YelpSearchForm expanded={expanded}/>
                           )}
                           
-                          <button id="meeting-create" onClick={handleSubmit}>Create!</button>
+                          <button className="" id="meeting-create" onClick={handleSubmit}>Create!</button>
                       </form>
                       
                   </div>
