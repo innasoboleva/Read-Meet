@@ -58,7 +58,7 @@ def _find_reviews_selenium(data, occurance=1):
     goodreads_book_id = data.get('goodreads_book_id', None)
     if goodreads_book_id:
         driver = webdriver.Chrome()
-        # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        
         driver.get(book_reviews.format(goodreads_book_id))
         try:
             header = WebDriverWait(driver, 30).until(lambda x: x.find_element(By.TAG_NAME, 'h1'))
@@ -67,7 +67,7 @@ def _find_reviews_selenium(data, occurance=1):
                 return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", \
                         "url": None, "message": "No reviews are available for this book." }
             # waiting for rating stars to load as indicator that all needed info has been loaded
-            # WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'RatingStars'))
+            
             error = driver.find_elements(By.CLASS_NAME, 'ErrorCard')
             if error:
                 print("Book has no reviews.")
@@ -116,7 +116,7 @@ def get_reviews(isbn):
     """
     Public method for getting reviews for a book.
     """
-    url = None
+    result_from_url = None
     count_url = 0 # trying to get page url 2 times
     while count_url <= 2:
         count_url += 1

@@ -82,9 +82,9 @@ def get_books_in_list(list_id):
     list_of_books = List.query.get(list_id)
     return list_of_books.books
 
-def get_book_by_id(isbn):
+def get_book_by_id(book_id):
     """ Returns book. """
-    return Book.query.get(isbn)
+    return Book.query.get(book_id)
 
 def get_popular_books():
     """ Returns list of popular books. """

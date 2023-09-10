@@ -40,7 +40,8 @@ class Book(db.Model):
 
     __tablename__ = "books"
 
-    ISBN = db.Column(db.String, primary_key=True)
+    book_id = db.Column(db.String, primary_key=True)
+    ISBN = db.Column(db.String)
     title = db.Column(db.String, nullable=False)
     subtitle = db.Column(db.String)
     authors = db.Column(db.String, nullable=False)
@@ -52,14 +53,14 @@ class Book(db.Model):
     lists = db.relationship("List", secondary="books_lists", back_populates="books")
 
     @classmethod
-    def create(cls, isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None):
+    def create(cls, book_id, isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None):
        """ Create and return a new book. """
-       return cls(ISBN=isbn, title=title, subtitle=subtitle, authors=authors, \
+       return cls(book_id=book_id, ISBN=isbn, title=title, subtitle=subtitle, authors=authors, \
                   image_url=image_url, description=description, popular_book=popular_book)
     
     def to_dict(self):
         """ Returns dict with instance data. """
-        return { "ISBN": self.ISBN, "title": self.title, "subtitle": self.subtitle, \
+        return { "book_id": self.book_id, "ISBN": self.ISBN, "title": self.title, "subtitle": self.subtitle, \
                 "authors": self.authors, "description": self.description, "image_url": self.image_url }
 
     def __repr__(self):
@@ -72,7 +73,7 @@ class Meeting(db.Model):
     __tablename__ = "meetings"
 
     meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('meeting_id_seq')"))
-    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), nullable=False)
+    book_id = db.Column(db.String, db.ForeignKey("books.book_id"), nullable=False)
     day = db.Column(db.DateTime, nullable=False)
     place = db.Column(db.String)
     address = db.Column(db.String)
@@ -143,7 +144,7 @@ class BookList(db.Model):
     __tablename__ = "books_lists"
 
     booklist_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('booklist_id_seq')"))
-    book_id = db.Column(db.String, db.ForeignKey("books.ISBN"), nullable=False)
+    book_id = db.Column(db.String, db.ForeignKey("books.book_id"), nullable=False)
     list_id = db.Column(db.Integer, db.ForeignKey("lists.list_id"), nullable=False)
 
 

@@ -44,14 +44,15 @@ if status == "success":
             books = result_from_book_search.get("books")
             if books:
                 popular_book = books[0]
-                title = books[0].get("title")
-                subtitle = books[0].get("subtitle")
-                authors = books[0].get("authors")
-                description = books[0].get("description")
-                books_ISBN = books[0].get("ISBN")
-                image = books[0].get("image")
+                book_id = popular_book.get("book_id")
+                title = popular_book.get("title")
+                subtitle = popular_book.get("subtitle")
+                authors = popular_book.get("authors")
+                description = popular_book.get("description")
+                books_ISBN = popular_book.get("ISBN")
+                image = popular_book.get("image_url")
                 popular_book = datetime.today().strftime("%Y-%m")
-                new_book = models.Book.create(isbn=books_ISBN, title=title, subtitle=subtitle, authors=authors, \
+                new_book = models.Book.create(book_id=book_id, isbn=books_ISBN, title=title, subtitle=subtitle, authors=authors, \
                   image_url=image, description=description, popular_book=popular_book)
                 models.db.session.add(new_book)
 

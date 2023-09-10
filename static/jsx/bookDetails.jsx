@@ -79,7 +79,7 @@ function BookDetailsPage(props) {
         signal: signal,
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "book_id": book.ISBN }),
+        body: JSON.stringify({ "book_id": book.book_id }),
       })
         .then(response => response.json())
         .then(data => {
@@ -121,7 +121,7 @@ function BookDetailsPage(props) {
           fetch('/api/create_meeting', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "book_id": book.ISBN, "user_id": user.user_id, "inputs": formInputs }),
+            body: JSON.stringify({ "book_id": book.book_id, "user_id": user.user_id, "inputs": formInputs }),
           })
             .then(response => response.json())
             .then(data => {
@@ -299,7 +299,7 @@ function BookDetailsPage(props) {
       fetch('/api/get_reviews_for_book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "book_id": book.ISBN }),
+        body: JSON.stringify({ "book_isbn": book.ISBN }),
       })
         .then(response => response.json())
         .then(data => {

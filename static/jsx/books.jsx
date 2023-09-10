@@ -92,12 +92,12 @@ function BooksSearchContainer() {
     return (
       <React.Fragment>
         <ReactRouterDOM.Link
-          key={book.ISBN}
+          key={book.book_id}
           to={{
-            pathname: `/books/${book.ISBN}`,
+            pathname: `/books/${book.book_id}`,
             state: { book }
           }}>
-        {/* <ReactRouterDOM.Link to={`/books/${book.ISBN}`}> */}
+        {/* <ReactRouterDOM.Link to={`/books/${book.book_id}`}> */}
         <div className="search-book-div">
           <div className="book-image-background" style={{ backgroundColor: `hsl(${generateRandomHue()}, 40%, 95%)`}}></div>
             <div className="image-block">
@@ -110,7 +110,7 @@ function BooksSearchContainer() {
             <div className="authors">{book.authors}</div>
           </div>
         </div>
-        {/* { showDetails && <BookDetails key={book.ISBN} book={book} /> } */}
+        {/* { showDetails && <BookDetails key={book.book_id} book={book} /> } */}
         </ReactRouterDOM.Link>
       </React.Fragment>
     );

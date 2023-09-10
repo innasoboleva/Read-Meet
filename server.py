@@ -222,11 +222,14 @@ def drop_meeting():
 @app.route("/api/get_reviews_for_book", methods=["POST"])
 def get_reviews_for_book():
     data = request.get_json()
-    book_id = data.get("book_id")
-    print("BOOK ", book_id)
-    result = goodreads_api.get_reviews(book_id)
-    print(result)
-    return jsonify(result)
+    book_isbn = data.get("book_isbn")
+    if book_isbn:
+        print("Getting reviews for Book - ISBN ", book_isbn)
+        result = goodreads_api.get_reviews(book_isbn)
+        print(result)
+        return jsonify(result)
+    else: # no ISBN for that book
+        return jsonify({ "status": "error", "code": 204, "message": "Book was not found on Goodreads"})
 
 
 @app.route("/api/get_popular_books")
@@ -234,6 +237,7 @@ def get_popular_books():
     """ Returns list of popular books for previous month. """
     books = crud.get_popular_books()
     result = [book.to_dict() for book in books]
+    print(result)
     return jsonify(result)
 
 
@@ -274,13 +278,13 @@ def create_meeting():
             image_url = book.get('image_url')
             description = book.get('description')
             authors = book.get('authors')
-            if isbn:
-                new_book = Book.create(isbn, title, authors, subtitle, \
-                                       image_url=image_url, description=description) # isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None
-                print(new_book)
-                db.session.add(new_book)
-                new_meeting = Meeting.create(new_book, day, offline, host, max_guests, overview=overview, place=place, language=language)
-                db.session.add(new_meeting)
+           
+            new_book = Book.create(book_id, isbn, title, authors, subtitle, \
+                                    image_url=image_url, description=description) 
+            print(new_book)
+            db.session.add(new_book)
+            new_meeting = Meeting.create(new_book, day, offline, host, max_guests, overview=overview, place=place, language=language)
+            db.session.add(new_meeting)
     else:
         new_meeting = Meeting.create(book, day, offline, host, max_guests, overview=overview, place=place, language=language)
         print(new_meeting)

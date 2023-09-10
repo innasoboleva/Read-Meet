@@ -227,9 +227,9 @@ function CarouselItems(props) {
         <div className="carousel-img-block d-flex justify-content-between">
           { books.map((book) => (
             
-            <div key={book.ISBN} className="carousel-image">
-              <ReactRouterDOM.Link key={book.ISBN} pathname={`{/books/${book.ISBN}}`} to={{
-            pathname: `/books/${book.ISBN}`,
+            <div key={book.book_id} className="carousel-image">
+              <ReactRouterDOM.Link key={book.book_id} pathname={`{/books/${book.book_id}}`} to={{
+            pathname: `/books/${book.book_id}`,
             state: { user, book }
             }}>
                 <img src={book.image_url} className="img-fluid" alt={book.title} />

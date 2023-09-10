@@ -5,7 +5,8 @@ import random
 # set up for books API requests
 book_key = os.environ.get('BOOK_KEY')
 book_url = "https://www.googleapis.com/books/v1/volumes?q=" # add search args to the url
-book_isbn = "https://www.googleapis.com/books/v1/volumes?q=isbn:" # find form action=/search and add ISBN number
+# book_isbn = "https://www.googleapis.com/books/v1/volumes?q=isbn:" # find form action=/search and add ISBN number
+book_url_with_id = "https://www.googleapis.com/books/v1/volumes/" # id + ?key=yourKey
 
 
 def _get_random_search_param():
@@ -76,9 +77,10 @@ def _get_books_info_from_response(items, start=None, stop=None):
     else:
         items_list = items
     for book in items_list:
+        book_id = book.get('id', None)
         volume_info = book.get('volumeInfo', None)
-        if volume_info:
-            book_to_add = {}
+        if volume_info and book_id:
+            book_to_add = { "book_id": book_id }
             title = volume_info.get('title', '') # check if this is in a data from Books API
             book_to_add['title'] = title
             subtitle = volume_info.get('subtitle', '')
@@ -90,17 +92,18 @@ def _get_books_info_from_response(items, start=None, stop=None):
             book_to_add['description'] = description
             industry_identifiers = volume_info.get('industryIdentifiers', [])
             if industry_identifiers == []:
-                continue
-            ISBN_13 = None
-            ISBN_10 = None
-            ISBN_13 = [item for item in industry_identifiers if item.get('type') == 'ISBN_13']
-            ISBN_10 = [item for item in industry_identifiers if item.get('type') == 'ISBN_10']
-            if ISBN_13:
-                book_to_add['ISBN'] = ISBN_13[0]["identifier"]
-            elif ISBN_10:
-                book_to_add['ISBN'] = ISBN_10[0]["identifier"]
-            else: # can be something like 'type': 'OTHER', 'identifier': 'UOM:39015000639784'}
-                book_to_add['ISBN'] = industry_identifiers[0]["identifier"]
+                book_to_add['ISBN'] = None
+            else:
+                ISBN_13 = None
+                ISBN_10 = None
+                ISBN_13 = [item for item in industry_identifiers if item.get('type') == 'ISBN_13']
+                ISBN_10 = [item for item in industry_identifiers if item.get('type') == 'ISBN_10']
+                if ISBN_13:
+                    book_to_add['ISBN'] = ISBN_13[0]["identifier"]
+                elif ISBN_10:
+                    book_to_add['ISBN'] = ISBN_10[0]["identifier"]
+                else: # can be something like 'type': 'OTHER', 'identifier': 'UOM:39015000639784'}
+                    book_to_add['ISBN'] = industry_identifiers[0]["identifier"]
             image_links = volume_info.get('imageLinks', None)
             if image_links:
                 image_link = image_links.get('thumbnail', '/static/img/basic_thumbnail.png') # if picture is not present, there is standart thumbnail
@@ -139,51 +142,103 @@ def find_list_of_books(params, page):
     return result
 
 
-def find_book(isbn):
+def find_book(book_id):
     """
-    Return result of search for sertain ISBN.
+    Return result of search for certain ID.
     """
-    book_search_url = book_isbn + isbn
+    key = f"?key={book_key}"
+    book_search_url = book_url_with_id + book_id + key
+    print(book_search_url)
     response = requests.get(book_search_url)
     
     if (response.status_code == 200):
         new_book = {}
-        response_data = response.json()
-        items = response_data.get('items', [])
-        if items:
-            volume_info = items[0].get('volumeInfo')
+        item = response.json()
+        book_id = item.get("id")
+        new_book["book_id"] = book_id
 
-            title = volume_info.get('title', '') # check if this is in a data from Books API
-            new_book['title'] = title
-            subtitle = volume_info.get('subtitle', '')
-            new_book['subtitle'] = subtitle
-            authors = volume_info.get('authors', ['No authors available'])
-            authors_str = ', '. join(authors)
-            new_book['authors'] = authors_str
-            description = volume_info.get('description', 'No description available.')
-            new_book['description'] = description
-            industry_identifiers = volume_info.get('industryIdentifiers', [])
-            if industry_identifiers != []:
-                ISBN_13 = None
-                ISBN_10 = None
-                ISBN_13 = [item for item in industry_identifiers if item.get('type') == 'ISBN_13']
-                ISBN_10 = [item for item in industry_identifiers if item.get('type') == 'ISBN_10']
-                if ISBN_13:
-                    new_book['ISBN'] = ISBN_13[0]["identifier"]
-                elif ISBN_10:
-                    new_book['ISBN'] = ISBN_10[0]["identifier"]
-                else: # can be something like 'type': 'OTHER', 'identifier': 'UOM:39015000639784'}
-                    new_book['ISBN'] = industry_identifiers[0]["identifier"]
-            else:
-                # no identifier
-                pass
-            image_links = volume_info.get('imageLinks', None)
-            if image_links:
-                image_link = image_links.get('thumbnail', '/static/img/basic_thumbnail.png') # if picture is not present, there is standart thumbnail
-                new_book['image_url'] = image_link
-            else:
-                new_book['image_url'] = '/static/img/basic_thumbnail.png'
+        volume_info = item.get('volumeInfo')
+        title = volume_info.get('title', '') # check if this is in a data from Books API
+        new_book['title'] = title
+        subtitle = volume_info.get('subtitle', '')
+        new_book['subtitle'] = subtitle
+        authors = volume_info.get('authors', ['No authors available'])
+        authors_str = ', '. join(authors)
+        new_book['authors'] = authors_str
+        description = volume_info.get('description', 'No description available.')
+        new_book['description'] = description
+        industry_identifiers = volume_info.get('industryIdentifiers', [])
+        if industry_identifiers == []:
+            new_book["ISBN"] = None
+        else:
+            ISBN_13 = None
+            ISBN_10 = None
+            ISBN_13 = [item for item in industry_identifiers if item.get('type') == 'ISBN_13']
+            ISBN_10 = [item for item in industry_identifiers if item.get('type') == 'ISBN_10']
+            if ISBN_13:
+                new_book['ISBN'] = ISBN_13[0]["identifier"]
+            elif ISBN_10:
+                new_book['ISBN'] = ISBN_10[0]["identifier"]
+            else: # can be something like 'type': 'OTHER', 'identifier': 'UOM:39015000639784'}
+                new_book['ISBN'] = industry_identifiers[0]["identifier"]
+        
+        image_links = volume_info.get('imageLinks', None)
+        if image_links:
+            image_link = image_links.get('thumbnail', '/static/img/basic_thumbnail.png') # if picture is not present, there is standart thumbnail
+            new_book['image_url'] = image_link
+        else:
+            new_book['image_url'] = '/static/img/basic_thumbnail.png'
 
         return { "status": "success", "book": new_book }
     else:
-        return { "status": "error", "code": 404, "message": f"Could not get book with {isbn}, server does not respond." }
+        return { "status": "error", "code": 404, "message": f"Could not get book with ID: s{book_id}, server does not respond." }
+
+
+# def find_book(isbn):
+#     """
+#     Return result of search for sertain ISBN.
+#     """
+#     book_search_url = book_isbn + isbn
+#     response = requests.get(book_search_url)
+    
+#     if (response.status_code == 200):
+#         new_book = {}
+#         response_data = response.json()
+#         items = response_data.get('items', [])
+#         if items:
+#             volume_info = items[0].get('volumeInfo')
+
+#             title = volume_info.get('title', '') # check if this is in a data from Books API
+#             new_book['title'] = title
+#             subtitle = volume_info.get('subtitle', '')
+#             new_book['subtitle'] = subtitle
+#             authors = volume_info.get('authors', ['No authors available'])
+#             authors_str = ', '. join(authors)
+#             new_book['authors'] = authors_str
+#             description = volume_info.get('description', 'No description available.')
+#             new_book['description'] = description
+#             industry_identifiers = volume_info.get('industryIdentifiers', [])
+#             if industry_identifiers != []:
+#                 ISBN_13 = None
+#                 ISBN_10 = None
+#                 ISBN_13 = [item for item in industry_identifiers if item.get('type') == 'ISBN_13']
+#                 ISBN_10 = [item for item in industry_identifiers if item.get('type') == 'ISBN_10']
+#                 if ISBN_13:
+#                     new_book['ISBN'] = ISBN_13[0]["identifier"]
+#                 elif ISBN_10:
+#                     new_book['ISBN'] = ISBN_10[0]["identifier"]
+#                 else: # can be something like 'type': 'OTHER', 'identifier': 'UOM:39015000639784'}
+#                     new_book['ISBN'] = industry_identifiers[0]["identifier"]
+#             else:
+#                 # no identifier
+#                 pass
+#             image_links = volume_info.get('imageLinks', None)
+#             if image_links:
+#                 image_link = image_links.get('thumbnail', '/static/img/basic_thumbnail.png') # if picture is not present, there is standart thumbnail
+#                 new_book['image_url'] = image_link
+#             else:
+#                 new_book['image_url'] = '/static/img/basic_thumbnail.png'
+
+#         return { "status": "success", "book": new_book }
+#     else:
+#         return { "status": "error", "code": 404, "message": f"Could not get book with {isbn}, server does not respond." }
