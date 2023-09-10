@@ -242,8 +242,9 @@ def create_meeting():
     """ Creates new meeting and returns data as JSON. """
     data = request.get_json()
     book_id = data.get("book_id")
+    print("Book_id", book_id)
     user_id = data.get("user_id")
-
+    print("User_id: ", user_id)
     inputs = data.get("inputs")
     raw_day = inputs.get('day')
     day = datetime.fromisoformat(raw_day)
@@ -251,7 +252,7 @@ def create_meeting():
     offline = True # check for zoom meeting or in person (offline) meeting
     if raw_offline != "offline":
         offline = False
-    language = inputs.get('language')
+    language = inputs.get('language', None)
     place = inputs.get('place')
     max_guests = inputs.get('max_guests')
     overview = inputs.get('overview', None)
@@ -263,7 +264,9 @@ def create_meeting():
     # if book is not in a DB
     if book is None:
         new_book_response = books_api.find_book(book_id)
+        print("Book response", new_book_response)
         if new_book_response.get("status") == "success":
+            print("Creating new book...")
             book = new_book_response['book']
             isbn = book.get('ISBN')
             title = book.get('title')
@@ -274,11 +277,13 @@ def create_meeting():
             if isbn:
                 new_book = Book.create(isbn, title, authors, subtitle, \
                                        image_url=image_url, description=description) # isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None
+                print(new_book)
                 db.session.add(new_book)
                 new_meeting = Meeting.create(new_book, day, offline, host, max_guests, overview=overview, place=place, language=language)
                 db.session.add(new_meeting)
     else:
         new_meeting = Meeting.create(book, day, offline, host, max_guests, overview=overview, place=place, language=language)
+        print(new_meeting)
         db.session.add(new_meeting)
     
     db.session.commit()
