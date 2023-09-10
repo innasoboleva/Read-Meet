@@ -5,8 +5,9 @@ function App() {
         <div className="container-fluid">
       <ReactRouterDOM.Switch>
         <ReactRouterDOM.Route path="/" exact>
-          <CarouselDataContainer />
-          <MeetingDataContainer />
+          <IndexPageContainer />
+          {/* <CarouselDataContainer />
+          <MeetingDataContainer /> */}
         </ReactRouterDOM.Route>
         
           <ReactRouterDOM.Route path="/books" exact>

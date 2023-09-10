@@ -3,99 +3,29 @@ function BookDetailsPage(props) {
     // getting book
     const { state } = props.location;
     const [createMeeting, setCreateMeeting] = React.useState(false);
-  
+    const [user, setUser] = React.useState();
+
+    // nav bar built in JS updates user info
+    window.updateUser = (newUser) => {
+      console.log("User state changed, new user: ", newUser)
+      setUser(newUser);
+    }
+
     if (!state || !state.book) {
       return <div>Book details not found.</div>;
     }
-  
     const book = state.book;
 
+    // if (state.user != null) {
+    //   setUser(state.user);
+    // }
+  
     const newMeeting = () => {
       setCreateMeeting(true);
     }
 
-    return (
-      <React.Fragment>
-        <MeetingForm book={book} handleCreateMeeting={newMeeting}/>
-        <div className='container-book-details'>
-          <div className="row">
-            <div className="book-details-descr col-5">
-              <h2>Details for { book.title }</h2>
-                <span className="subtitle">{ book.subtitle } </span>
-              <div className="authors"> Written by { book.authors }</div>
-              <div className="descr"> { book.description }</div>
-              <ReviewsContainer book={book} />
-            </div>
-            <div className="book-details-img col-7 col-md-auto">
-              <img src={ book.image_url }/>
-              <BookMeetingDataContainer book={book} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting}/>
-            </div>
-          </div>
-        </div>
-      </React.Fragment>
-      )
-  }
-  
-  function BookMeetingDataContainer(props) {
-    const { book, createMeeting, setCreateMeeting } = props;
-    const [meetings, setMeetings] = React.useState([]);
-    const [user, setUser] = React.useState();
-    console.log("Meetings after update:", meetings);
-    
     React.useEffect(() => {
-      if (createMeeting) {
-        console.log("Meeting called in meeting data container")
-        // Reset the state to prevent repeated actions
-        setCreateMeeting(false);
-
-        if (user.user_id) {
-          const formInputs = {
-            day: document.querySelector('#day').value,
-            offline: document.querySelector('input[type="radio"]:checked').id,
-            language: document.querySelector('#languages').value,
-            overview: document.querySelector('#overview').value,
-            place: document.querySelector('#autocomplete').value,
-            max_guests: document.querySelector('#max-guests').value,
-          };
-    
-          fetch('/api/create_meeting', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "book_id": book.ISBN, "user_id": user.user_id, "inputs": formInputs }),
-          })
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.status == "success") {
-                  console.log("New meeting is created!")
-                  console.log(data["new_meeting"])
-                  console.log("Meetings before update:", meetings);
-
-                  setMeetings((prevMeetings) => {
-                    console.log("Prev meeting: ", prevMeetings)
-                    console.log("Data for new meeting: ", data["new_meeting"])
-                    let result = [...prevMeetings, data["new_meeting"]];
-                    console.log(`result: ${result}`);
-                    return result
-                  }); // HERE
-                  
-                  var modalElement = document.querySelector('#meetingForm');
-                  var modal = bootstrap.Modal.getInstance(modalElement);
-                  if (modal) {
-                      modal.hide(); // Bootstrap's method
-                  }
-                }
-                else {
-                  console.log("Error: meeting was not created")
-                  document.querySelector('#error-message-new-meeting').innerText = data['message']
-                }
-            })
-            .catch(error => console.error('Error creating new meeting:', error));
-          }
-
-      }
-    }, [createMeeting]);
-  
-    React.useEffect(() => {
+      // for aborting fetch requests, when user redirects the page
       const controller = new AbortController();
       const signal = controller.signal;
   
@@ -112,8 +42,35 @@ function BookDetailsPage(props) {
         };
   
       }, []);
+
+    return (
+      <React.Fragment>
+        <MeetingForm book={book} user={user} handleCreateMeeting={newMeeting}/>
+        <div className='container-book-details'>
+          <div className="row">
+            <div className="book-details-descr col-5">
+              <h2>Details for { book.title }</h2>
+                <span className="subtitle">{ book.subtitle } </span>
+              <div className="authors"> Written by { book.authors }</div>
+              <div className="descr"> { book.description }</div>
+              <ReviewsContainer book={book} />
+            </div>
+            <div className="book-details-img col-7 col-md-auto">
+              <img src={ book.image_url }/>
+              <BookMeetingDataContainer user={user} book={book} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting}/>
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
+      )
+  }
   
-  
+  function BookMeetingDataContainer(props) {
+    const { book, user, createMeeting, setCreateMeeting } = props;
+    const [meetings, setMeetings] = React.useState([]);
+   
+    console.log("Meetings after update:", meetings);
+
     React.useEffect(() => {
       const controller = new AbortController();
       const signal = controller.signal;
@@ -139,7 +96,86 @@ function BookDetailsPage(props) {
       };
   
     }, [user]);
+    
+    React.useEffect(() => {
+      if (createMeeting) {
+        console.log("Meeting called in meeting data container")
+        // Reset the state to prevent repeated actions
+        setCreateMeeting(false);
+
+        const formInputs = {
+          day: document.querySelector('#day').value,
+          offline: document.querySelector('input[type="radio"]:checked').id,
+          language: document.querySelector('#languages').value,
+          overview: document.querySelector('#overview').value,
+          place: document.querySelector('#autocomplete').value,
+          max_guests: document.querySelector('#max-guests').value,
+        };
+
+        const resultOfValidForm = isFormValid(formInputs);
+        const validForm = (resultOfValidForm.status == "success");
+        if (user && user.user_id && validForm) {
+          // if input correct and user is logged in, create a new meeting
+          document.querySelector('#error-message-new-meeting').innerText = ""; // cleaning modal if there were any error-messages
+
+          fetch('/api/create_meeting', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "book_id": book.ISBN, "user_id": user.user_id, "inputs": formInputs }),
+          })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.status == "success") {
+                  console.log("New meeting is created!")
+
+                  setMeetings((prevMeetings) => {
+                    console.log("Data for new meeting: ", data["new_meeting"])
+                    let result = [...prevMeetings, data["new_meeting"]];
+                    return result
+                  });
+                  
+                  var modalElement = document.querySelector('#meetingForm');
+                  var modal = bootstrap.Modal.getInstance(modalElement);
+                  if (modal) {
+                      modal.hide(); // Bootstrap's method
+                  }
+                }
+                else {
+                  console.log("Error: meeting was not created")
+                  document.querySelector('#error-message-new-meeting').innerText = data['message']
+                }
+            })
+            .catch(error => console.error('Error creating new meeting:', error));
+          } else {
+            // show error message on the form, input is incorrect
+            if (resultOfValidForm.message != null) {
+              document.querySelector('#error-message-new-meeting').innerText = resultOfValidForm.message;
+            } else {
+              document.querySelector('#error-message-new-meeting').innerText = "";
+            }
+          }
+      }
+    }, [createMeeting]);
   
+    const isFormValid = (formInputs) => {
+      // checking date, must be in the future
+      const now = new Date();
+      const inputDate = new Date(formInputs.day);
+      const isDateCorrect = (inputDate > now);
+      if (!isDateCorrect) {
+        return { "status": "error", "message": "Date of meeting cannot be in the past, please check!" }
+      }
+      if (formInputs.offline == 'offline') {
+        if (formInputs.place == "") {
+          return { "status": "error", "message": "If meeting in person, you need to pick a place to meet. Please check." }
+        }
+      }
+      if (formInputs.max_guests == "") { // type: number automatically check for valid number, min 1
+        return { "status": "error", "message": "You need to specify maximum of attending guests." }
+      }
+     
+      return { "status": "success" }
+    }
   
     return (
       <React.Fragment>
@@ -257,7 +293,6 @@ function BookDetailsPage(props) {
     const { book } = props;
     const [reviews, setReviews] = React.useState([]);
     const [noReviewsMessage, setNoReviewsMessage] = React.useState("");
-    let message = "";
 
     React.useEffect(() => {
       
@@ -275,6 +310,7 @@ function BookDetailsPage(props) {
             }
             else {
               console.log("No reviews")
+              console.log(data)
               if (data.code == 204) {
                 setNoReviewsMessage(data.message);
               }
@@ -341,29 +377,27 @@ function BookDetailsPage(props) {
   }
   
   function MeetingForm(props) {
-    const { book, handleCreateMeeting } = props;
-  
-    const currentDate = () => {
-      const now = new Date();
-  
-      // Get the current date and time components
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is zero-indexed
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-  
-      // Format the date and time in the desired format
-      const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-      return formattedDateTime
-    }
-  
+    const { book, user, handleCreateMeeting } = props;
+    const errorMessage = "";
     const [expanded, setExpanded] = React.useState(false);
+    const [hideCreateButton, setHideCreateButton] = React.useState(true);
+
     // for expanding yelp search form 
-  
     const toggleYelpForm = () => {
       setExpanded(!expanded);
     }
+
+    React.useEffect(() => {
+      console.log(user)
+      if (user && user.user_id != null) {
+        console.log("Create button showing")
+        setHideCreateButton(false);
+      } else {
+        console.log("Create button hidden")
+        setHideCreateButton(true);
+      }
+    }, [user]);
+   
 
     const handleSubmit = (event) => {
       event.preventDefault();
@@ -384,17 +418,16 @@ function BookDetailsPage(props) {
                       <div className="message" id="error-message-signup"></div>
                       
                       <form id="create-meeting-form" className="signin" method="POST">
-                        <div className="message" id="error-message-new-meeting"></div>
+                        <div className="message" id="error-message-new-meeting">{errorMessage}</div>
                           <div className="element">
                               <label htmlFor="day">
-                                  Chosee day and time:
+                                  Chosee day and time: <span className="red-indicator">*required</span>
                               </label>
                               <input
                                   className="input myInput"
                                   type="datetime-local"
                                   id="day"
                                   name="day"
-                                  min={currentDate}
                                   required />
                           </div>
                           <div className="radio-buttons">
@@ -402,9 +435,10 @@ function BookDetailsPage(props) {
                               <label className="form-check-label" htmlFor="zoom">
                                 Zoom
                               </label>
+                              
                               <input className="form-check-input" type="radio" name="meetingOption" id="offline" defaultChecked />
                               <label className="form-check-label" htmlFor="offline">
-                                Meeting-In-Person
+                                Meeting-In-Person <span className="red-indicator">*required</span>
                               </label>
                           </div>
                           <div className="element">
@@ -432,24 +466,24 @@ function BookDetailsPage(props) {
                           </div>
                           <div className="element">
                           <label htmlFor="max-guests">
-                                  Maximum attending guests
+                                  Maximum attending guests<span className="red-indicator">*required</span>
                           </label>
-                            <input type="text" id="max-guests" required/>
+                            <input type="number" id="max-guests" required min="1" step="1" />
                           </div>
                           <div className="element">
                           <label htmlFor="place">
-                                  Place to meet
+                                  Add address for a place to meet:<span className="red-indicator">*required</span>
                           </label>
-                            <input type="text" id="autocomplete" required/>
+                            <input type="text" id="autocomplete"/>
                           </div>
                           <div>
-                            <button id="search-yelp-form" onClick={toggleYelpForm}>Let's look for a place!</button>
+                            <button id="search-yelp-form" onClick={toggleYelpForm}>Or let's look for a place!</button>
                           </div>
                           {expanded && (
                             <YelpSearchForm expanded={expanded}/>
                           )}
                           
-                          <button className="" id="meeting-create" onClick={handleSubmit}>Create!</button>
+                          <button className="btn btn-success" id="meeting-create"  disabled={hideCreateButton} onClick={handleSubmit}>Create!</button>
                       </form>
                       
                   </div>
@@ -533,7 +567,7 @@ function BookDetailsPage(props) {
     React.useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
-        console.log("UseEffect PAGe: ", page);
+        console.log("UseEffect Page: ", page);
         console.log("UseEffect new search: ", newSearch);
        
         fetch("/api/get_yelp_places", {

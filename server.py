@@ -98,11 +98,15 @@ def login():
             if user.address is not None:
                 session["address"] = user.address
             flash(f"You successfully logged in with {email}!")
+            print(f"You successfully logged in with {email}!")
+            print ({ "user_id": user.user_id, "name": user.name, "address": user.address, "zipcode": user.zipcode })
             return jsonify({ "status": "success", \
                             "user": { "user_id": user.user_id, "name": user.name, "address": user.address, "zipcode": user.zipcode } })
         else:
+            print("Wrong password")
             return jsonify({ "status": "error", "message": "Wrong password. Please try again..."})
     else:
+        print("No user")
         return jsonify({ "status": "error", "message": "There is no user with this email. Please try again..."})
     
 
@@ -118,7 +122,7 @@ def logout():
         if "address" in session:
             session["address"] = None
         flash("You logged out!")
-        print("You logged out!")
+        print("Session, log out, user_id: ", session.get("user_id"))
         return jsonify({ "status": "success" })
     else:
         print("logged out: status: error")
@@ -188,11 +192,13 @@ def join_meeting():
     user_id = data.get("user_id")
     meeting_id = data.get("meeting_id")
     meeting = crud.get_meeting_by_id(meeting_id)
+    print(user_id, " joins", meeting_id)
     if (meeting and (len(meeting.attending_guests) != meeting.max_guests) and (meeting.host_id != user_id)):
         message = crud.join_meeting(user_id, meeting_id)
         if message['status'] == 'success':
             db.session.commit()
         flash(message['message'])
+        print(message['message'])
         return jsonify(message)
     else:
         return jsonify({"status": "error", "message": "Can't find meeting or user data." })
@@ -206,6 +212,8 @@ def drop_meeting():
     user_id = data.get("user_id")
     meeting_id = data.get("meeting_id")
     message = crud.drop_meeting(user_id, meeting_id)
+    print(user_id, " drops", meeting_id)
+    print(message)
     db.session.commit()
     flash(message['message'])
     return jsonify(message)
@@ -217,6 +225,7 @@ def get_reviews_for_book():
     book_id = data.get("book_id")
     print("BOOK ", book_id)
     result = goodreads_api.get_reviews(book_id)
+    print(result)
     return jsonify(result)
 
 

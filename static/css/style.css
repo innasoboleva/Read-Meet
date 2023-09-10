@@ -408,6 +408,7 @@ a {
 
 .modal-content.meeting {
   grid-template-columns: 100%;
+  padding-bottom: 50px;
 }
 
 #overview {
@@ -433,23 +434,38 @@ a {
 button#meeting-create {
   position: absolute;
   left: 20%;
-  font-size: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+button#search-yelp-form, button#meeting-create {
   cursor: pointer;
   width: 40%;
   border: none;
   border-radius: 3px;
+  font-size: 15px;
   font-family: sans-serif;
   font-weight: 200;
   background-color: rgb(115, 142, 124);
   color: white;
   transition: background-color .1s ease-in-out,color .1s ease-in-out;
-  margin-top: 20px;
-  margin-bottom: 20px;
 }
 
-button#meeting-create:hover {
+button#meeting-create:hover, button#search-yelp-form:hover {
   background-color: #445549;
  }
+
+.red-indicator {
+  position: relative;
+  font-size: 9px;
+  color: red;
+  left: 21%;
+}
+
+.form-check-input {
+  margin-right: 5px;
+  margin-left: 20px;
+}
 
 /* Yelp table */
 

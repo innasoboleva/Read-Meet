@@ -1,28 +1,40 @@
 // creates a table displaying upcoming meetings
-function MeetingDataContainer() {
-    const [meetings, setMeetings] = React.useState([]);
-    const [user, setUser] = React.useState();
+function IndexPageContainer() {
+  const [user, setUser] = React.useState();
 
-    window.updateUser = (newUser) => {
-      setUser(newUser);
-    }
-  
-    React.useEffect(() => {
-        fetch('/api/get_current_user')
-          .then(response => response.json())
-          .then(data => {
-            setUser(data)
-            if ((data.user_id != "") && (data.user_id != null)) {
-                console.log("No user")
-                window.userIsLoggedIn();
-            }
-            else {
-                console.log("User loged in")
-                window.userIsLoggedOut();
-            }
-          })
-          .catch(error => console.error('Error fetching current user:', error));
-      }, []);
+  // nav bar built in JS updates user info
+  window.updateUser = (newUser) => {
+    setUser(newUser);
+  }
+
+  React.useEffect(() => {
+      fetch('/api/get_current_user')
+        .then(response => response.json())
+        .then(data => {
+          setUser(data)
+          if ((data.user_id != "") && (data.user_id != null)) {
+              console.log("No user")
+              window.userIsLoggedIn();
+          }
+          else {
+              console.log("User loged in")
+              window.userIsLoggedOut();
+          }
+        })
+        .catch(error => console.error('Error fetching current user:', error));
+    }, []);
+
+  return (<React.Fragment>
+            <CarouselDataContainer user={user}/>
+            <MeetingDataContainer user={user}/>
+          </React.Fragment>);
+}
+
+
+function MeetingDataContainer(props) {
+  const { user } = props;
+    const [meetings, setMeetings] = React.useState([]);
+    // const [user, setUser] = React.useState();
 
     React.useEffect(() => {
       fetch('/api/get_all_meetings')
@@ -33,7 +45,7 @@ function MeetingDataContainer() {
               }
             })
         .catch(error => console.error('Error fetching meetings:', error));
-    }, [user]);
+      }, [user]);
 
     return (
       <React.Fragment>
@@ -165,7 +177,8 @@ function MeetingRow(props) {
   }
 
 
-function CarouselDataContainer() {
+function CarouselDataContainer(props) {
+  const { user } = props;
   // fetching popular books for carousel
   const [popularBooks, setPopularBooks] = React.useState([]);
 
@@ -189,7 +202,7 @@ function CarouselDataContainer() {
     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
       <div className="carousel-inner">
           { groupBooks.map((books, index) => (
-              <CarouselItems key={index} books={books} isActive={index===1}/> // if index is 1, it will set block to active for carousel
+              <CarouselItems user={user} key={index} books={books} isActive={index===1}/> // if index is 1, it will set block to active for carousel
           ))}
       </div>
       <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -207,7 +220,7 @@ function CarouselDataContainer() {
 
 
 function CarouselItems(props) {
-  const { books, isActive } = props;
+  const { books, user, isActive } = props;
   return (
     <React.Fragment>
       <div className={`carousel-item ${isActive ? 'active' : ''}`}>
@@ -217,7 +230,7 @@ function CarouselItems(props) {
             <div key={book.ISBN} className="carousel-image">
               <ReactRouterDOM.Link key={book.ISBN} pathname={`{/books/${book.ISBN}}`} to={{
             pathname: `/books/${book.ISBN}`,
-            state: { book }
+            state: { user, book }
             }}>
                 <img src={book.image_url} className="img-fluid" alt={book.title} />
               </ReactRouterDOM.Link>

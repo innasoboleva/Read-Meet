@@ -120,14 +120,16 @@ def get_reviews(isbn):
     count_url = 0 # trying to get page url 2 times
     while count_url <= 2:
         count_url += 1
-        url = _find_page_selenium(isbn)
-        if url.get("status") == "error" and url.get("code") != 204:
+        result_from_url = _find_page_selenium(isbn)
+        if result_from_url.get("status") == "error" and result_from_url.get("code") != 204:
             print("Trying to get url for getting reviews one more time...")
             continue
+        elif result_from_url.get("code") == 204:
+            return result_from_url
         else:
             break
     
-    id = _find_book_number_selenium(url)
+    id = _find_book_number_selenium(result_from_url)
 
     reviews = None
     count_reviews = 0   # trying to get reviews 2 times
@@ -138,6 +140,8 @@ def get_reviews(isbn):
         if reviews.get("status") == "error" and reviews.get("code") != 204:
             print("Trying to get reviews one more time...")
             continue
+        elif reviews.get("code") == 204:
+            return reviews
         else:
             break
     return reviews
