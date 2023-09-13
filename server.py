@@ -4,6 +4,7 @@ from flask import Flask, render_template, jsonify, request, session, flash
 from models import connect_to_db , db, User, Meeting, Book
 import crud
 from datetime import datetime
+import pytz
 
 
 app = Flask(__name__)
@@ -27,6 +28,7 @@ def show_books_page():
 @app.route("/api/get_books")
 def get_books():
     """ Get books information with provided parameters. """
+    
     search_req = request.args.get("search", None)
     page = request.args.get("page")
     result = books_api.find_list_of_books(search_req, int(page) if page else 0)
@@ -36,7 +38,9 @@ def get_books():
 
 @app.route("/api/create_new_user", methods=["POST"])
 def create_new_user():
-    """ If user's email is not present in DB, creates new user and returns status success. If exists, returns error."""
+    """ 
+    If user's email is not present in DB, creates new user and returns status success. If exists, returns error.
+    """
     json_data = request.get_json()
     email = json_data.get("user_email")
     if crud.does_user_exist(email):
@@ -74,6 +78,7 @@ def create_new_user():
 @app.route("/api/get_current_user")
 def get_current_user():
     """ Get current user information if loged in."""
+
     user = session.get("user_id", None)
     name = session.get("name", None)
     address = session.get("address", None)
@@ -112,7 +117,7 @@ def login():
 
 @app.route("/api/logout_user")
 def logout():
-    """ Delets user from session. Returns status. 
+    """ Deletes user from session. Returns status. 
         Assums that user is not empty.
     """
     if "user_id" in session:
@@ -132,6 +137,7 @@ def logout():
 @app.route("/api/get_all_meetings")
 def get_all_active_meetings_data():
     """ Get all data from database for all meetings. """
+
     meeting_list_of_dict = []
     all_meetings = crud.get_all_active_meetings()
     if all_meetings:
@@ -147,6 +153,7 @@ def get_all_active_meetings_data():
 @app.route("/api/get_user_by_id", methods=["POST"])
 def get_user_by_id():
     """ Get user info by id. """
+
     user_id = request.get_json().get("host_id")
     if user_id:
         user = crud.get_user_by_id(user_id)
@@ -158,6 +165,7 @@ def get_user_by_id():
 @app.route("/api/get_book_by_id", methods=["POST"])
 def get_book_by_id():
     """ Get book data by id. """
+
     book_id = request.get_json().get("book_id")
     if book_id:
         book = crud.get_book_by_id(book_id)
@@ -168,6 +176,7 @@ def get_book_by_id():
 @app.route("/api/get_all_meetings_for_book", methods=["POST"])
 def get_meetings_for_book():
     """ Returns all meeting data for a book with requested id. """
+
     data = request.get_json()
     book_id = data.get("book_id")
     if book_id:
@@ -188,6 +197,7 @@ def get_meetings_for_book():
 @app.route("/api/join_meeting", methods=["POST"])
 def join_meeting():
     """ Sends request to db to join meeting. """
+
     data = request.get_json()
     user_id = data.get("user_id")
     meeting_id = data.get("meeting_id")
@@ -208,6 +218,7 @@ def join_meeting():
 @app.route("/api/drop_meeting", methods=["POST"])
 def drop_meeting():
     """ Sends request to db to drop from meeting. """
+
     data = request.get_json()
     user_id = data.get("user_id")
     meeting_id = data.get("meeting_id")
@@ -221,12 +232,14 @@ def drop_meeting():
 
 @app.route("/api/get_reviews_for_book", methods=["POST"])
 def get_reviews_for_book():
+    """
+    Gets all reviews for a given book from goodreads web-app, using selenium library.
+    """
     data = request.get_json()
     book_isbn = data.get("book_isbn")
     if book_isbn:
         print("Getting reviews for Book - ISBN ", book_isbn)
         result = goodreads_api.get_reviews(book_isbn)
-        print(result)
         return jsonify(result)
     else: # no ISBN for that book
         return jsonify({ "status": "error", "code": 204, "message": "Book was not found on Goodreads"})
@@ -235,23 +248,30 @@ def get_reviews_for_book():
 @app.route("/api/get_popular_books")
 def get_popular_books():
     """ Returns list of popular books for previous month. """
+
     books = crud.get_popular_books()
     result = [book.to_dict() for book in books]
-    print(result)
     return jsonify(result)
 
 
 @app.route("/api/create_meeting", methods=["POST"])
 def create_meeting():
     """ Creates new meeting and returns data as JSON. """
+
     data = request.get_json()
     book_id = data.get("book_id")
     print("Book_id", book_id)
     user_id = data.get("user_id")
     print("User_id: ", user_id)
     inputs = data.get("inputs")
+
     raw_day = inputs.get('day')
+    timezone = inputs.get('timezone')
     day = datetime.fromisoformat(raw_day)
+    tz = pytz.timezone(convert_tz(timezone))
+    day_tz = tz.localize(day)
+    print(day_tz)
+
     raw_offline = inputs.get('offline')
     offline = True # check for zoom meeting or in person (offline) meeting
     if raw_offline != "offline":
@@ -283,10 +303,10 @@ def create_meeting():
                                     image_url=image_url, description=description) 
             print(new_book)
             db.session.add(new_book)
-            new_meeting = Meeting.create(new_book, day, offline, host, max_guests, overview=overview, place=place, language=language)
+            new_meeting = Meeting.create(new_book, day_tz, offline, host, max_guests, overview=overview, place=place, language=language)
             db.session.add(new_meeting)
     else:
-        new_meeting = Meeting.create(book, day, offline, host, max_guests, overview=overview, place=place, language=language)
+        new_meeting = Meeting.create(book, day_tz, offline, host, max_guests, overview=overview, place=place, language=language)
         print(new_meeting)
         db.session.add(new_meeting)
     
@@ -297,7 +317,6 @@ def create_meeting():
         list_of_guests = [guest.user_id for guest in new_meeting.attending_guests]
         meeting_dict["guests_count"] = len(new_meeting.attending_guests)
         meeting_dict["guests"] = list_of_guests
-        print(meeting_dict)
         return jsonify({ "status": "success", "new_meeting": meeting_dict })
     else:
         return jsonify({"status": "error", "message": "Couldn't create new meeting, server error" })
@@ -305,6 +324,9 @@ def create_meeting():
 
 @app.route("/api/get_yelp_places", methods=["POST"])
 def get_yelp_businesses():
+    """
+    Gets information from Yelp api, all existing buisinesses for required place, starting from provided page.
+    """
     data = request.get_json()
     term = data.get("place")
     page = data.get("page", 0)
@@ -313,8 +335,58 @@ def get_yelp_businesses():
         data = yelp_api.find_places(zipcode, term, page)
         return jsonify(data)
     else:
-        print("error")
         return jsonify({ "status": "error", "message": "User is not logged in!"})
+    
+
+def convert_tz(input):
+    """
+    Converts from TZ to full name
+    """
+    utc_offsets = {
+        'UTC-12': 'Etc/GMT+12',
+        'UTC-11': 'Pacific/Midway',
+        'UTC-10': 'Pacific/Honolulu',
+        'UTC-9': 'America/Anchorage',
+        'UTC-8': 'America/Los_Angeles',
+        'UTC-7': 'America/Denver',
+        'UTC-6': 'America/Chicago',
+        'UTC-5': 'America/New_York',
+        'UTC-4': 'America/Halifax',
+        'UTC-3': 'America/Argentina/Buenos_Aires',
+        'UTC-2': 'Etc/GMT+2',
+        'UTC-1': 'Atlantic/Azores',
+        'UTC': 'Etc/UTC',
+        'UTC+1': 'Europe/Berlin',
+        'UTC+2': 'Europe/Istanbul',
+        'UTC+3': 'Europe/Moscow',
+        'UTC+3:30': 'Asia/Tehran',
+        'UTC+4': 'Asia/Dubai',
+        'UTC+4:30': 'Asia/Kabul',
+        'UTC+5': 'Asia/Karachi',
+        'UTC+5:30': 'Asia/Kolkata',
+        'UTC+5:45': 'Asia/Kathmandu',
+        'UTC+6': 'Asia/Dhaka',
+        'UTC+6:30': 'Indian/Cocos',
+        'UTC+7': 'Asia/Bangkok',
+        'UTC+8': 'Asia/Shanghai',
+        'UTC+8:45': 'Australia/Eucla',
+        'UTC+9': 'Asia/Tokyo',
+        'UTC+9:30': 'Australia/Darwin',
+        'UTC+10': 'Australia/Brisbane',
+        'UTC+10:30': 'Australia/Lord_Howe',
+        'UTC+11': 'Asia/Srednekolymsk',
+        'UTC+11:30': 'Pacific/Norfolk',
+        'UTC+12': 'Pacific/Fiji',
+        'UTC+12:45': 'Pacific/Chatham',
+        'UTC+13': 'Pacific/Enderbury',
+        'UTC+14': 'Pacific/Kiritimati'
+    }
+    
+    correct_tz_name = utc_offsets.get(input)
+    if correct_tz_name:
+        return correct_tz_name
+    return None
+
 
 
 if __name__ == "__main__":

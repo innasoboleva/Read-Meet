@@ -6,7 +6,7 @@ function BookDetailsPage(props) {
     const [user, setUser] = React.useState();
 
     // nav bar built in JS updates user info
-    window.updateUser = (newUser) => {
+    window.updateUserOnDetailsPage = (newUser) => {
       console.log("User state changed, new user: ", newUser)
       setUser(newUser);
     }
@@ -105,10 +105,11 @@ function BookDetailsPage(props) {
 
         const formInputs = {
           day: document.querySelector('#day').value,
+          timezone: document.querySelector('#timezone').value,
           offline: document.querySelector('input[type="radio"]:checked').id,
           language: document.querySelector('#languages').value,
           overview: document.querySelector('#overview').value,
-          place: document.querySelector('#autocomplete').value,
+          place: document.querySelector('#autocomplete-address').value,
           max_guests: document.querySelector('#max-guests').value,
         };
 
@@ -271,11 +272,18 @@ function BookDetailsPage(props) {
             .catch(error => console.error('Error dropping meeting:', error));
         };
         }
+
+    // converting date of meeting from UTC to local user's time
+    const date = new Date(meeting.date);
+    // the user's local timezone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const options = { timeZone: userTimeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    const localDateString = date.toLocaleDateString('en-US', options);
   
     return (
       <tr>
-        <td>{meeting.date}</td>
-        <td>{meeting.place}</td>
+        <td>{localDateString}</td>
+        <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
         <td>{meeting.host_name}</td>
         <td>{guestsCount}/{meeting.max_guests}</td>
         <td>
@@ -383,10 +391,23 @@ function BookDetailsPage(props) {
     const [hideCreateButton, setHideCreateButton] = React.useState(true);
 
     // for expanding yelp search form 
-    const toggleYelpForm = () => {
+    const toggleYelpForm = (env) => {
+      env.preventDefault();
+      console.log("Yelp form toggled: ", expanded);
       setExpanded(!expanded);
-    }
+    };
 
+    const yelpError = () => {
+      document.querySelector('#error-message-yelp').innerText = "No information on Yelp for your zipcode";
+      setExpanded(false);
+    };
+
+    const updateAddressInForm = (name, address) => {
+      document.querySelector('#autocomplete-address').value = `${name}, ${address}`;
+      console.log(address);
+      setExpanded(false);
+    };
+ 
     React.useEffect(() => {
       console.log(user)
       if (user && user.user_id != null) {
@@ -430,6 +451,51 @@ function BookDetailsPage(props) {
                                   name="day"
                                   required />
                           </div>
+
+                          <div className="element">
+                            <select id="timezone">
+
+                              <option value="UTC-12">(UTC-12:00) International Date Line West</option>
+                              <option value="UTC-11">(UTC-11:00) Coordinated Universal Time-11</option>
+                              <option value="UTC-10">(UTC-10:00) Hawaii</option>
+                              <option value="UTC-9">(UTC-09:00) Alaska</option>
+                              <option value="UTC-8">(UTC-08:00) Pacific Time (US & Canada)</option>
+                              <option value="UTC-7">(UTC-07:00) Arizona</option>
+                              <option value="UTC-6">(UTC-06:00) Central Time (US & Canada)</option>
+                              <option value="UTC-5">(UTC-05:00) Eastern Time (US & Canada)</option>
+                              <option value="UTC-4">(UTC-04:00) Atlantic Time (Canada)</option>
+                              <option value="UTC-3">(UTC-03:00) Greenland</option>
+                              <option value="UTC-2">(UTC-02:00) Mid-Atlantic</option>
+                              <option value="UTC-1">(UTC-01:00) Azores</option>
+                              <option value="UTC">(UTC) Coordinated Universal Time</option>
+                              <option value="UTC+1">(UTC+01:00) Central European Time</option>
+                              <option value="UTC+2">(UTC+02:00) Eastern European Time</option>
+                              <option value="UTC+3">(UTC+03:00) Moscow Time</option>
+                              <option value="UTC+3:30">(UTC+03:30) Iran Time</option>
+                              <option value="UTC+4">(UTC+04:00) Gulf Standard Time</option>
+                              <option value="UTC+4:30">(UTC+04:30) Afghanistan</option>
+                              <option value="UTC+5">(UTC+05:00) Pakistan Lahore Time</option>
+                              <option value="UTC+5:30">(UTC+05:30) India Standard Time</option>
+                              <option value="UTC+5:45">(UTC+05:45) Nepal Time</option>
+                              <option value="UTC+6">(UTC+06:00) Bangladesh Standard Time</option>
+                              <option value="UTC+6:30">(UTC+06:30) Cocos Islands Time</option>
+                              <option value="UTC+7">(UTC+07:00) Indochina Time</option>
+                              <option value="UTC+8">(UTC+08:00) China Taiwan Time</option>
+                              <option value="UTC+8:45">(UTC+08:45) Australia Eucla Time</option>
+                              <option value="UTC+9">(UTC+09:00) Japan Standard Time</option>
+                              <option value="UTC+9:30">(UTC+09:30) Australia Central Time</option>
+                              <option value="UTC+10">(UTC+10:00) Australia Eastern Time</option>
+                              <option value="UTC+10:30">(UTC+10:30) Lord Howe Island Time</option>
+                              <option value="UTC+11">(UTC+11:00) Srednekolymsk Time</option>
+                              <option value="UTC+11:30">(UTC+11:30) Norfolk Island Time</option>
+                              <option value="UTC+12">(UTC+12:00) New Zealand Standard Time</option>
+                              <option value="UTC+12:45">(UTC+12:45) Chatham Islands Time</option>
+                              <option value="UTC+13">(UTC+13:00) Phoenix Islands Time</option>
+                              <option value="UTC+14">(UTC+14:00) Line Islands Time</option>
+
+                            </select>
+                          </div>
+
                           <div className="radio-buttons">
                               <input className="form-check-input" type="radio" name="meetingOption" id="zoom" />
                               <label className="form-check-label" htmlFor="zoom">
@@ -472,15 +538,16 @@ function BookDetailsPage(props) {
                           </div>
                           <div className="element">
                           <label htmlFor="place">
-                                  Add address for a place to meet:<span className="red-indicator">*required</span>
+                                  Add address and name for a place to meet:<span className="red-indicator">*required</span>
                           </label>
-                            <input type="text" id="autocomplete"/>
+                            <input type="text" id="autocomplete-address"/>
                           </div>
                           <div>
                             <button id="search-yelp-form" onClick={toggleYelpForm}>Or let's look for a place!</button>
                           </div>
+                          <div className="message" id="error-message-yelp"></div>
                           {expanded && (
-                            <YelpSearchForm expanded={expanded}/>
+                            <YelpSearchForm expanded={expanded} yelpError={yelpError} updateAddressInForm={updateAddressInForm}/>
                           )}
                           
                           <button className="btn btn-success" id="meeting-create"  disabled={hideCreateButton} onClick={handleSubmit}>Create!</button>
@@ -496,7 +563,7 @@ function BookDetailsPage(props) {
 
   
   function YelpSearchForm(props) {
-    const { expanded } = props;
+    const { expanded, yelpError, updateAddressInForm } = props;
     const [places, setPlaces] = React.useState([]);
     const [newSearch, setNewSearch] = React.useState("");
     const [page, setPage] = React.useState(0);
@@ -579,6 +646,7 @@ function BookDetailsPage(props) {
           .then(response => response.json())
           .then(data => {
             if (data["status"] === "success") {
+              document.querySelector('#error-message-yelp').innerText = "";
                 if (!clean) {
                     setPlaces(prevPlaces => [...prevPlaces, ...data["places"]]); 
                     setIsLoading(false);
@@ -587,9 +655,16 @@ function BookDetailsPage(props) {
                     setPage(0);
                     setClean(false);
                 }
+            } else {
+              console.log("Yelp form ERRRROR, toggling... ", expanded);
+              yelpError(true);
             }
           })
-          .catch(error => console.error('Error getting businesses from Yelp API:', error));
+          .catch((error) => {
+            console.error('Error getting businesses from Yelp API:', error)
+            console.log("Yelp form very big ERRRROR, toggling... ", expanded);
+            yelpError(true);
+          });
     
           return () => {
             // cancel the request before component unmounts
@@ -606,7 +681,7 @@ function BookDetailsPage(props) {
                 <button id="search-yelp-button" onClick={handleYelpSearch}>Search</button>
               </div> { places.map((place, index) => (
                 <div className="container">
-                <YelpRow key={place.id} place={place} index={index}/>
+                <YelpRow key={place.id} place={place} index={index} updateAddressInForm={updateAddressInForm}/>
                 </div>
               ))}
                {isLoading && <p>Loading...</p>}
@@ -616,15 +691,15 @@ function BookDetailsPage(props) {
 
   
   function YelpRow(props) {
-    const { place, index } = props;
+    const { place, index, updateAddressInForm } = props;
 
     return (<React.Fragment>
       <div className="row yelp-row">
-        <div className="col-4 square-image">
+        <div className="col-4 square-image" onClick={() => updateAddressInForm(place.name, place.address)}>
             <img src={place.image}></img>
         </div>
         <div className="col-8 d-flex yelp-text">
-            <span className="yelp-name">{index + 1}. {place.name}<p className="yelp-rating">{place.rating}&#9733;</p></span>
+            <span className="yelp-name" onClick={() => updateAddressInForm(place.name, place.address)}>{index + 1}. {place.name}<p className="yelp-rating">{place.rating}&#9733;</p></span>
             <span className="yelp-address">{place.address}</span>
             <div className="yelp-url"><a link={place.url}>Check hours and reviews here</a></div>
         </div>

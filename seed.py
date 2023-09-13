@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 import random
 import string
+import pytz
 
 import models, server
 from apis import books_api, goodreads_api
@@ -70,10 +71,13 @@ for user in users:
 # creates meetings
 books = models.Book.query.all()
 for index, user in enumerate(users):
-    date_now = datetime.now().date() + timedelta(days=1) # adding one more day to now
+    date_now = datetime.now() + timedelta(days=1) # adding one more day to now
+    nyc = pytz.timezone('America/New_York')
+    date_localized = nyc.localize(date_now)
+
     random_book = books[random.randint(0, len(books) - 1)]
     random_guests_num = random.randint(5, 25)
-    new_meeting = models.Meeting.create(random_book, date_now, True, user, random_guests_num) # book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"
+    new_meeting = models.Meeting.create(random_book, date_localized, True, user, random_guests_num) # book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"
     models.db.session.add(new_meeting)
     random_guests = random.randint(0, random_guests_num)
     for _ in range(random_guests):

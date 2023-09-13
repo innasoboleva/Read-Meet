@@ -168,8 +168,8 @@ form.signin {
 .message {
   color: red;
   font-weight: 200;
+  max-width: 400px;
 }
-
 
 
 /* Styling the modal image */
@@ -423,7 +423,7 @@ a {
   padding-bottom: 10px;
 }
 
-#autocomplete {
+#autocomplete-address {
   height: 30px;
   padding-left: 10px;
   border-radius: 4px;
@@ -521,4 +521,8 @@ button#meeting-create:hover, button#search-yelp-form:hover {
 
 .yelp-url:hover {
   color:#3e867c;
+}
+
+.yelp-row img, .yelp-name{
+  cursor: pointer;
 }

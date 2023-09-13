@@ -51,4 +51,4 @@ def find_places(zipcode, type, page=0):
         else:
             return { 'status': 'error', 'code': 204, 'message': 'Yelp could not find any results' }
     else:
-        return { 'status': 'error', 'code': 404, 'message': 'Could not get Yelp data, server does not respond.' }
+        return { 'status': 'error', 'code': 404, 'message': 'Could not get Yelp data.' }

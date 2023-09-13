@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+from datetime import datetime
+import re
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 db = SQLAlchemy()
 
@@ -74,7 +77,8 @@ class Meeting(db.Model):
 
     meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('meeting_id_seq')"))
     book_id = db.Column(db.String, db.ForeignKey("books.book_id"), nullable=False)
-    day = db.Column(db.DateTime, nullable=False)
+    # day = db.Column(db.DateTime, nullable=False)
+    day = db.Column(TIMESTAMP(timezone=True), nullable=False)
     place = db.Column(db.String)
     address = db.Column(db.String)
     offline = db.Column(db.Boolean, nullable=False)
@@ -97,7 +101,9 @@ class Meeting(db.Model):
     
     def to_dict(self):
         """ Returns data of an instance in a dictionary. """
-        return { "id": self.meeting_id, "book_id": self.book_id, "date": self.day, \
+        meeting_date = str(self.day)
+
+        return { "id": self.meeting_id, "book_id": self.book_id, "date": meeting_date, \
                 "place": self.place, "address": self.address, "offline": self.offline, \
                     "language": self.language, "video": self.video_note, \
                         "overview": self.overview, "host_id": self.host_id, "max_guests": self.max_guests, "host_name": self.host.name }

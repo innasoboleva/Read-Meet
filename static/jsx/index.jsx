@@ -13,11 +13,11 @@ function IndexPageContainer() {
         .then(data => {
           setUser(data)
           if ((data.user_id != "") && (data.user_id != null)) {
-              console.log("No user")
+              console.log("User logged in")
               window.userIsLoggedIn();
           }
           else {
-              console.log("User loged in")
+              console.log("No user")
               window.userIsLoggedOut();
           }
         })
@@ -26,6 +26,8 @@ function IndexPageContainer() {
 
   return (<React.Fragment>
             <CarouselDataContainer user={user}/>
+            <UsersHostDataContainer user={user} />
+            <UsersGuestDataContainer user={user} />
             <MeetingDataContainer user={user}/>
           </React.Fragment>);
 }
@@ -37,6 +39,7 @@ function MeetingDataContainer(props) {
     // const [user, setUser] = React.useState();
 
     React.useEffect(() => {
+      console.log("User got updated, re-rendering..")
       fetch('/api/get_all_meetings')
         .then(response => response.json())
         .then(data => {
@@ -56,10 +59,9 @@ function MeetingDataContainer(props) {
               <th scope="col">Book</th>
               <th scope="col">Day</th>
               <th scope="col">Place</th>
-              <th scope="col">Offline</th>
               <th scope="col">Few words</th>
               <th scope="col">Video note</th>
-              <th scope="col">Language (English, if not specified)</th>
+              <th scope="col">Language</th>
               <th scope="col">Host</th>
               <th scope="col"> Guests (max specified)</th>
               <th scope="col"></th>
@@ -78,7 +80,6 @@ function MeetingDataContainer(props) {
 // each row of a meeting table
 function MeetingRow(props) {
     const { meeting, user } = props;
-    // const [host, setHost] = React.useState({});
     const [book, setBook] = React.useState({});
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(true);
@@ -93,7 +94,8 @@ function MeetingRow(props) {
     }, [guestsCount])
     
     React.useEffect(() => {
-      if ((user.user_id == null) || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
+      console.log("User", user.user_id)
+      if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
         // user is a host, disable buttons
         setHideJoinButton(true);
         setHideDropButton(true);
@@ -155,12 +157,20 @@ function MeetingRow(props) {
         };
         }
 
+
+    // converting date of meeting from UTC to local user's time
+    // const date = new Date(meeting.date);
+    // the user's local timezone
+    // const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // const options = { timeZone: userTimeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    // const localDateString = date.toLocaleDateString('en-US', options);
+    const localDateString = convertDate(meeting.date);
+
     return (
       <tr>
         <td>{book.title}, <br></br>by {book.authors}</td>
-        <td>{meeting.date}</td>
-        <td>{meeting.place}</td>
-        <td>{meeting.offline}</td>
+        <td>{localDateString}</td>
+        <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
         <td>{meeting.overview}</td>
         <td>{meeting.video}</td>
         <td>{meeting.language}</td>
@@ -241,4 +251,142 @@ function CarouselItems(props) {
        </div>
     </React.Fragment>
   )
+}
+
+
+function UsersHostDataContainer(props) {
+  const { user } = props;
+  const [meetings, setMeetings] = React.useState([]);
+
+  React.useEffect(() => {
+    fetch('/api/get_hosted_meetings_for_user')
+      .then(response => response.json())
+      .then(data => {
+          if (data) {
+              setMeetings(data);
+            }
+          })
+      .catch(error => console.error('Error fetching meetings:', error));
+    }, [user]);
+
+  return (
+    <React.Fragment>
+      <h2>Your Hosted Meetings</h2>
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Book</th>
+            <th scope="col">Day</th>
+            <th scope="col">Place</th>
+            <th scope="col"> Guests (max specified)</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          { meetings.map((meeting) => (
+            <UserHostMeetingRow key={meeting.id} meeting={meeting} user={user} />
+          ))}
+        </tbody>
+      </table>
+    </React.Fragment>
+  );
+}
+
+
+function UserHostMeetingRow(props) {
+
+  const { meeting, user } = props;
+
+  const meeting_date = convertDate(meeting.date);
+
+  const deleteMeeting = () => {
+    console.log("Deleting meeting...")
+  };
+
+  return (
+    <tr>
+      {/* <td>{book.title}, <br></br>by {book.authors}</td> */}
+      <td>{meeting_date}</td>
+      <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
+      <td>{guestsCount}/{meeting.max_guests}</td>
+      <td>
+          <button id="button-delete" className="btn btn-success" onClick={deleteMeeting}>Cancel</button>
+      </td>
+    </tr>
+  );
+}
+
+
+function UsersGuestDataContainer(props) {
+  const { user } = props;
+  const [meetings, setMeetings] = React.useState([]);
+
+  // React.useEffect(() => {
+  //   fetch('/api/get_guest_meetings_for_user')
+  //     .then(response => response.json())
+  //     .then(data => {
+  //         if (data) {
+  //             setMeetings(data);
+  //           }
+  //         })
+  //     .catch(error => console.error('Error fetching meetings:', error));
+  //   }, [user]);
+
+  return (
+    <React.Fragment>
+      <h2>Your Guest Meetings</h2>
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Book</th>
+            <th scope="col">Day</th>
+            <th scope="col">Place</th>
+            <th scope="col"> Guests (max specified)</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          { meetings.map((meeting) => (
+            <UserGuestMeetingRow key={meeting.id} meeting={meeting} user={user} />
+          ))}
+        </tbody>
+      </table>
+    </React.Fragment>
+  );
+}
+
+function UserGuestMeetingRow(props) {
+  const { meeting, user } = props;
+
+  const meeting_date = convertDate(meeting.date);
+
+  const dropMeeting = () => {
+    console.log("Dropping meeting...")
+  };
+
+  return (
+    <tr>
+      {/* <td>{book.title}, <br></br>by {book.authors}</td> */}
+      <td>{meeting_date}</td>
+      <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
+      <td>{guestsCount}/{meeting.max_guests}</td>
+      <td>
+          <button id="button-drop" className="btn btn-success" onClick={dropMeeting}>Drop</button>
+      </td>
+    </tr>
+  );
+}
+
+
+function convertDate(day) {
+  if (day != null) {
+    // converting date of meeting from UTC to local user's time
+    const date = new Date(day);
+    // the user's local timezone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const options = { timeZone: userTimeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    const localDateString = date.toLocaleDateString('en-US', options);
+    return localDateString
+  }
+  return ""
 }
