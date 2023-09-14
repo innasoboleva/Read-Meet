@@ -15,7 +15,7 @@ a {
   background-color: rgb(235, 227, 212);
 }
 
-#nav-search-input {
+#nav-search-input, #search-yelp {
   padding: 5px 35px 5px 15px;
   background-color: white;
   border-radius: 15px;
@@ -56,7 +56,7 @@ button#sgn:hover {
 } */
 
 /* Styling for sign-ins and sing-ups */
-.modal-content {
+.modal-content-sign {
   display: grid;
   grid-template-columns: 200px 1fr; 
   gap: 20px; 
@@ -438,7 +438,7 @@ button#meeting-create {
   margin-bottom: 20px;
 }
 
-button#search-yelp-form, button#meeting-create {
+button#search-yelp-form, button#meeting-create, button#search-yelp-button {
   cursor: pointer;
   width: 40%;
   border: none;
@@ -451,7 +451,7 @@ button#search-yelp-form, button#meeting-create {
   transition: background-color .1s ease-in-out,color .1s ease-in-out;
 }
 
-button#meeting-create:hover, button#search-yelp-form:hover {
+button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-button:hover {
   background-color: #445549;
  }
 
@@ -525,4 +525,14 @@ button#meeting-create:hover, button#search-yelp-form:hover {
 
 .yelp-row img, .yelp-name{
   cursor: pointer;
+}
+
+#yelp-search-button {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+/* Modal popup for deleting meetings */
+.modal-footer-alert {
+  justify-content: center;
 }

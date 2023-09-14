@@ -390,6 +390,12 @@ function BookDetailsPage(props) {
     const [expanded, setExpanded] = React.useState(false);
     const [hideCreateButton, setHideCreateButton] = React.useState(true);
 
+    // changing yelp form button label
+    React.useEffect(() => {
+      const text = expanded ? "Hide Yelp search" : "Or let's look for a place!";
+      document.querySelector('#search-yelp-form').innerText = text;
+    }, [expanded]);
+
     // for expanding yelp search form 
     const toggleYelpForm = (env) => {
       env.preventDefault();
@@ -675,7 +681,6 @@ function BookDetailsPage(props) {
     
     return (<React.Fragment>
             <div className="yelp-form">
-              <p>Yelp Search!</p>
               <div className="element">
                 <input type="search" id="search-yelp" />
                 <button id="search-yelp-button" onClick={handleYelpSearch}>Search</button>

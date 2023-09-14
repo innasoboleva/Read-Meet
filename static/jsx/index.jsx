@@ -67,11 +67,15 @@ function MeetingDataContainer(props) {
               <th scope="col"></th>
             </tr>
           </thead>
+          {meetings.length === 0 ? (
+        <tbody><tr><td>No meetings to display.</td></tr></tbody>
+      ) : (
           <tbody>
             { meetings.map((meeting) => (
               <MeetingRow key={meeting.id} meeting={meeting} user={user} />
             ))}
           </tbody>
+      )}
         </table>
       </React.Fragment>
     );
@@ -80,7 +84,6 @@ function MeetingDataContainer(props) {
 // each row of a meeting table
 function MeetingRow(props) {
     const { meeting, user } = props;
-    const [book, setBook] = React.useState({});
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(true);
     const [hideDropButton, setHideDropButton] = React.useState(true);
@@ -107,16 +110,7 @@ function MeetingRow(props) {
         setHideJoinButton(false);
         setHideDropButton(true);
       };
-      
-      fetch('/api/get_book_by_id', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "book_id": meeting.book_id }),
-      })
-        .then(response => response.json())
-        .then(data => setBook(data))
-        .catch(error => console.error('Error fetching book:', error));
-    }, [meeting]);
+    });
 
     const joinMeeting = () => {
       console.log(`${meeting.id}`)
@@ -135,8 +129,8 @@ function MeetingRow(props) {
               }
           })
           .catch(error => console.error('Error joining meeting:', error));
-      };
       }
+      };
       
       const dropMeeting = () => {
         if (user.user_id && (user.user_id != meeting.host_id)) {
@@ -154,21 +148,14 @@ function MeetingRow(props) {
                 }
             })
             .catch(error => console.error('Error dropping meeting:', error));
-        };
         }
+        };
 
-
-    // converting date of meeting from UTC to local user's time
-    // const date = new Date(meeting.date);
-    // the user's local timezone
-    // const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // const options = { timeZone: userTimeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    // const localDateString = date.toLocaleDateString('en-US', options);
     const localDateString = convertDate(meeting.date);
 
-    return (
+    return (<React.Fragment>
       <tr>
-        <td>{book.title}, <br></br>by {book.authors}</td>
+        <td>{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
         <td>{localDateString}</td>
         <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
         <td>{meeting.overview}</td>
@@ -183,6 +170,7 @@ function MeetingRow(props) {
             <button id="button-drop" className="btn btn-warning" disabled={hideDropButton} onClick={dropMeeting}>Drop</button>
         </td>
       </tr>
+      </React.Fragment>
     );
   }
 
@@ -210,11 +198,15 @@ function CarouselDataContainer(props) {
   return (
     <React.Fragment>
     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+    {groupBooks.length === 0 ? (
+        <span>No books to display.</span>
+      ) : (
       <div className="carousel-inner">
           { groupBooks.map((books, index) => (
               <CarouselItems user={user} key={index} books={books} isActive={index===1}/> // if index is 1, it will set block to active for carousel
           ))}
       </div>
+      )}
       <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
         <span className="carousel-control-prev-icon" aria-hidden="true"></span>
         <span className="visually-hidden">Previous</span>
@@ -234,6 +226,9 @@ function CarouselItems(props) {
   return (
     <React.Fragment>
       <div className={`carousel-item ${isActive ? 'active' : ''}`}>
+      {books.length === 0 ? (
+        <span>No books to display.</span>
+      ) : (
         <div className="carousel-img-block d-flex justify-content-between">
           { books.map((book) => (
             
@@ -248,6 +243,7 @@ function CarouselItems(props) {
           ))}
           
           </div>
+      )}
        </div>
     </React.Fragment>
   )
@@ -256,14 +252,49 @@ function CarouselItems(props) {
 
 function UsersHostDataContainer(props) {
   const { user } = props;
+  const modalRef = React.useRef(null);
+  const [showModal, setShowModal] = React.useState(false);
   const [meetings, setMeetings] = React.useState([]);
+
+
+  React.useEffect(() => {
+    // showing/hiding modal alert for cancelling meeting
+    const modalElement = modalRef.current;
+
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+
+      if (showModal) {
+        modal.show();
+      }
+      // hide() doesn't do anything here, closing modal using html button attr
+    }
+  }, [showModal]);
+
+
+  const showAlertModal = (meeting, meetingDate) => {
+    document.querySelector('#modal-body-alert-text').innerHTML = `<p>${meeting.book_title} by ${meeting.book_authors}</p><p>on ${meetingDate}</p>`
+    setShowModal(true);
+    
+  };
+
+  const deleteMeeting = () => {
+    console.log("Deleting meeting...")
+    setShowModal(false);
+  };
+
+  const cancelDelete = () => {
+    console.log("Canceled deleting meeting...")
+    setShowModal(false);
+  };
 
   React.useEffect(() => {
     fetch('/api/get_hosted_meetings_for_user')
       .then(response => response.json())
       .then(data => {
-          if (data) {
-              setMeetings(data);
+        console.log("Hosting: ", data);
+          if (data.status == "success" && data.meetings.length > 0) {
+              setMeetings(data.meetings);
             }
           })
       .catch(error => console.error('Error fetching meetings:', error));
@@ -272,6 +303,7 @@ function UsersHostDataContainer(props) {
   return (
     <React.Fragment>
       <h2>Your Hosted Meetings</h2>
+       <ModalAlert deleteMeeting={deleteMeeting} cancelDelete={cancelDelete} modalRef={modalRef}/>
       <table className="table table-hover">
         <thead>
           <tr>
@@ -282,11 +314,15 @@ function UsersHostDataContainer(props) {
             <th scope="col"></th>
           </tr>
         </thead>
+        {meetings.length === 0 ? (
+        <tbody><tr><td>No meetings to display.</td></tr></tbody>
+      ) : (
         <tbody>
           { meetings.map((meeting) => (
-            <UserHostMeetingRow key={meeting.id} meeting={meeting} user={user} />
+            <UserHostMeetingRow key={meeting.id} meeting={meeting} showAlertModal={showAlertModal}/>
           ))}
         </tbody>
+      )}
       </table>
     </React.Fragment>
   );
@@ -294,25 +330,21 @@ function UsersHostDataContainer(props) {
 
 
 function UserHostMeetingRow(props) {
+  const { meeting, showAlertModal } = props;
 
-  const { meeting, user } = props;
+  const meetingDate = convertDate(meeting.date);
 
-  const meeting_date = convertDate(meeting.date);
-
-  const deleteMeeting = () => {
-    console.log("Deleting meeting...")
-  };
-
-  return (
+  return (<React.Fragment>
     <tr>
-      {/* <td>{book.title}, <br></br>by {book.authors}</td> */}
-      <td>{meeting_date}</td>
+      <td>{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
+      <td>{meetingDate}</td>
       <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
-      <td>{guestsCount}/{meeting.max_guests}</td>
+      <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>
-          <button id="button-delete" className="btn btn-success" onClick={deleteMeeting}>Cancel</button>
+          <button id="button-delete" className="btn btn-secondary" onClick={() => showAlertModal(meeting, meetingDate)}>Cancel</button>
       </td>
     </tr>
+    </React.Fragment>
   );
 }
 
@@ -321,16 +353,17 @@ function UsersGuestDataContainer(props) {
   const { user } = props;
   const [meetings, setMeetings] = React.useState([]);
 
-  // React.useEffect(() => {
-  //   fetch('/api/get_guest_meetings_for_user')
-  //     .then(response => response.json())
-  //     .then(data => {
-  //         if (data) {
-  //             setMeetings(data);
-  //           }
-  //         })
-  //     .catch(error => console.error('Error fetching meetings:', error));
-  //   }, [user]);
+  React.useEffect(() => {
+    fetch('/api/get_guest_meetings_for_user')
+      .then(response => response.json())
+      .then(data => {
+        console.log("Guest:", data)
+          if (data.status == "success" && data.meetings.length > 0) {
+              setMeetings(data.meetings);
+            }
+          })
+      .catch(error => console.error('Error fetching meetings:', error));
+    }, [user]);
 
   return (
     <React.Fragment>
@@ -345,35 +378,74 @@ function UsersGuestDataContainer(props) {
             <th scope="col"></th>
           </tr>
         </thead>
-        <tbody>
+        
+        {meetings.length === 0 ? (<tbody><tr><td>No meetings to display.</td></tr></tbody>
+          ) : (
+            <tbody>
           { meetings.map((meeting) => (
-            <UserGuestMeetingRow key={meeting.id} meeting={meeting} user={user} />
+            <UserGuestMeetingRow key={meeting.id} meeting={meeting} />
           ))}
-        </tbody>
+          </tbody>
+        )}
       </table>
     </React.Fragment>
   );
 }
 
 function UserGuestMeetingRow(props) {
-  const { meeting, user } = props;
-
-  const meeting_date = convertDate(meeting.date);
+  const { meeting } = props;
+  const meetingDate = convertDate(meeting.date);
 
   const dropMeeting = () => {
     console.log("Dropping meeting...")
   };
 
-  return (
+  return (<React.Fragment>
     <tr>
-      {/* <td>{book.title}, <br></br>by {book.authors}</td> */}
-      <td>{meeting_date}</td>
+      <td>{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
+      <td>{meetingDate}</td>
       <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
-      <td>{guestsCount}/{meeting.max_guests}</td>
+      <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>
           <button id="button-drop" className="btn btn-success" onClick={dropMeeting}>Drop</button>
       </td>
     </tr>
+    </React.Fragment>
+  );
+}
+
+
+function ModalAlert(props) {
+  const { deleteMeeting, cancelDelete, modalRef } = props;
+
+  return (<React.Fragment>
+      <div className="modal" id="modal-alert" tablindex="-1" role="dialog" aria-labelledby="modalAlert"
+      aria-hidden="true" ref={modalRef}>
+      <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+              <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+            <div className="modal-body" id="modal-body-alert">
+              <div className="modal-title">
+              <h3>Confirmation</h3></div>
+                <h5>Do you really want to delete this meeting?</h5><br></br>
+                <div id="modal-body-alert-text"></div>
+            </div>
+            
+            <div className="modal-footer modal-footer-alert">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" onClick={cancelDelete}>
+                No
+              </button>
+              <button type="button" className="btn btn-danger" data-bs-dismiss="modal" aria-label="Close" onClick={deleteMeeting}>
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </React.Fragment>
   );
 }
 

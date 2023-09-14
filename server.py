@@ -28,7 +28,7 @@ def show_books_page():
 @app.route("/api/get_books")
 def get_books():
     """ Get books information with provided parameters. """
-    
+
     search_req = request.args.get("search", None)
     page = request.args.get("page")
     result = books_api.find_list_of_books(search_req, int(page) if page else 0)
@@ -192,6 +192,46 @@ def get_meetings_for_book():
         return jsonify({ "status": "success", "meetings": meeting_list_of_dict})
     else: 
         return jsonify({ "status": "error", "message": f"Couldn't get any meetings data for {book_id}."})
+    
+
+@app.route("/api/get_hosted_meetings_for_user")
+def get_host_meetings():
+    """ Returns all HOST meeting data for a user. """
+
+    user_id = session.get("user_id")
+    if user_id:
+        meetings = crud.get_host_meetings(user_id)
+        meeting_list_of_dict = []
+        if meetings:
+            for meeting in meetings:
+                meeting_dict = meeting.to_dict()
+                list_of_guests = [guest.user_id for guest in meeting.attending_guests]
+                meeting_dict["guests_count"] = len(meeting.attending_guests)
+                meeting_dict["guests"] = list_of_guests
+                meeting_list_of_dict.append(meeting_dict)
+        return jsonify({ "status": "success", "meetings": meeting_list_of_dict})
+    else: 
+        return jsonify({ "status": "error", "message": "You need to log in to see your host meetings."})
+    
+
+@app.route("/api/get_guest_meetings_for_user")
+def get_guest_meetings():
+    """ Returns all GUSET meeting data for a user. """
+
+    user_id = session.get("user_id")
+    if user_id:
+        meetings = crud.get_guest_meetings(user_id)
+        meeting_list_of_dict = []
+        if meetings:
+            for meeting in meetings:
+                meeting_dict = meeting.to_dict()
+                list_of_guests = [guest.user_id for guest in meeting.attending_guests]
+                meeting_dict["guests_count"] = len(meeting.attending_guests)
+                meeting_dict["guests"] = list_of_guests
+                meeting_list_of_dict.append(meeting_dict)
+        return jsonify({ "status": "success", "meetings": meeting_list_of_dict})
+    else: 
+        return jsonify({ "status": "error", "message": "You need to log in to see your guest meetings."})
     
 
 @app.route("/api/join_meeting", methods=["POST"])

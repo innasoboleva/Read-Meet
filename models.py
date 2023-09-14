@@ -103,7 +103,8 @@ class Meeting(db.Model):
         """ Returns data of an instance in a dictionary. """
         meeting_date = str(self.day)
 
-        return { "id": self.meeting_id, "book_id": self.book_id, "date": meeting_date, \
+        return { "id": self.meeting_id, "book_id": self.book_id, "book_title": self.book.title, \
+                "book_authors": self.book.authors, "date": meeting_date, \
                 "place": self.place, "address": self.address, "offline": self.offline, \
                     "language": self.language, "video": self.video_note, \
                         "overview": self.overview, "host_id": self.host_id, "max_guests": self.max_guests, "host_name": self.host.name }
