@@ -37,7 +37,9 @@ def drop_meeting(user_id, meeting_id):
     if meeting and user:
         if user in meeting.attending_guests:
             meeting.attending_guests.remove(user)
-            return {"status": "success", "message": f"{user.name} dropped from meeting for '{meeting.book.title}' successfully!" } 
+            return {"status": "success", "message": f"{user.name} dropped from meeting for '{meeting.book.title}' successfully!" }
+        else:
+            return {"status": "error", "message": "Can't find user as a guest in this meeting" }
     else:
         return {"status": "error", "message": "Can't find meeting or user data" }
     

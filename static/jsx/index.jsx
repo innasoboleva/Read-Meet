@@ -1,6 +1,8 @@
 // creates a table displaying upcoming meetings
 function IndexPageContainer() {
   const [user, setUser] = React.useState();
+  const [meetingToAdd, setMeetingToAdd] = React.useState();
+  const [meetingToDrop, setMeetingToDrop] = React.useState();
 
   // nav bar built in JS updates user info
   window.updateUser = (newUser) => {
@@ -26,15 +28,21 @@ function IndexPageContainer() {
 
   return (<React.Fragment>
             <CarouselDataContainer user={user}/>
-            <UsersHostDataContainer user={user} />
-            <UsersGuestDataContainer user={user} />
-            <MeetingDataContainer user={user}/>
+            { (user && user.user_id != "" && user.user_id != null) ? (
+              <React.Fragment>
+                <UsersHostDataContainer user={user} /> 
+                <UsersGuestDataContainer user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} />
+              </React.Fragment>
+            ) : (
+                <div>You will see your personal meetings here if you log in </div>
+            )}
+            <MeetingDataContainer user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop}/>
           </React.Fragment>);
 }
 
 
 function MeetingDataContainer(props) {
-  const { user } = props;
+  const { user, setMeetingToAdd, setMeetingToDrop } = props;
     const [meetings, setMeetings] = React.useState([]);
     // const [user, setUser] = React.useState();
 
@@ -72,7 +80,7 @@ function MeetingDataContainer(props) {
       ) : (
           <tbody>
             { meetings.map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} user={user} />
+              <MeetingRow key={meeting.id} meeting={meeting} user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop}/>
             ))}
           </tbody>
       )}
@@ -83,10 +91,11 @@ function MeetingDataContainer(props) {
 
 // each row of a meeting table
 function MeetingRow(props) {
-    const { meeting, user } = props;
+    const { meeting, user, setMeetingToAdd, setMeetingToDrop } = props;
     // for correct displaying join meeting button and drop meeting button
-    const [hideJoinButton, setHideJoinButton] = React.useState(true);
-    const [hideDropButton, setHideDropButton] = React.useState(true);
+    const [hideJoinButton, setHideJoinButton] = React.useState(false);
+
+    const [hideDropButton, setHideDropButton] = React.useState(false);
 
     const [guestsCount, setGuestsCount] = React.useState(meeting.guests_count);
 
@@ -94,10 +103,11 @@ function MeetingRow(props) {
       if (guestsCount >= meeting.max_guests) {
         setHideJoinButton(true);
       }
+      console.log("Guest count updated show Join:", hideJoinButton);
+      console.log("Guest count updated show Drop:", hideDropButton);
     }, [guestsCount])
     
     React.useEffect(() => {
-      console.log("User", user.user_id)
       if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests) && !(meeting.guests.includes(user.user_id))) {
         // user is a host, disable buttons
         setHideJoinButton(true);
@@ -110,10 +120,12 @@ function MeetingRow(props) {
         setHideJoinButton(false);
         setHideDropButton(true);
       };
+      console.log("Initial show Join:", hideJoinButton);
+      console.log("Initial show Drop:", hideDropButton);
     });
 
     const joinMeeting = () => {
-      console.log(`${meeting.id}`)
+      
       if (user.user_id && (user.user_id != meeting.host_id)) {
         fetch('/api/join_meeting', {
           method: 'POST',
@@ -126,8 +138,9 @@ function MeetingRow(props) {
                   setHideJoinButton(true);
                   setHideDropButton(false);
                   setGuestsCount(prevGuestsCount => prevGuestsCount + 1);
-                  console.log("show Join:", hideJoinButton);
-                  console.log("show Drop:", hideDropButton);
+                  console.log("JOIN meeting - show Join:", hideJoinButton);
+                  console.log("JOIN meeting - show Drop:", hideDropButton);
+                  setMeetingToAdd(meeting);
               }
           })
           .catch(error => console.error('Error joining meeting:', error));
@@ -147,8 +160,9 @@ function MeetingRow(props) {
                     setHideDropButton(true);
                     setHideJoinButton(false);
                     setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
-                    console.log("show Join:", hideJoinButton);
-                    console.log("show Drop:", hideDropButton);
+                    console.log("DROP: show Join:", hideJoinButton);
+                    console.log("DROP: show Drop:", hideDropButton);
+                    setMeetingToDrop(meeting);
                 }
             })
             .catch(error => console.error('Error dropping meeting:', error));
@@ -262,7 +276,7 @@ function UsersHostDataContainer(props) {
 
   const [meetingToDelete, setMeetingToDelete] = React.useState();
 
-
+  console.log("User info:", user);
   React.useEffect(() => {
     // showing/hiding modal alert for cancelling meeting
     const modalElement = modalRef.current;
@@ -289,9 +303,6 @@ function UsersHostDataContainer(props) {
   const deleteMeeting = () => {
     console.log("Deleting meeting...")
     setShowModal(false);
-    // const updatedMeetings = meetings.filter(meeting => meeting.id != meetingToDelete.id);
-    // setMeetings(updatedMeetings);
-    // setMeetingToDelete(null);
 
     fetch('/api/delete_meeting', {
       method: 'POST',
@@ -324,7 +335,6 @@ function UsersHostDataContainer(props) {
     fetch('/api/get_hosted_meetings_for_user')
       .then(response => response.json())
       .then(data => {
-        console.log("Hosting: ", data);
           if (data.status == "success" && data.meetings.length > 0) {
               setMeetings(data.meetings);
             }
@@ -382,20 +392,37 @@ function UserHostMeetingRow(props) {
 
 
 function UsersGuestDataContainer(props) {
-  const { user } = props;
+  const { user, meetingToAdd, meetingToDrop } = props;
   const [meetings, setMeetings] = React.useState([]);
 
   React.useEffect(() => {
     fetch('/api/get_guest_meetings_for_user')
       .then(response => response.json())
       .then(data => {
-        console.log("Guest:", data)
           if (data.status == "success" && data.meetings.length > 0) {
               setMeetings(data.meetings);
             }
           })
       .catch(error => console.error('Error fetching meetings:', error));
     }, [user]);
+
+    React.useEffect(() => {
+      if (meetingToAdd != null) {
+          // guest count was not updated, since correct num only in db, need to update manually
+          meetingToAdd.guests_count = meetingToAdd.guests_count + 1;
+          setMeetings(prevMeetings => [...prevMeetings, meetingToAdd]);
+          console.log("New guest meetings", meetings);
+      }
+      }, [meetingToAdd]);
+
+      React.useEffect(() => {
+        if (meetingToDrop != null) {
+          const updatedMeetings = meetings.filter(meeting => meeting.id != meetingToDrop.id);
+          setMeetings(updatedMeetings);
+          console.log("New guest meetings, after drop", meetings);
+        }
+        }, [meetingToDrop]);
+
 
   return (
     <React.Fragment>
@@ -439,7 +466,7 @@ function UserGuestMeetingRow(props) {
       <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
       <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>
-          <button id="button-drop" className="btn btn-success" onClick={dropMeeting}>Drop</button>
+          <button id="button-guest-drop" className="btn btn-success" onClick={dropMeeting}>Drop</button>
       </td>
     </tr>
     </React.Fragment>
