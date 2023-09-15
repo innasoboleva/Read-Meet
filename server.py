@@ -270,6 +270,21 @@ def drop_meeting():
     return jsonify(message)
 
 
+@app.route("/api/delete_meeting", methods=["POST"])
+def delete_meeting():
+    """ Sends request to db to delete meeting. """
+
+    data = request.get_json()
+    user_id = data.get("user_id")
+    meeting_id = data.get("meeting_id")
+    meeting_to_delete = crud.get_meeting_by_id(meeting_id)
+    if meeting_to_delete and meeting_to_delete.host_id == user_id:
+        db.session.delete(meeting_to_delete)
+        db.session.commit()
+        return jsonify({ "status": "success" })
+    return jsonify({ "status": "error" })
+
+
 @app.route("/api/get_reviews_for_book", methods=["POST"])
 def get_reviews_for_book():
     """

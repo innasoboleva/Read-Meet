@@ -98,7 +98,7 @@ function MeetingRow(props) {
     
     React.useEffect(() => {
       console.log("User", user.user_id)
-      if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests)) {
+      if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests) && !(meeting.guests.includes(user.user_id))) {
         // user is a host, disable buttons
         setHideJoinButton(true);
         setHideDropButton(true);
@@ -126,14 +126,16 @@ function MeetingRow(props) {
                   setHideJoinButton(true);
                   setHideDropButton(false);
                   setGuestsCount(prevGuestsCount => prevGuestsCount + 1);
+                  console.log("show Join:", hideJoinButton);
+                  console.log("show Drop:", hideDropButton);
               }
           })
           .catch(error => console.error('Error joining meeting:', error));
       }
-      };
+    };
       
       const dropMeeting = () => {
-        if (user.user_id && (user.user_id != meeting.host_id)) {
+        if (user.user_id && (user.user_id != meeting.host_id) && meeting.guests.includes(user.user_id)) {
           fetch('/api/drop_meeting', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -145,11 +147,13 @@ function MeetingRow(props) {
                     setHideDropButton(true);
                     setHideJoinButton(false);
                     setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
+                    console.log("show Join:", hideJoinButton);
+                    console.log("show Drop:", hideDropButton);
                 }
             })
             .catch(error => console.error('Error dropping meeting:', error));
         }
-        };
+      };
 
     const localDateString = convertDate(meeting.date);
 
@@ -256,6 +260,8 @@ function UsersHostDataContainer(props) {
   const [showModal, setShowModal] = React.useState(false);
   const [meetings, setMeetings] = React.useState([]);
 
+  const [meetingToDelete, setMeetingToDelete] = React.useState();
+
 
   React.useEffect(() => {
     // showing/hiding modal alert for cancelling meeting
@@ -266,27 +272,53 @@ function UsersHostDataContainer(props) {
 
       if (showModal) {
         modal.show();
+      } else {
+        modal.hide();
       }
       // hide() doesn't do anything here, closing modal using html button attr
     }
   }, [showModal]);
 
 
-  const showAlertModal = (meeting, meetingDate) => {
+  const showAlertModal = (meeting, meetingDate) => { // showing modal alert with provided meeting info
     document.querySelector('#modal-body-alert-text').innerHTML = `<p>${meeting.book_title} by ${meeting.book_authors}</p><p>on ${meetingDate}</p>`
     setShowModal(true);
-    
+    setMeetingToDelete(meeting);
   };
 
   const deleteMeeting = () => {
     console.log("Deleting meeting...")
     setShowModal(false);
+    // const updatedMeetings = meetings.filter(meeting => meeting.id != meetingToDelete.id);
+    // setMeetings(updatedMeetings);
+    // setMeetingToDelete(null);
+
+    fetch('/api/delete_meeting', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ "meeting_id": meetingToDelete.id, "user_id": user.user_id }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status == "success") {
+            console.log("Meeting was deleted");
+            const updatedMeetings = meetings.filter(meeting => meeting.id != meetingToDelete.id);
+            setMeetings(updatedMeetings);
+            setMeetingToDelete(null);
+          }
+        })
+      .catch(error => console.error('Error fetching meetings:', error));
   };
 
   const cancelDelete = () => {
-    console.log("Canceled deleting meeting...")
     setShowModal(false);
   };
+
+
+  React.useEffect(() => {
+      console.log("Meetings updated.");
+  }, [meetings]);
+
 
   React.useEffect(() => {
     fetch('/api/get_hosted_meetings_for_user')
@@ -423,7 +455,7 @@ function ModalAlert(props) {
       aria-hidden="true" ref={modalRef}>
       <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
-              <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
+              <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={cancelDelete}>
                   <span aria-hidden="true">&times;</span>
               </button>
             <div className="modal-body" id="modal-body-alert">

@@ -40,6 +40,7 @@ def drop_meeting(user_id, meeting_id):
             return {"status": "success", "message": f"{user.name} dropped from meeting for '{meeting.book.title}' successfully!" } 
     else:
         return {"status": "error", "message": "Can't find meeting or user data" }
+    
 
 # Users
 def get_host_meetings(user_id):
