@@ -4,6 +4,8 @@ function IndexPageContainer() {
   const [meetingToAdd, setMeetingToAdd] = React.useState();
   const [meetingToDrop, setMeetingToDrop] = React.useState();
 
+  const [meetingToDropFromGuest, setMeetingToDropFromGuest] = React.useState();
+
   // nav bar built in JS updates user info
   window.updateUser = (newUser) => {
     setUser(newUser);
@@ -26,23 +28,28 @@ function IndexPageContainer() {
         .catch(error => console.error('Error fetching current user:', error));
     }, []);
 
+  const dropMeetingFromGuest = (meeting) => {
+    setMeetingToDropFromGuest(meeting);
+    setMeetingToDrop(meeting);
+  }
+
   return (<React.Fragment>
             <CarouselDataContainer user={user}/>
             { (user && user.user_id != "" && user.user_id != null) ? (
               <React.Fragment>
                 <UsersHostDataContainer user={user} /> 
-                <UsersGuestDataContainer user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} />
+                <UsersGuestDataContainer user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} dropMeetingFromGuest={dropMeetingFromGuest}/>
               </React.Fragment>
             ) : (
                 <div>You will see your personal meetings here if you log in </div>
             )}
-            <MeetingDataContainer user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop}/>
+            <MeetingDataContainer user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
           </React.Fragment>);
 }
 
 
 function MeetingDataContainer(props) {
-  const { user, setMeetingToAdd, setMeetingToDrop } = props;
+  const { user, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
     const [meetings, setMeetings] = React.useState([]);
     // const [user, setUser] = React.useState();
 
@@ -57,7 +64,7 @@ function MeetingDataContainer(props) {
             })
         .catch(error => console.error('Error fetching meetings:', error));
       }, [user]);
-
+      
     return (
       <React.Fragment>
         <h2>Upcoming Book Discussions</h2>
@@ -80,7 +87,7 @@ function MeetingDataContainer(props) {
       ) : (
           <tbody>
             { meetings.map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop}/>
+              <MeetingRow key={meeting.id} meeting={meeting} user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
             ))}
           </tbody>
       )}
@@ -91,7 +98,7 @@ function MeetingDataContainer(props) {
 
 // each row of a meeting table
 function MeetingRow(props) {
-    const { meeting, user, setMeetingToAdd, setMeetingToDrop } = props;
+    const { meeting, user, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(false);
 
@@ -105,7 +112,15 @@ function MeetingRow(props) {
       }
       console.log("Guest count updated show Join:", hideJoinButton);
       console.log("Guest count updated show Drop:", hideDropButton);
-    }, [guestsCount])
+    }, [guestsCount]);
+
+    React.useEffect(() => {
+      if (meetingToDropFromGuest != null && meetingToDropFromGuest.id === meeting.id) {
+        setHideDropButton(true);
+        setHideJoinButton(false);
+        setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
+      }
+    }, [meetingToDropFromGuest]);
     
     React.useEffect(() => {
       if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests) && !(meeting.guests.includes(user.user_id))) {
@@ -392,7 +407,7 @@ function UserHostMeetingRow(props) {
 
 
 function UsersGuestDataContainer(props) {
-  const { user, meetingToAdd, meetingToDrop } = props;
+  const { user, meetingToAdd, meetingToDrop, dropMeetingFromGuest } = props;
   const [meetings, setMeetings] = React.useState([]);
 
   React.useEffect(() => {
@@ -409,6 +424,7 @@ function UsersGuestDataContainer(props) {
     React.useEffect(() => {
       if (meetingToAdd != null) {
           // guest count was not updated, since correct num only in db, need to update manually
+          console.log("meetingToAdd", meetingToAdd)
           meetingToAdd.guests_count = meetingToAdd.guests_count + 1;
           setMeetings(prevMeetings => [...prevMeetings, meetingToAdd]);
           console.log("New guest meetings", meetings);
@@ -417,7 +433,8 @@ function UsersGuestDataContainer(props) {
 
       React.useEffect(() => {
         if (meetingToDrop != null) {
-          const updatedMeetings = meetings.filter(meeting => meeting.id != meetingToDrop.id);
+          console.log("meetingToDrop", meetingToDrop)
+          const updatedMeetings = meetings.filter(meeting => meeting.id !== meetingToDrop.id);
           setMeetings(updatedMeetings);
           console.log("New guest meetings, after drop", meetings);
         }
@@ -442,7 +459,7 @@ function UsersGuestDataContainer(props) {
           ) : (
             <tbody>
           { meetings.map((meeting) => (
-            <UserGuestMeetingRow key={meeting.id} meeting={meeting} />
+            <UserGuestMeetingRow key={meeting.id} meeting={meeting} dropMeetingFromGuest={dropMeetingFromGuest}/>
           ))}
           </tbody>
         )}
@@ -452,12 +469,8 @@ function UsersGuestDataContainer(props) {
 }
 
 function UserGuestMeetingRow(props) {
-  const { meeting } = props;
+  const { meeting, dropMeetingFromGuest } = props;
   const meetingDate = convertDate(meeting.date);
-
-  const dropMeeting = () => {
-    console.log("Dropping meeting...")
-  };
 
   return (<React.Fragment>
     <tr>
@@ -466,7 +479,7 @@ function UserGuestMeetingRow(props) {
       <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
       <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>
-          <button id="button-guest-drop" className="btn btn-success" onClick={dropMeeting}>Drop</button>
+          <button id="button-guest-drop" className="btn btn-success" onClick={() => dropMeetingFromGuest(meeting)}>Drop</button>
       </td>
     </tr>
     </React.Fragment>

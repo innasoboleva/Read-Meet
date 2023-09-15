@@ -100,7 +100,6 @@ def create_meeting(user_id, book_id, day, offline, max_guests, overview, place, 
     host = get_user_by_id(user_id)
     new_meeting = Meeting.create(book, day, offline, host, max_guests, overview=overview, place=place, language=language)
     return new_meeting
-    # book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"
 
 
 
