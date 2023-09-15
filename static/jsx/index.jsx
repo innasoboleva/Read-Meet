@@ -109,9 +109,9 @@ function MeetingRow(props) {
     React.useEffect(() => {
       if (guestsCount >= meeting.max_guests) {
         setHideJoinButton(true);
+        console.log("Guest count updated show Join:", hideJoinButton, "for meeting", meeting.id);
+        console.log("Guest count updated show Drop:", hideDropButton, "for meeting", meeting.id);
       }
-      console.log("Guest count updated show Join:", hideJoinButton);
-      console.log("Guest count updated show Drop:", hideDropButton);
     }, [guestsCount]);
 
     React.useEffect(() => {
@@ -135,8 +135,8 @@ function MeetingRow(props) {
         setHideJoinButton(false);
         setHideDropButton(true);
       };
-      console.log("Initial show Join:", hideJoinButton);
-      console.log("Initial show Drop:", hideDropButton);
+      console.log("Initial show Join:", hideJoinButton, "for meeting", meeting.id);
+      console.log("Initial show Drop:", hideDropButton, "for meeting", meeting.id);
     });
 
     const joinMeeting = () => {
@@ -153,10 +153,11 @@ function MeetingRow(props) {
                   setHideJoinButton(true);
                   setHideDropButton(false);
                   setGuestsCount(prevGuestsCount => prevGuestsCount + 1);
-                  console.log("JOIN meeting - show Join:", hideJoinButton);
-                  console.log("JOIN meeting - show Drop:", hideDropButton);
+                  console.log("JOIN meeting - show Join:", hideJoinButton, "for meeting", meeting.id);
+                  console.log("JOIN meeting - show Drop:", hideDropButton, "for meeting", meeting.id);
                   setMeetingToAdd(meeting);
               }
+              console.loe('??')
           })
           .catch(error => console.error('Error joining meeting:', error));
       }
@@ -171,14 +172,17 @@ function MeetingRow(props) {
           })
             .then(response => response.json())
             .then(data => {
+              console.log('WHAT??', data)
                 if (data && data.status == "success") {
-                    setHideDropButton(true);
-                    setHideJoinButton(false);
-                    setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
-                    console.log("DROP: show Join:", hideJoinButton);
-                    console.log("DROP: show Drop:", hideDropButton);
-                    setMeetingToDrop(meeting);
+                  console.log("I'm here doing it all...");
+                  setHideDropButton(true);
+                  setHideJoinButton(false);
+                  setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
+                  console.log("DROP: show Join:", hideJoinButton, "for meeting", meeting.id);
+                  console.log("DROP: show Drop:", hideDropButton, "for meeting", meeting.id);
+                  setMeetingToDrop(meeting);
                 }
+                console.log('WHAT??')
             })
             .catch(error => console.error('Error dropping meeting:', error));
         }
@@ -197,10 +201,10 @@ function MeetingRow(props) {
         <td>{meeting.host_name}</td>
         <td>{guestsCount}/{meeting.max_guests}</td>
         <td>
-            <button id="button-join" className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
+            <button id={`button-join-${meeting.id}`} className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
         </td>
         <td>
-            <button id="button-drop" className="btn btn-warning" disabled={hideDropButton} onClick={dropMeeting}>Drop</button>
+            <button id={`button-drop-${meeting.id}`} className="btn btn-warning" disabled={hideDropButton} onClick={dropMeeting}>Drop</button>
         </td>
       </tr>
       </React.Fragment>
@@ -479,7 +483,7 @@ function UserGuestMeetingRow(props) {
       <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
       <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>
-          <button id="button-guest-drop" className="btn btn-success" onClick={() => dropMeetingFromGuest(meeting)}>Drop</button>
+          <button id={`button--guest-drop-${meeting.id}`} className="btn btn-warning" onClick={() => dropMeetingFromGuest(meeting)}>Drop</button>
       </td>
     </tr>
     </React.Fragment>
