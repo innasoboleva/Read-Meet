@@ -237,10 +237,10 @@ a {
 }
 
 .subtitle {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 400;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  color: black;
 }
 
 .authors {

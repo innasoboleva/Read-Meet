@@ -1,3 +1,4 @@
+// Book search table
 function BooksSearchContainer() {
   const [page, setPage] = React.useState(0);
   const [books, setBooks] = React.useState([]);
@@ -81,37 +82,35 @@ function BooksSearchContainer() {
   );
   }
 
+// representing each book
+function Book(props) {
+  const { book } = props;
 
-  function Book(props) {
-    const { book } = props;
-    // const [showDetails, setShowDetails] = React.useState(false);
-    function generateRandomHue() {
-      return Math.floor(Math.random() * 361); // Generates random hue between 0 and 360
-    }
-  
-    return (
-      <React.Fragment>
-        <ReactRouterDOM.Link
-          key={book.book_id}
-          to={{
-            pathname: `/books/${book.book_id}`,
-            state: { book }
-          }}>
-        {/* <ReactRouterDOM.Link to={`/books/${book.book_id}`}> */}
-        <div className="search-book-div">
-          <div className="book-image-background" style={{ backgroundColor: `hsl(${generateRandomHue()}, 40%, 95%)`}}></div>
-            <div className="image-block">
-              <img src={book.image_url} className="img-fluid" alt={`Picture cover for ${book.title}`} />
-            </div>
-          <div className="book-contents">
-            <div className="title">{book.title}</div>
-            {/* render subtitle only if present in the book */}
-            {/* { book.subtitle ? <span className="subtitle"><br></br>{book.subtitle}</span> : null } */}
-            <div className="authors">{book.authors}</div>
-          </div>
-        </div>
-        {/* { showDetails && <BookDetails key={book.book_id} book={book} /> } */}
-        </ReactRouterDOM.Link>
-      </React.Fragment>
-    );
+  function generateRandomHue() {
+    return Math.floor(Math.random() * 361); // Generates random hue between 0 and 360
   }
+
+  return (
+    <React.Fragment>
+      <ReactRouterDOM.Link
+        key={book.book_id}
+        to={{
+          pathname: `/books/${book.book_id}`,
+          state: { book }
+        }}>
+      <div className="search-book-div">
+        <div className="book-image-background" style={{ backgroundColor: `hsl(${generateRandomHue()}, 40%, 95%)`}}></div>
+          <div className="image-block">
+            <img src={book.image_url} className="img-fluid" alt={`Picture cover for ${book.title}`} />
+          </div>
+        <div className="book-contents">
+          <div className="title">{book.title}</div>
+          {/* render subtitle if present in the book */}
+          { book.subtitle ? <span className="subtitle">{book.subtitle}</span> : <span/> }
+          <div className="authors">{book.authors}</div>
+        </div>
+      </div>
+      </ReactRouterDOM.Link>
+    </React.Fragment>
+  );
+}

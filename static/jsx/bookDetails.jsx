@@ -1,4 +1,4 @@
-
+// parent component for book details
 function BookDetailsPage(props) {
     // getting book
     const { state } = props.location;
@@ -15,10 +15,6 @@ function BookDetailsPage(props) {
       return <div>Book details not found.</div>;
     }
     const book = state.book;
-
-    // if (state.user != null) {
-    //   setUser(state.user);
-    // }
   
     const newMeeting = () => {
       setCreateMeeting(true);
@@ -65,11 +61,10 @@ function BookDetailsPage(props) {
       )
   }
   
+  // Table to show all upcoming meetings for picked book
   function BookMeetingDataContainer(props) {
     const { book, user, createMeeting, setCreateMeeting } = props;
     const [meetings, setMeetings] = React.useState([]);
-   
-    console.log("Meetings after update:", meetings);
 
     React.useEffect(() => {
       const controller = new AbortController();
@@ -99,7 +94,6 @@ function BookDetailsPage(props) {
     
     React.useEffect(() => {
       if (createMeeting) {
-        console.log("Meeting called in meeting data container")
         // Reset the state to prevent repeated actions
         setCreateMeeting(false);
 
@@ -296,7 +290,7 @@ function BookDetailsPage(props) {
     );
   }
   
-  
+  // Table for showing reviews (got from Goodreads web-app)
   function ReviewsContainer(props) {
     const { book } = props;
     const [reviews, setReviews] = React.useState([]);
@@ -345,6 +339,7 @@ function BookDetailsPage(props) {
     )
   }
   
+  // each review of Review table
   function Review(props) {
     const { review } = props;
     const [expanded, setExpanded] = React.useState(false);
@@ -376,21 +371,19 @@ function BookDetailsPage(props) {
           { overflowing ? <button className="read-more-btn" onClick={toggleExpansion}>
               {expanded ? 'Hide' : 'Read More...'}
             </button> : "" }
-            {/* <button className="read-more-btn" onClick={toggleExpansion}>
-              {expanded ? 'Hide' : 'Read More...'}
-            </button> */}
         </div>
       </React.Fragment>
     )
   }
   
+  // form for creating a new meeting
   function MeetingForm(props) {
     const { book, user, handleCreateMeeting } = props;
     const errorMessage = "";
     const [expanded, setExpanded] = React.useState(false);
     const [hideCreateButton, setHideCreateButton] = React.useState(true);
 
-    // changing yelp form button label
+    // switching labels on yelp search button
     React.useEffect(() => {
       const text = expanded ? "Hide Yelp search" : "Or let's look for a place!";
       document.querySelector('#search-yelp-form').innerText = text;
@@ -417,10 +410,8 @@ function BookDetailsPage(props) {
     React.useEffect(() => {
       console.log(user)
       if (user && user.user_id != null) {
-        console.log("Create button showing")
         setHideCreateButton(false);
       } else {
-        console.log("Create button hidden")
         setHideCreateButton(true);
       }
     }, [user]);
@@ -567,7 +558,7 @@ function BookDetailsPage(props) {
     )
   }
 
-  
+  // Form for searching places on Yelp
   function YelpSearchForm(props) {
     const { expanded, yelpError, updateAddressInForm } = props;
     const [places, setPlaces] = React.useState([]);
@@ -608,7 +599,7 @@ function BookDetailsPage(props) {
             const modalContentScrollY = modalContentElement.scrollTop;
             console.log("modalContentScrollY:", modalContentScrollY)
           if ( // changed logic of if statement to implement for modal popup scroll
-            // modalContentHeight - modalContentScrollY + 300 >= modalContentElement.offsetHeight
+            // was modalContentHeight - modalContentScrollY + 300 >= modalContentElement.offsetHeight
             modalContentScrollY + modalContentElement.offsetHeight + 300 >= modalContentHeight
           ) {
             console.log("PAGE before increment: ", page)
@@ -694,7 +685,7 @@ function BookDetailsPage(props) {
           </React.Fragment>
     )}
 
-  
+  // each row of yelp result table
   function YelpRow(props) {
     const { place, index, updateAddressInForm } = props;
 

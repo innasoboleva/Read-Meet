@@ -1,10 +1,11 @@
-// creates a table displaying upcoming meetings
+// parent component keeping track of all children
 function IndexPageContainer() {
   const [user, setUser] = React.useState();
-  const [meetingToAdd, setMeetingToAdd] = React.useState();
-  const [meetingToDrop, setMeetingToDrop] = React.useState();
+  const [meetingToAdd, setMeetingToAdd] = React.useState(null);
+  const [meetingToDrop, setMeetingToDrop] = React.useState(null);
 
-  const [meetingToDropFromGuest, setMeetingToDropFromGuest] = React.useState();
+  const [meetingToDropFromGuest, setMeetingToDropFromGuest] = React.useState(null);
+  const [meetingToDelete, setMeetingToDelete] = React.useState(null);
 
   // nav bar built in JS updates user info
   window.updateUser = (newUser) => {
@@ -30,28 +31,31 @@ function IndexPageContainer() {
 
   const dropMeetingFromGuest = (meeting) => {
     setMeetingToDropFromGuest(meeting);
-    setMeetingToDrop(meeting);
+  }
+
+  const deleteMeetingFromMeetingTable = (meeting) => {
+    setMeetingToDelete(meeting);
   }
 
   return (<React.Fragment>
             <CarouselDataContainer user={user}/>
             { (user && user.user_id != "" && user.user_id != null) ? (
               <React.Fragment>
-                <UsersHostDataContainer user={user} /> 
+                <UsersHostDataContainer user={user} deleteMeetingFromMeetingTable={deleteMeetingFromMeetingTable}/> 
                 <UsersGuestDataContainer user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} dropMeetingFromGuest={dropMeetingFromGuest}/>
               </React.Fragment>
             ) : (
                 <div>You will see your personal meetings here if you log in </div>
             )}
-            <MeetingDataContainer user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
+            <MeetingDataContainer user={user} meetingToDelete={meetingToDelete} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
           </React.Fragment>);
 }
 
-
+// table for all upcoming meeting for everyone
 function MeetingDataContainer(props) {
-  const { user, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
+  const { user, meetingToDelete, meetingToAdd, meetingToDrop, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
     const [meetings, setMeetings] = React.useState([]);
-    // const [user, setUser] = React.useState();
+
 
     React.useEffect(() => {
       console.log("User got updated, re-rendering..")
@@ -87,7 +91,7 @@ function MeetingDataContainer(props) {
       ) : (
           <tbody>
             { meetings.map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} user={user} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
+              <MeetingRow key={meeting.id} meeting={meeting} user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
             ))}
           </tbody>
       )}
@@ -98,7 +102,7 @@ function MeetingDataContainer(props) {
 
 // each row of a meeting table
 function MeetingRow(props) {
-    const { meeting, user, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
+    const { meeting, user, meetingToAdd, meetingToDrop, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(false);
 
@@ -109,34 +113,31 @@ function MeetingRow(props) {
     React.useEffect(() => {
       if (guestsCount >= meeting.max_guests) {
         setHideJoinButton(true);
-        console.log("Guest count updated show Join:", hideJoinButton, "for meeting", meeting.id);
-        console.log("Guest count updated show Drop:", hideDropButton, "for meeting", meeting.id);
       }
     }, [guestsCount]);
 
     React.useEffect(() => {
       if (meetingToDropFromGuest != null && meetingToDropFromGuest.id === meeting.id) {
-        setHideDropButton(true);
-        setHideJoinButton(false);
-        setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
+        dropMeeting();
       }
     }, [meetingToDropFromGuest]);
     
     React.useEffect(() => {
-      if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (guestsCount >= meeting.max_guests) && !(meeting.guests.includes(user.user_id))) {
-        // user is a host, disable buttons
-        setHideJoinButton(true);
-        setHideDropButton(true);
-      } else if (user.user_id && meeting.guests.includes(user.user_id)) {
-        // user is a guest, disable join
-        setHideJoinButton(true);
-        setHideDropButton(false);
-      } else {
-        setHideJoinButton(false);
-        setHideDropButton(true);
-      };
-      console.log("Initial show Join:", hideJoinButton, "for meeting", meeting.id);
-      console.log("Initial show Drop:", hideDropButton, "for meeting", meeting.id);
+      // check for initial render with no updates made yet
+      if (meetingToDropFromGuest == null && meetingToDrop == null & meetingToAdd == null) {
+        if ((user.user_id == null) || (user.user_id == "") || (user.user_id == meeting.host_id) || (meeting.guests_count >= meeting.max_guests) && !(meeting.guests.includes(user.user_id))) {
+          // user is a host, disable buttons
+          setHideJoinButton(true);
+          setHideDropButton(true);
+        } else if (user.user_id && meeting.guests.includes(user.user_id)) {
+          // user is a guest, disable join
+          setHideJoinButton(true);
+          setHideDropButton(false);
+        } else {
+          setHideJoinButton(false);
+          setHideDropButton(true);
+        };
+      }
     });
 
     const joinMeeting = () => {
@@ -150,14 +151,17 @@ function MeetingRow(props) {
           .then(response => response.json())
           .then(data => {
               if (data && data.status == "success") {
+                if (meetingToAdd == meeting) {
+                  setMeetingToAdd(null);
+                }
+                  meeting.guests.push(user.user_id) // add user_id
+                  meeting.guests_count = meeting.guests_count + 1;
                   setHideJoinButton(true);
                   setHideDropButton(false);
                   setGuestsCount(prevGuestsCount => prevGuestsCount + 1);
-                  console.log("JOIN meeting - show Join:", hideJoinButton, "for meeting", meeting.id);
-                  console.log("JOIN meeting - show Drop:", hideDropButton, "for meeting", meeting.id);
+                  
                   setMeetingToAdd(meeting);
               }
-              console.loe('??')
           })
           .catch(error => console.error('Error joining meeting:', error));
       }
@@ -172,17 +176,17 @@ function MeetingRow(props) {
           })
             .then(response => response.json())
             .then(data => {
-              console.log('WHAT??', data)
                 if (data && data.status == "success") {
-                  console.log("I'm here doing it all...");
-                  setHideDropButton(true);
+                  if (meetingToDrop == meeting) {
+                    setMeetingToDrop(null);
+                  }
+                  meeting.guests = meeting.guests.filter(item => item != user.user_id) // remove user_id
+                  meeting.guests_count = meeting.guests_count - 1;
                   setHideJoinButton(false);
+                  setHideDropButton(true);
                   setGuestsCount(prevGuestsCount => prevGuestsCount - 1);
-                  console.log("DROP: show Join:", hideJoinButton, "for meeting", meeting.id);
-                  console.log("DROP: show Drop:", hideDropButton, "for meeting", meeting.id);
                   setMeetingToDrop(meeting);
                 }
-                console.log('WHAT??')
             })
             .catch(error => console.error('Error dropping meeting:', error));
         }
@@ -199,7 +203,7 @@ function MeetingRow(props) {
         <td>{meeting.video}</td>
         <td>{meeting.language}</td>
         <td>{meeting.host_name}</td>
-        <td>{guestsCount}/{meeting.max_guests}</td>
+        <td>{meeting.guests_count}/{meeting.max_guests}</td>
         <td>
             <button id={`button-join-${meeting.id}`} className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
         </td>
@@ -211,7 +215,7 @@ function MeetingRow(props) {
     );
   }
 
-
+// component for showing books
 function CarouselDataContainer(props) {
   const { user } = props;
   // fetching popular books for carousel
@@ -227,19 +231,19 @@ function CarouselDataContainer(props) {
     }, []);
   
   const filteredBooks = popularBooks.filter(book => !book.image_url.startsWith("/static/img"));
-  const groupBooks = [];
+  const groupedBooks = [];
   for (let i = 0; i < filteredBooks.length; i += 3) {
-    groupBooks.push(filteredBooks.slice(i, i + 3));
+    groupedBooks.push(filteredBooks.slice(i, i + 3));
   }
 
   return (
     <React.Fragment>
     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
-    {groupBooks.length === 0 ? (
+    {groupedBooks.length === 0 ? (
         <span>No books to display.</span>
       ) : (
       <div className="carousel-inner">
-          { groupBooks.map((books, index) => (
+          { groupedBooks.map((books, index) => (
               <CarouselItems user={user} key={index} books={books} isActive={index===1}/> // if index is 1, it will set block to active for carousel
           ))}
       </div>
@@ -257,7 +261,7 @@ function CarouselDataContainer(props) {
     )
 }
 
-
+// child component of carousel, showing three books at the same time
 function CarouselItems(props) {
   const { books, user, isActive } = props;
   return (
@@ -286,9 +290,9 @@ function CarouselItems(props) {
   )
 }
 
-
+// table for all upcoming meeting for user if user is a host
 function UsersHostDataContainer(props) {
-  const { user } = props;
+  const { user, deleteMeetingFromMeetingTable } = props;
   const modalRef = React.useRef(null);
   const [showModal, setShowModal] = React.useState(false);
   const [meetings, setMeetings] = React.useState([]);
@@ -308,7 +312,6 @@ function UsersHostDataContainer(props) {
       } else {
         modal.hide();
       }
-      // hide() doesn't do anything here, closing modal using html button attr
     }
   }, [showModal]);
 
@@ -333,6 +336,7 @@ function UsersHostDataContainer(props) {
         if (data.status == "success") {
             console.log("Meeting was deleted");
             const updatedMeetings = meetings.filter(meeting => meeting.id != meetingToDelete.id);
+            deleteMeetingFromMeetingTable(meetingToDelete);
             setMeetings(updatedMeetings);
             setMeetingToDelete(null);
           }
@@ -389,7 +393,7 @@ function UsersHostDataContainer(props) {
   );
 }
 
-
+// row of a hosting table meetings
 function UserHostMeetingRow(props) {
   const { meeting, showAlertModal } = props;
 
@@ -409,7 +413,7 @@ function UserHostMeetingRow(props) {
   );
 }
 
-
+// table for all upcoming meeting for user if user has joined as a guest
 function UsersGuestDataContainer(props) {
   const { user, meetingToAdd, meetingToDrop, dropMeetingFromGuest } = props;
   const [meetings, setMeetings] = React.useState([]);
@@ -427,20 +431,14 @@ function UsersGuestDataContainer(props) {
 
     React.useEffect(() => {
       if (meetingToAdd != null) {
-          // guest count was not updated, since correct num only in db, need to update manually
-          console.log("meetingToAdd", meetingToAdd)
-          meetingToAdd.guests_count = meetingToAdd.guests_count + 1;
           setMeetings(prevMeetings => [...prevMeetings, meetingToAdd]);
-          console.log("New guest meetings", meetings);
       }
       }, [meetingToAdd]);
 
       React.useEffect(() => {
         if (meetingToDrop != null) {
-          console.log("meetingToDrop", meetingToDrop)
           const updatedMeetings = meetings.filter(meeting => meeting.id !== meetingToDrop.id);
           setMeetings(updatedMeetings);
-          console.log("New guest meetings, after drop", meetings);
         }
         }, [meetingToDrop]);
 
@@ -472,6 +470,7 @@ function UsersGuestDataContainer(props) {
   );
 }
 
+// row of a guest table
 function UserGuestMeetingRow(props) {
   const { meeting, dropMeetingFromGuest } = props;
   const meetingDate = convertDate(meeting.date);
@@ -490,7 +489,7 @@ function UserGuestMeetingRow(props) {
   );
 }
 
-
+// confirmation alert for deleting meeting in Host table
 function ModalAlert(props) {
   const { deleteMeeting, cancelDelete, modalRef } = props;
 
@@ -525,7 +524,7 @@ function ModalAlert(props) {
   );
 }
 
-
+// getting local user TZ and returning localized date
 function convertDate(day) {
   if (day != null) {
     // converting date of meeting from UTC to local user's time

@@ -35,7 +35,6 @@ def get_books():
     return jsonify(result)
 
 
-
 @app.route("/api/create_new_user", methods=["POST"])
 def create_new_user():
     """ 
@@ -173,6 +172,7 @@ def get_book_by_id():
     else:
         return {}
     
+
 @app.route("/api/get_all_meetings_for_book", methods=["POST"])
 def get_meetings_for_book():
     """ Returns all meeting data for a book with requested id. """
@@ -216,7 +216,7 @@ def get_host_meetings():
 
 @app.route("/api/get_guest_meetings_for_user")
 def get_guest_meetings():
-    """ Returns all GUSET meeting data for a user. """
+    """ Returns all GUEST meeting data for a user. """
 
     user_id = session.get("user_id")
     if user_id:
@@ -236,7 +236,7 @@ def get_guest_meetings():
 
 @app.route("/api/join_meeting", methods=["POST"])
 def join_meeting():
-    """ Sends request to db to join meeting. """
+    """ If user is not host and not a guest, joins the meeting. """
 
     data = request.get_json()
     user_id = data.get("user_id")
@@ -257,7 +257,7 @@ def join_meeting():
 
 @app.route("/api/drop_meeting", methods=["POST"])
 def drop_meeting():
-    """ Sends request to db to drop from meeting. """
+    """ Sends request to drop from meeting. """
 
     data = request.get_json()
     user_id = data.get("user_id")
@@ -272,7 +272,7 @@ def drop_meeting():
 
 @app.route("/api/delete_meeting", methods=["POST"])
 def delete_meeting():
-    """ Sends request to db to delete meeting. """
+    """ Sends request to delete meeting. """
 
     data = request.get_json()
     user_id = data.get("user_id")
@@ -395,7 +395,7 @@ def get_yelp_businesses():
 
 def convert_tz(input):
     """
-    Converts from TZ to full name
+    Converts tz to full name
     """
     utc_offsets = {
         'UTC-12': 'Etc/GMT+12',
