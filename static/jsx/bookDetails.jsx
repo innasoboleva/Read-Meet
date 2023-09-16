@@ -652,6 +652,7 @@ function BookDetailsPage(props) {
                     setPage(0);
                     setClean(false);
                 }
+                print("Yelp places are: ", places)
             } else {
               console.log("Yelp form ERRRROR, toggling... ", expanded);
               yelpError(true);

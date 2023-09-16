@@ -1,7 +1,4 @@
 from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service as ChromeService
-# from webdriver_manager.chrome import ChromeDriverManager # to automatically download and set up the appropriate version of ChromeDriver
-
 from selenium.webdriver.common.by import By # for searching tags by condition
 from selenium.webdriver.support.wait import WebDriverWait # for waiting to load the Selenium request
 from selenium.webdriver.support import expected_conditions as EC    # adding condition
