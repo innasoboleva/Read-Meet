@@ -4,7 +4,7 @@ import urllib.parse # for URL encoding
 
 # set up for yelp API requests
 yelp_key = os.environ.get('YELP_KEY')
-yelp_url = "https://api.yelp.com/v3/businesses/search?location={}&term={}" # term is keyword as park or cafe, location can be address or zipcode
+yelp_url = "https://api.yelp.com/v3/businesses/search?location={}&offset={}&term={}" # term is keyword as park or cafe, location can be address or zipcode
 
 def find_places(zipcode, type, page=0):
     """
@@ -12,14 +12,12 @@ def find_places(zipcode, type, page=0):
     Need zipcode and type of business to search for, park or cafe for example.
     """
     result_count = 20   # number of results from request
-    offset = result_count * page
+    offset = str(result_count * page)
     type_encoded = urllib.parse.quote(type)
-    # yelp_search_url = yelp_url.format(zipcode, type)
-    yelp_search_url_encoded = yelp_url.format(zipcode, type_encoded)
+    yelp_search_url_encoded = yelp_url.format(zipcode, offset, type_encoded)
     headers = {
             'Content-type': 'application/json',
             'Authorization': f'Bearer {yelp_key}',
-            'offset': str(offset)
         }
     print(headers)
     response_data = requests.get(yelp_search_url_encoded, headers=headers)
@@ -47,6 +45,7 @@ def find_places(zipcode, type, page=0):
             place_to_add['rating'] = rating
             places_to_display.append(place_to_add)
         if places_to_display:
+            print(places_to_display)
             return { 'status': 'success', 'code': 200, 'message': 'OK', 'places': places_to_display }
         else:
             return { 'status': 'error', 'code': 204, 'message': 'Yelp could not find any results' }

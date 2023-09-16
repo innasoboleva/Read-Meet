@@ -48,6 +48,7 @@ def _find_book_number_selenium(url_data):
         return { "status": "success", "code": 200, "message": "OK", "goodreads_book_id": goodreads_number }
     return url_data
 
+
 def _find_reviews_selenium(data, occurance=1):
     """ 
     Provides review information for given book number in Goodreads app, if book present on Goodreads. If not, returns data back.
