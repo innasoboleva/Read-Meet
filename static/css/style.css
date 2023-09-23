@@ -3,6 +3,7 @@
 body {
   font-family: sans-serif;
   background-color: #fff;
+  /* background-color: #F6F0EE */
 }
 
 a {
@@ -12,14 +13,15 @@ a {
 
 /* Styling for top bar, navigation */
 #top-bar {
-  background-color: rgb(235, 227, 212);
+  /* background-color: rgb(255, 252, 246); */
+  padding-top: 15px;
 }
 
 #nav-search-input, #search-yelp {
   padding: 5px 35px 5px 15px;
   background-color: white;
   border-radius: 15px;
-  border-color: rgb(158, 185, 170);
+  border-color: rgb(192, 189, 193);
   border-width: 2px;
   border-style: solid;
   text-overflow: ellipsis;
@@ -27,18 +29,38 @@ a {
 }
 
 .search-button {
-  right: 17%;
+  right: 8%;
   align-self: center;
   position: relative;
   background-color: transparent;
   border: none;
 }
 
-ul.search-nav {
-  margin: 0 0 0 0;
+.home-btn {
+  margin-left: 50px;
+  transition: color 0.3s;
 }
 
+.home-btn:hover {
+  color: gray;
+  text-decoration: underline; 
+}
+
+#sign-in-nav-link, #sign-out-nav-link {
+  margin-right: 50px;
+  /* border: black; */
+  border: 2px solid #989898;
+  border-radius: 15px;
+}
+
+#user-signout, #ser-signin {
+  padding: 5px 7px 5px 7px;
+}
+
+
 /* Styling for buttons on the nav bar */
+
+
 
 /* button#sgn {
   font-family: sans-serif;
@@ -120,9 +142,10 @@ button#user-signin:hover {
 } 
 
 .modal-img {
-  background-color: rgb(124, 174, 156);
+  /* background-color: rgb(124, 174, 156); */
   height: 400px;
   width: 200px;
+  overflow: hidden;
 }
 
 .element {
@@ -181,9 +204,25 @@ form.signin {
 /* CAROUSEL */
 
 #carouselExampleControls {
-  background-color: rgb(255, 253, 247);
+  /* background-color: rgb(255, 253, 247); */
   padding: 20px 0 20px 0;
   margin-bottom: 30px;
+  padding-right: 50px;
+  padding-left: 50px;
+}
+
+.carousel-inner {
+  display: flex;
+  /* justify-content: space-around; */
+  margin-top: 100px;
+  margin-right: 55px;
+  margin-left: 55px;
+  background-color: rgba(255, 255, 255, 0.7); /* transparent for 50% */
+  width: auto;
+  border-radius: 20px;
+  padding-top: 10px;
+  padding-right: 80px;
+  padding-left: 80px;
 }
 
 .carousel-control-next,
@@ -192,32 +231,49 @@ form.signin {
 }
 
 .carousel-control-prev {
-  left: -30px;
+  top: 80px;
+  left: 50px;
 }
 
 .carousel-control-next {
-  right: -30px;
-}
-
-.carousel-inner {
-  display: flex;
-  flex-wrap: wrap;
+  top: 80px;
+  right: 50px;
 }
 
 .carousel-image {
+  padding: 0px 10px 0px 10px;
   flex: 1;
   box-sizing: border-box;
-  height: 300px; /* height for the book cover */
+  height: 250px; /* height for the book cover */
+  max-width: 250px;
   cursor: pointer;
+  position: relative;
+  margin-left: 80px;
+  margin-right: 80px;
+  /* justify-content: center; */
 }
 
 .carousel-image img {
+  /* position: absolute; */
   max-width: 100%;
-  height: 100%; 
-  object-fit: cover;
+  height: 95%;
+  /* object-fit: cover; */
   display: block;
   margin: 0 auto;
+  /* justify-self: center; */
+ 
 }
+
+/* #shadow-carousel {
+  height: 100%;
+  position: absolute; 
+  top: 0;
+  left: 38.5%;
+  width: 240px;
+  height: 120%;
+  overflow: auto;
+  
+} */
 
 /* Style for book search page, showing different books */
 
@@ -267,13 +323,9 @@ a {
 
 .search-book-div {
   width: 240px;
-  justify-content: center;
   margin: 0px 10px 10px 10px;
-  height: 340px;
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: calc(20% - 30px);
   min-width: 150px;
+  min-height: 230px;
   border-style: solid;
   border-width: 0.5px;
   border-color: #c6c6c6;
@@ -535,4 +587,71 @@ button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-b
 /* Modal popup for deleting meetings */
 .modal-footer-alert {
   justify-content: center;
+}
+
+/* Index page - styling tables */
+#meeting-table, #host-table, #guest-table {
+  max-height: 600px;
+  overflow: auto;
+  background-color: #f7efdb;
+  margin: 5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
+  border-radius: 20px;
+}
+
+#meeting-table {
+  width: auto;
+  margin-right: 30px;
+}
+
+#host-table, #guest-table {
+  width: 600px;
+}
+
+.table {
+  width: 100%;
+}
+
+#background-img {
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+  margin-right: 50px;
+  top: 70px;
+}
+
+#background2-img {
+  position: absolute;
+  /* width: 110%; */
+  z-index: -3;
+  margin-top: 1100px;
+  overflow: hidden;
+}
+
+#index-container-tables {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* .column {
+  flex: 1;
+}
+
+.column:first-child {
+  flex: 2; 
+} */
+
+#meeting-table-container {
+  margin-top: 360px;
+  margin-bottom: 50px;
+
+}
+
+#guest-table-container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+#host-table-container {
+  /* margin-top: 20px; */
 }

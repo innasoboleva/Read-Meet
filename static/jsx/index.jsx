@@ -38,16 +38,33 @@ function IndexPageContainer() {
   }
 
   return (<React.Fragment>
+            <div id="background-img">
+              <img src="/static/img/house_on_the_hill.png"></img>
+            </div>
+            {/* <div id="background2-img">
+              <img src="/static/img/coffee_menu.jpg"></img>
+            </div> */}
             <CarouselDataContainer user={user}/>
-            { (user && user.user_id != "" && user.user_id != null) ? (
-              <React.Fragment>
-                <UsersHostDataContainer user={user} deleteMeetingFromMeetingTable={deleteMeetingFromMeetingTable}/> 
-                <UsersGuestDataContainer user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} dropMeetingFromGuest={dropMeetingFromGuest}/>
-              </React.Fragment>
-            ) : (
-                <div>You will see your personal meetings here if you log in </div>
-            )}
-            <MeetingDataContainer user={user} meetingToDelete={meetingToDelete} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
+            <div id="index-container-tables">
+            <div className="column" id="meeting-table-container">
+                <MeetingDataContainer user={user} meetingToDelete={meetingToDelete} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
+              </div>
+              { (user && user.user_id != "" && user.user_id != null) ? (
+                <React.Fragment>
+                  <div className="column">
+                    <div id="host-table-container">
+                      <UsersHostDataContainer user={user} deleteMeetingFromMeetingTable={deleteMeetingFromMeetingTable}/> 
+                    </div>
+                    <div id="guest-table-container">
+                      <UsersGuestDataContainer user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} dropMeetingFromGuest={dropMeetingFromGuest}/>
+                    </div>
+                  </div>
+                </React.Fragment>
+              ) : (
+                  <div>You will see your personal meetings here if you log in </div>
+              )}
+            </div>
+            
           </React.Fragment>);
 }
 
@@ -72,30 +89,33 @@ function MeetingDataContainer(props) {
     return (
       <React.Fragment>
         <h2>Upcoming Book Discussions</h2>
-        <table className="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Book</th>
-              <th scope="col">Day</th>
-              <th scope="col">Place</th>
-              <th scope="col">Few words</th>
-              <th scope="col">Video note</th>
-              <th scope="col">Language</th>
-              <th scope="col">Host</th>
-              <th scope="col"> Guests (max specified)</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          {meetings.length === 0 ? (
-        <tbody><tr><td>No meetings to display.</td></tr></tbody>
-      ) : (
-          <tbody>
-            { meetings.map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
-            ))}
-          </tbody>
-      )}
-        </table>
+        <div id="meeting-table">
+          <table className="table table-hover" >
+            <thead>
+              <tr>
+                <th scope="col">Book</th>
+                <th scope="col">Day</th>
+                <th scope="col">Place</th>
+                <th scope="col">Few words</th>
+                <th scope="col">Video note</th>
+                <th scope="col">Lg.</th>
+                <th scope="col">Host</th>
+                <th scope="col"> Guests</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            {meetings.length === 0 ? (
+          <tbody><tr><td>No meetings to display.</td></tr></tbody>
+        ) : (
+            <tbody>
+              { meetings.map((meeting) => (
+                <MeetingRow key={meeting.id} meeting={meeting} user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
+              ))}
+            </tbody>
+        )}
+          </table>
+        </div>
       </React.Fragment>
     );
   }
@@ -278,7 +298,9 @@ function CarouselItems(props) {
             pathname: `/books/${book.book_id}`,
             state: { user, book }
             }}>
+                
                 <img src={book.image_url} className="img-fluid" alt={book.title} />
+                {/* <img id="shadow-carousel" src="/static/img/bannershadow.png" /> */}
               </ReactRouterDOM.Link>
             </div>
           ))}
@@ -350,7 +372,7 @@ function UsersHostDataContainer(props) {
 
 
   React.useEffect(() => {
-      console.log("Meetings updated.");
+      console.log("Meetings were updated.");
   }, [meetings]);
 
 
@@ -369,13 +391,14 @@ function UsersHostDataContainer(props) {
     <React.Fragment>
       <h2>Your Hosted Meetings</h2>
        <ModalAlert deleteMeeting={deleteMeeting} cancelDelete={cancelDelete} modalRef={modalRef}/>
+       <div id="host-table">
       <table className="table table-hover">
         <thead>
           <tr>
             <th scope="col">Book</th>
             <th scope="col">Day</th>
             <th scope="col">Place</th>
-            <th scope="col"> Guests (max specified)</th>
+            <th scope="col"> Guests</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -389,6 +412,7 @@ function UsersHostDataContainer(props) {
         </tbody>
       )}
       </table>
+      </div>
     </React.Fragment>
   );
 }
@@ -446,13 +470,15 @@ function UsersGuestDataContainer(props) {
   return (
     <React.Fragment>
       <h2>Your Guest Meetings</h2>
+      <div id="guest-table">
       <table className="table table-hover">
         <thead>
           <tr>
             <th scope="col">Book</th>
             <th scope="col">Day</th>
             <th scope="col">Place</th>
-            <th scope="col"> Guests (max specified)</th>
+            <th scope="col">Host</th>
+            <th scope="col"> Guests</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -466,6 +492,7 @@ function UsersGuestDataContainer(props) {
           </tbody>
         )}
       </table>
+      </div>
     </React.Fragment>
   );
 }
@@ -480,6 +507,7 @@ function UserGuestMeetingRow(props) {
       <td>{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
       <td>{meetingDate}</td>
       <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
+      <td>{meeting.host_name}</td>
       <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>
           <button id={`button--guest-drop-${meeting.id}`} className="btn btn-warning" onClick={() => dropMeetingFromGuest(meeting)}>Drop</button>

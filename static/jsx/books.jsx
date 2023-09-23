@@ -4,6 +4,53 @@ function BooksSearchContainer() {
   const [books, setBooks] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const [status, setStatus] = React.useState("loading"); // if no book were found, status == error, if found == success
+
+  // setting the same height for each book (div) for each row on the screen
+  const containerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    function setRowHeights() {
+      
+      if (containerRef.current) {
+        const container = containerRef.current;
+        const divs = container.querySelectorAll('.search-book-div');
+
+        const containerWidth = container.clientWidth; // Width of the container
+        const divWidth = 260; // Fixed width of each div
+        const divsPerRow = Math.floor(containerWidth / divWidth); // Calculate divs per row
+      
+        let maxHeight = 0;
+        divs.forEach((div, index) => {
+          // Set the min-height to ensure a constant height
+          div.style.minHeight = `${maxHeight}px`;
+    
+          const height = div.clientHeight;
+          if (height > maxHeight) {
+            maxHeight = height;
+          }
+    
+          // when all divs are done in the row, set the height for each
+          if ((index + 1) % divsPerRow === 0) {
+            for (let i = index - divsPerRow + 1; i <= index; i++) {
+              divs[i].style.minHeight = `${maxHeight}px`;
+            }
+            maxHeight = 0;
+          }
+        });
+      } 
+    }
+
+    setRowHeights();
+    // recalculates heights on window resize
+    window.addEventListener('resize', setRowHeights);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', setRowHeights);
+    };
+  }, [status, books]);
+
 
   let isScrolling = false;
   // slowing down scroll calls, debounce implementation (found on StackOverflow)
@@ -55,13 +102,19 @@ function BooksSearchContainer() {
      })
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         if (data["status"] === "success") {
           setIsLoading(false);
           setBooks(prevBooks => [...prevBooks, ...data["books"]]); // appending new books to existing list
-          console.log("Books are set")
+          setStatus("success");
+        } else {
+          setStatus("error");
         }
       })
-      .catch(error => console.error('Error fetching books with search query:', error));
+      .catch(error => {
+        console.error('Error fetching books with search query:', error);
+        setStatus("error");
+      });
 
       return () => {
         // cancel the request before component unmounts
@@ -72,15 +125,22 @@ function BooksSearchContainer() {
   return (
     <React.Fragment>
       <h4>Results</h4>
-      <div className="search-all-books d-flex">
+      { status == "success" ? (<div ref={containerRef} className="search-all-books d-flex">
         {books.map((book, index) => (
           <Book key={index} book={book} />
         ))}
         {isLoading && <p>Loading...</p>}
       </div>
+      ) : status == "error" ? (
+        <React.Fragment>
+          <div>No books were found.</div>
+        </React.Fragment>
+      ) : (
+        <p>Loading...</p>
+      )}
     </React.Fragment>
   );
-  }
+}
 
 // representing each book
 function Book(props) {

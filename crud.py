@@ -1,6 +1,7 @@
 """ CRUD operations. """
 from models import db, User, Meeting, Book, List
 from datetime import datetime
+import pytz
 
 # Meetings
 def get_all_meetings():
@@ -49,17 +50,27 @@ def drop_meeting(user_id, meeting_id):
         return {"status": "error", "message": "Can't find meeting or user data" }
     
 
+def update_past_meetings():
+    all_meetings = Meeting.query.all()
+    today = datetime.now(pytz.UTC)
+    for meeting in all_meetings:
+        if meeting.active == True:
+            if meeting.day < today:
+                meeting.active = False
+
 # Users
-def get_host_meetings(user_id):
-    """ Returns all meetings that user created as a host. """
+def get_host_active_meetings(user_id):
+    """ Returns all meetings that user created as a host and that will be in the future. """
     user = User.query.get(user_id)
-    return user.host_meetings
+    active_host_meetings = [meeting for meeting in user.host_meetings if meeting.active]
+    return active_host_meetings
 
 
-def get_guest_meetings(user_id):
+def get_guest_active_meetings(user_id):
     """ Returns all meetings that user joined as a guest. """
     user = User.query.get(user_id)
-    return user.guest_meetings
+    active_guest_meetings = [meeting for meeting in user.guest_meetings if meeting.active]
+    return active_guest_meetings
 
 
 def get_user_by_id(id):

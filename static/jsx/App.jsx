@@ -3,18 +3,16 @@ function App() {
     return (
       <ReactRouterDOM.BrowserRouter>
         <div className="container-fluid">
-      <ReactRouterDOM.Switch>
-        <ReactRouterDOM.Route path="/" exact>
-          <IndexPageContainer />
-          {/* <CarouselDataContainer />
-          <MeetingDataContainer /> */}
-        </ReactRouterDOM.Route>
-        
-          <ReactRouterDOM.Route path="/books" exact>
-              <BooksSearchContainer />
+        <ReactRouterDOM.Switch>
+          <ReactRouterDOM.Route exact path="/" >
+            <IndexPageContainer />
           </ReactRouterDOM.Route>
-          <ReactRouterDOM.Route path="/books/:bookId" component={BookDetailsPage} />
-        </ReactRouterDOM.Switch>
+          
+            <ReactRouterDOM.Route exact path="/books" >
+                <BooksSearchContainer />
+            </ReactRouterDOM.Route>
+            <ReactRouterDOM.Route path="/books/:bookId" component={BookDetailsPage} />
+          </ReactRouterDOM.Switch>
         </div>
       </ReactRouterDOM.BrowserRouter>
     );

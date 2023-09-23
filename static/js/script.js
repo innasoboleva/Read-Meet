@@ -37,6 +37,7 @@ function closeModalWithId(modalId) {
     }
 }
 
+
 document.querySelector("#user-signup").addEventListener("click", (evt) => {
     evt.preventDefault();
 

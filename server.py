@@ -18,10 +18,18 @@ def homepage():
     return render_template("index.html")
 
 
+# @app.route("/books/", strict_slashes=False)
 @app.route("/books")
 def show_books_page():
     """Show page with rendered books."""
     print("Books user: ", session.get('user_id'))
+    return render_template("index.html")
+
+
+@app.route("/books/<book_id>")
+def show_detailed_book_page_manually(book_id):
+    """Show page that user manually inputed."""
+    print("User manually asked for a book", book_id)
     return render_template("index.html")
 
 
@@ -33,6 +41,17 @@ def get_books():
     page = request.args.get("page")
     result = books_api.find_list_of_books(search_req, int(page) if page else 0)
     return jsonify(result)
+
+@app.route("/api/get_book")
+def get_book():
+    """ Get book's information with provided parameters: book ID. Method for getting book from Google books."""
+
+    book_id = request.args.get("book", None)
+    if book_id:
+        result = books_api.find_book(book_id)
+        return jsonify(result)
+    else:
+        return { "status": "error", "code": 404, "message": f"No book ID was provided" }
 
 
 @app.route("/api/create_new_user", methods=["POST"])
@@ -163,7 +182,7 @@ def get_user_by_id():
 
 @app.route("/api/get_book_by_id", methods=["POST"])
 def get_book_by_id():
-    """ Get book data by id. """
+    """ Get book data by id. Used for localy stored books. """
 
     book_id = request.get_json().get("book_id")
     if book_id:
@@ -200,7 +219,7 @@ def get_host_meetings():
 
     user_id = session.get("user_id")
     if user_id:
-        meetings = crud.get_host_meetings(user_id)
+        meetings = crud.get_host_active_meetings(user_id)
         meeting_list_of_dict = []
         if meetings:
             for meeting in meetings:
@@ -220,7 +239,7 @@ def get_guest_meetings():
 
     user_id = session.get("user_id")
     if user_id:
-        meetings = crud.get_guest_meetings(user_id)
+        meetings = crud.get_guest_active_meetings(user_id)
         meeting_list_of_dict = []
         if meetings:
             for meeting in meetings:
@@ -443,8 +462,16 @@ def convert_tz(input):
     return None
 
 
+def check_meetings_for_past_due():
+    """ Method for updating past meetings to being inactive and now showing in user's tables. """
+    crud.update_past_meetings()
+    # save changes
+    db.session.commit()
+
 
 if __name__ == "__main__":
     connect_to_db(app)
+    # updating old meetings to inactive
+    check_meetings_for_past_due()
     app.run(debug=True, host='127.0.0.1') # localhost preferable for video api
     

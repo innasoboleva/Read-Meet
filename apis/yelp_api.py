@@ -19,13 +19,12 @@ def find_places(zipcode, type, page=0):
             'Content-type': 'application/json',
             'Authorization': f'Bearer {yelp_key}',
         }
-    print(headers)
+    print(yelp_search_url_encoded, headers)
     response_data = requests.get(yelp_search_url_encoded, headers=headers)
     response = response_data.json()
     if response.get("error") == None:
         places_to_display = []
         places = response.get('businesses', [])
-        print("PLACES length: ", len(places))
         for place in places:
             place_to_add = {}
             place_to_add["id"] = place.get("id")
@@ -45,7 +44,6 @@ def find_places(zipcode, type, page=0):
             place_to_add['rating'] = rating
             places_to_display.append(place_to_add)
         if places_to_display:
-            print(places_to_display)
             return { 'status': 'success', 'code': 200, 'message': 'OK', 'places': places_to_display }
         else:
             return { 'status': 'error', 'code': 204, 'message': 'Yelp could not find any results' }
