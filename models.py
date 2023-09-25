@@ -77,7 +77,6 @@ class Meeting(db.Model):
 
     meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True, server_default=text("nextval('meeting_id_seq')"))
     book_id = db.Column(db.String, db.ForeignKey("books.book_id"), nullable=False)
-    # day = db.Column(db.DateTime, nullable=False)
     day = db.Column(TIMESTAMP(timezone=True), nullable=False)
     place = db.Column(db.String)
     address = db.Column(db.String)

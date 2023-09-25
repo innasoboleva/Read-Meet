@@ -13,7 +13,7 @@ a {
 
 /* Styling for top bar, navigation */
 #top-bar {
-  /* background-color: rgb(255, 252, 246); */
+  background-color: rgb(242, 242, 242);
   padding-top: 15px;
 }
 
@@ -36,14 +36,15 @@ a {
   border: none;
 }
 
-.home-btn {
+#home-btn, #book-btn {
   margin-left: 50px;
+  color: gray;
   transition: color 0.3s;
 }
 
-.home-btn:hover {
-  color: gray;
-  text-decoration: underline; 
+#home-btn:hover, #book-btn:hover {
+  color: rgb(55, 55, 55);
+  font-weight: 500;
 }
 
 #sign-in-nav-link, #sign-out-nav-link {
@@ -51,12 +52,19 @@ a {
   /* border: black; */
   border: 2px solid #989898;
   border-radius: 15px;
+  transition: color 0.3s;
+  transition: border 0.3s;
 }
 
-#user-signout, #ser-signin {
+#user-signout, #user-signin {
   padding: 5px 7px 5px 7px;
 }
 
+
+#sign-in-nav-link:hover, #sign-out-nav-link:hover {
+  border: 2px solid #5a5a5a;
+  border-radius: 15px;
+}
 
 /* Styling for buttons on the nav bar */
 
@@ -591,7 +599,6 @@ button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-b
 
 /* Index page - styling tables */
 #meeting-table, #host-table, #guest-table {
-  max-height: 600px;
   overflow: auto;
   background-color: #f7efdb;
   margin: 5px 5px 5px 5px;
@@ -602,10 +609,13 @@ button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-b
 #meeting-table {
   width: auto;
   margin-right: 30px;
+  max-height: 900px;
+  
 }
 
 #host-table, #guest-table {
   width: 600px;
+  max-height: 600px;
 }
 
 .table {
@@ -618,6 +628,7 @@ button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-b
   z-index: -1;
   margin-right: 50px;
   top: 70px;
+  overflow: hidden;
 }
 
 #background2-img {
@@ -631,19 +642,24 @@ button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-b
 #index-container-tables {
   display: flex;
   justify-content: space-around;
+  overflow: scroll;
 }
 
-/* .column {
+.column {
   flex: 1;
+  overflow-x: auto;
 }
 
 .column:first-child {
   flex: 2; 
-} */
+  overflow-x: auto;
+  max-width: 900px;
+}
 
 #meeting-table-container {
   margin-top: 360px;
   margin-bottom: 50px;
+  /* max-width: 900px; */
 
 }
 
