@@ -142,18 +142,33 @@ def find_list_of_books(params, page):
     return result
 
 
+def _get_response_for_book_ID(book):
+    """ Getting response from server for book with provided book ID """
+    key = f"?key={book_key}"
+    book_search_url = book_url_with_id + book + key
+    print("Book search URL:", book_search_url)
+    response = requests.get(book_search_url)
+    
+    if (response.status_code == 200):
+        return { "status": "success", "response": response.json() }
+    else:
+        return { "status": "error", "code": 404, "message": f"Could not get book with ID: s{book}, server does not respond." }
+
+
 def find_book(book_id):
     """
     Return result of search for certain ID.
     """
-    key = f"?key={book_key}"
-    book_search_url = book_url_with_id + book_id + key
-    print(book_search_url)
-    response = requests.get(book_search_url)
-    
-    if (response.status_code == 200):
+    response = _get_response_for_book_ID(book_id)
+    # key = f"?key={book_key}"
+    # book_search_url = book_url_with_id + book_id + key
+    # print(book_search_url)
+    # response = requests.get(book_search_url)
+    if response.get("status") == "success":
+    # if (response.status_code == 200):
         new_book = {}
-        item = response.json()
+        # item = response.json()
+        item = response.get("response")
         book_id = item.get("id")
         new_book["book_id"] = book_id
 

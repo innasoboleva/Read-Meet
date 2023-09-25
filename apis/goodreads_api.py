@@ -65,13 +65,12 @@ def _find_reviews_selenium(data, occurance=1):
                 return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", \
                         "url": None, "message": "No reviews are available for this book." }
             # waiting for rating stars to load as indicator that all needed info has been loaded
-            
-            error = driver.find_elements(By.CLASS_NAME, 'ErrorCard')
+            error = driver.find_elements(By.CLASS_NAME, 'ErrorCard') 
             if error:
                 print("Book has no reviews.")
                 return { "status": "error", "code": 204, "message": "Book was not found on Goodreads", \
                         "url": None, "message": "No one has reviewed this book yet." }
-            review_cards = WebDriverWait(driver, 60).until(lambda x: x.find_elements(By.CLASS_NAME, 'ReviewCard'))
+            review_cards = WebDriverWait(driver, 30).until(lambda x: x.find_elements(By.CLASS_NAME, 'ReviewCard'))
             reviews_for_book = []
             for card in review_cards:
                 review = {}
