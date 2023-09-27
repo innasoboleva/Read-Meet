@@ -5,7 +5,6 @@ import random
 # set up for books API requests
 book_key = os.environ.get('BOOK_KEY')
 book_url = "https://www.googleapis.com/books/v1/volumes?q=" # add search args to the url
-# book_isbn = "https://www.googleapis.com/books/v1/volumes?q=isbn:" # find form action=/search and add ISBN number
 book_url_with_id = "https://www.googleapis.com/books/v1/volumes/" # id + ?key=yourKey
 
 
@@ -47,16 +46,13 @@ def _get_list_of_books_for_page(search_result):
     """
     With provided response, returns book information. Count = how many pages to skip.
     """
-    count = 0 # that can be page
     if search_result.get("status") == "success":
         try:
             response_data = search_result.get("response")
             books = response_data.get('items', [])
             on_page = search_result.get("on_page", None)
             if on_page: # to help splitting results / pagination or to display 1 book only
-                start = count * on_page
-                end = count * on_page + on_page 
-                return _get_books_info_from_response(books, start, end)
+                return _get_books_info_from_response(books, start=0, stop=on_page)
             else:
                 return _get_books_info_from_response(books) # get all results
         except:
@@ -72,7 +68,7 @@ def _get_books_info_from_response(items, start=None, stop=None):
     """
     books_to_render = []
 
-    if start and stop:
+    if stop:
         items_list = items[start:stop]
     else:
         items_list = items
@@ -155,19 +151,11 @@ def _get_response_for_book_ID(book):
         return { "status": "error", "code": 404, "message": f"Could not get book with ID: s{book}, server does not respond." }
 
 
-def find_book(book_id):
-    """
-    Return result of search for certain ID.
-    """
-    response = _get_response_for_book_ID(book_id)
-    # key = f"?key={book_key}"
-    # book_search_url = book_url_with_id + book_id + key
-    # print(book_search_url)
-    # response = requests.get(book_search_url)
+def _get_book_for_book_ID(response):
+    """ Getting information from response and passing it in a dictionary """
+
     if response.get("status") == "success":
-    # if (response.status_code == 200):
         new_book = {}
-        # item = response.json()
         item = response.get("response")
         book_id = item.get("id")
         new_book["book_id"] = book_id
@@ -207,4 +195,12 @@ def find_book(book_id):
         return { "status": "success", "book": new_book }
     else:
         return { "status": "error", "code": 404, "message": f"Could not get book with ID: s{book_id}, server does not respond." }
+
+
+def find_book(book_id):
+    """
+    Return result of search for certain ID.
+    """
+    response = _get_response_for_book_ID(book_id)
+    return _get_book_for_book_ID(response)
 
