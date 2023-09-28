@@ -1,6 +1,6 @@
 import os
 from apis import books_api, yelp_api, goodreads_api
-from flask import Flask, render_template, jsonify, request, session, flash
+from flask import Flask, render_template, jsonify, request, session
 from models import connect_to_db , db, User, Meeting, Book
 import crud
 from datetime import datetime
@@ -79,14 +79,14 @@ def create_new_user():
             new_user = User.create(email, password, name, zipcode, address, age)
             db.session.add(new_user)
             db.session.commit()
-            flash("New user successfully created.")
+            
             session["user_id"] = new_user.user_id
             session["name"] = name
             if address:
                 session["address"] = address
             if zipcode:
                 session["zipcode"] = zipcode
-            flash(f"You logged in with {email}!")
+            
         except:
             return jsonify({ "status": "error", "message": "There was a server problem. Please try again..."})
         return jsonify({ "status": "success", "new_user": \
@@ -120,7 +120,7 @@ def login():
             session["zipcode"] = user.zipcode
             if user.address is not None:
                 session["address"] = user.address
-            flash(f"You successfully logged in with {email}!")
+            
             print(f"You successfully logged in with {email}!")
             print ({ "user_id": user.user_id, "name": user.name, "address": user.address, "zipcode": user.zipcode })
             return jsonify({ "status": "success", \
@@ -144,7 +144,7 @@ def logout():
         session["zipcode"] = None
         if "address" in session:
             session["address"] = None
-        flash("You logged out!")
+       
         print("Session, log out, user_id: ", session.get("user_id"))
         return jsonify({ "status": "success" })
     else:
@@ -266,7 +266,7 @@ def join_meeting():
         message = crud.join_meeting(user_id, meeting_id)
         if message['status'] == 'success':
             db.session.commit()
-        flash(message['message'])
+        
         print(message['message'])
         return jsonify(message)
     else:
@@ -285,7 +285,7 @@ def drop_meeting():
     print(user_id, " drops", meeting_id)
     print(message)
     db.session.commit()
-    flash(message['message'])
+    
     return jsonify(message)
 
 

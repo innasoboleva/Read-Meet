@@ -36,11 +36,6 @@ def test_app():
         db.session.close()
 
 
-# @pytest.fixture
-# def client(test_app):
-#     return test_app.test_client()
-
-
 def test_create_all(test_app):
     print("Checking user... test create all")
     new_user = User.create('test@example.com', '0000', 'Test Test', '94560', '304 Addison Ct., NY') #cls, email, password, name, zipcode, address=None, age=None):
@@ -211,58 +206,43 @@ def test_update_past_meetings(test_app):
 
 
 def test_get_active_meetings(test_app):
-    pass
-
-
-def test_user_exist_check_by_email(test_app):
-    pass
-
-"""
-
-
-# Users
-def get_host_active_meetings(user_id):
+    new_user = User.create('test@example.com', '0000', 'Test Test', '94560', '304 Addison Ct., NY') #cls, email, password, name, zipcode, address=None, age=None):
+    new_user2 = User.create('test2@example.com', '0001', 'Test 1', '94561', '305 Addison Ct., NY') #cls, email, password, name, zipcode, address=None, age=None):
    
-    user = User.query.get(user_id)
-    active_host_meetings = [meeting for meeting in user.host_meetings if meeting.active]
-    return active_host_meetings
+    new_book = Book.create('1', '123', 'Title Test', 'Author test') #book_id, isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None
+    # future
+    date_now = datetime.now() + timedelta(days=1) # adding one more day to now
+    nyc = pytz.timezone('America/New_York')
+    date_localized = nyc.localize(date_now)
 
-
-def get_guest_active_meetings(user_id):
+    new_meeting = Meeting.create(new_book, date_localized, True, new_user, 10) #book, day, offline, host, max_guests, video_note=None, overview=None, place=None, address=None, language="EN"
    
-    user = User.query.get(user_id)
-    active_guest_meetings = [meeting for meeting in user.guest_meetings if meeting.active]
-    return active_guest_meetings
+    with test_app.app_context():
+        db.session.add_all([new_user, new_user2, new_book, new_meeting])
+        first_meeting = Meeting.query.filter_by(book_id='1').first()
+        some_user = User.query.filter_by(email='test@example.com').first()
+        some_user2 = User.query.filter_by(email='test2@example.com').first()
+        update_past_meetings()
+        join_meeting(some_user2.user_id, first_meeting.meeting_id)
+        db.session.commit()
+        
+        assert get_host_active_meetings(some_user.user_id) == [first_meeting]
+        assert get_guest_active_meetings(some_user2.user_id) == [first_meeting]
+        assert does_user_exist("test@example.com") == True
+        assert does_user_exist("test@example111.com") == False
 
 
-def does_user_exist(email):
-   
-    user_to_check = User.query.filter(User.email == email).first()
-    return bool(user_to_check)
-
-
-def get_user_by_email(email):
+def test_get_popular_books(test_app):
     
-    return User.query.filter(User.email == email).first()
-
-
-# Books
-def get_book_by_id(book_id):
+    popular_book = datetime.today().strftime("%Y-%m")
+    new_book = Book.create('1', '123', 'Title Test', 'Author test') #book_id, isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None
+    new_book2 = Book.create('2', '1233', 'Title 2', 'Author 2', None, popular_book) #book_id, isbn, title, authors, subtitle=None, popular_book=None, image_url=None, description=None
     
-    return Book.query.get(book_id)
+    with test_app.app_context():
+        db.session.add_all([new_book, new_book2])
+        db.session.commit()
 
-def get_popular_books():
-    
-    day = datetime.today().strftime("%Y-%m")
-    return Book.query.filter(Book.popular_book == day).all()
+        assert get_book_by_id('1') == new_book
+        assert get_book_by_id('2') == new_book2
+        assert get_popular_books() == [new_book2]
 
-def create_meeting(user_id, book_id, day, offline, max_guests, overview, place, language):
-   
-    book = get_book_by_id(book_id)
-    host = get_user_by_id(user_id)
-    new_meeting = Meeting.create(book, day, offline, host, max_guests, overview=overview, place=place, language=language)
-    return new_meeting
-
-
-
-"""

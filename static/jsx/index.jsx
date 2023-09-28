@@ -6,11 +6,57 @@ function IndexPageContainer() {
 
   const [meetingToDropFromGuest, setMeetingToDropFromGuest] = React.useState(null);
   const [meetingToDelete, setMeetingToDelete] = React.useState(null);
+  const [messages, setMessages] = React.useState([]);
+  // for referencing timer, for clean up
+  const timersRef = React.useRef({});
+  
+   //  to add a message with a timer
+   const addMessageWithTimer = (message) => {
+    const uniqueKey = `${message}_${Date.now()}`;
+
+     setMessages((prevMessages) => [...prevMessages, { message, key: uniqueKey }]);
+      // to clear this specific message after 20 seconds
+      const timer = setTimeout(() => {
+        setMessages((prevMessages) => prevMessages.filter((prevMessage) => prevMessage.key !== uniqueKey));
+        clearTimeout(timersRef.current[uniqueKey]);
+        delete timersRef.current[uniqueKey];
+        }, 15000);
+        timersRef.current[uniqueKey] = timer;
+  };
 
   // nav bar built in JS updates user info
   window.updateUser = (newUser) => {
     setUser(newUser);
+    if (newUser != null && newUser.name != "") {
+      addMessageWithTimer(`You logged in as ${newUser.name}`);
+    } else if (newUser != null && newUser.name == "") {
+      addMessageWithTimer(`You logged out`);
+    }
   }
+
+  React.useEffect(() => {
+    // Clean up timers and messages when the component unmounts
+    return () => {
+      Object.values(timersRef.current).forEach((timer) => {
+        clearTimeout(timer);
+      });
+      timersRef.current = {};
+      setMessages([]);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (meetingToAdd) {
+      addMessageWithTimer(`You joined a meeting for "${meetingToAdd.book_title}" on ${convertDate(meetingToAdd.date)}`);
+    }
+  }, [meetingToAdd]);
+
+  React.useEffect(() => {
+    if (meetingToDrop) {
+      addMessageWithTimer(`You dropped from a meeting for "${meetingToDrop.book_title}" on ${convertDate(meetingToDrop.date)}`);
+    }
+  }, [meetingToDrop]);
+
 
   React.useEffect(() => {
       fetch('/api/get_current_user')
@@ -31,13 +77,16 @@ function IndexPageContainer() {
 
   const dropMeetingFromGuest = (meeting) => {
     setMeetingToDropFromGuest(meeting);
+    addMessageWithTimer(`You dropped from a meeting for "${meeting.book_title}"`);
   }
 
   const deleteMeetingFromMeetingTable = (meeting) => {
     setMeetingToDelete(meeting);
+    addMessageWithTimer(`You canceled a meeting for "${meeting.book_title}"`);
   }
 
   return (<React.Fragment>
+           <Messages messages={messages}/>
             <div id="background-img">
               <img src="/static/img/house_on_the_hill.png"></img>
             </div>
@@ -67,6 +116,21 @@ function IndexPageContainer() {
             
           </React.Fragment>);
 }
+
+function Messages(props) {
+  const { messages } = props;
+  
+  return (
+    <React.Fragment>
+     <div id="flash-messages">
+     {messages && messages.map((messageObject) => (
+            <li key={messageObject.key}>{messageObject.message}</li>
+          ))}
+      </div>
+    </React.Fragment>
+  );
+}
+
 
 // table for all upcoming meeting for everyone
 function MeetingDataContainer(props) {
@@ -321,7 +385,6 @@ function UsersHostDataContainer(props) {
 
   const [meetingToDelete, setMeetingToDelete] = React.useState();
 
-  console.log("User info:", user);
   React.useEffect(() => {
     // showing/hiding modal alert for cancelling meeting
     const modalElement = modalRef.current;
@@ -345,7 +408,6 @@ function UsersHostDataContainer(props) {
   };
 
   const deleteMeeting = () => {
-    console.log("Deleting meeting...")
     setShowModal(false);
 
     fetch('/api/delete_meeting', {
