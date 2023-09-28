@@ -11,7 +11,7 @@ Create new user and log in to be able to use this app fully!
 Create and host book discussion meetings centered around your favorite books.
 Choose the date, time, and location for your meeting.
 3. _Meeting Discovery:_<br>
-Browse a diverse range of upcoming book discussion meetings created by fellow users.
+Browse a diverse range of upcoming book discussion meetings created by fellow users for each possible book.
 4. _Book Selection:_<br>
 Select your preferred choice of book for your meeting from an extensive library of titles.
 5. _Check reviews:_<br>
@@ -32,7 +32,7 @@ Experience the joy of discussing your favorite books with others who share your 
 ![ Detailed data model](url_to_image)
 
 ### Project Tech Stack
-Python, JavaScript, HTML5, CSS3, Flask, SQLAlchemy,  PostgreSQL, AJAX, Jinja2, React, Bootstrap, JSON
+Python, JavaScript, HTML5, CSS3, Flask, SQLAlchemy,  PostgreSQL, AJAX, Jinja2, React, Bootstrap, JSON, Pytest
 
 ### APIs Used
 Google Books API, Yelp API, MediaStream API, Selenium

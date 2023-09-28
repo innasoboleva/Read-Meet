@@ -6,6 +6,17 @@ function BookDetailsPage(props) {
     const [user, setUser] = React.useState();
     let book = null;
 
+    // AWS
+    const AWS = window.AWS; // Get the AWS object from the global scope
+
+    // AWS.config.update({
+    //   region: 'your-region', // e.g., 'us-east-1'
+    //   accessKeyId: 'your-access-key-id',
+    //   secretAccessKey: 'your-secret-access-key',
+    // });
+
+    const s3 = new AWS.S3();
+
     // nav bar built in JS updates user info
     window.updateUserOnDetailsPage = (newUser) => {
       console.log("User state changed, new user: ", newUser)
@@ -43,8 +54,6 @@ function BookDetailsPage(props) {
       book = state.book;
       console.log("Title", book.title);
     }
-
-    // const book = state.book;
   
     const newMeeting = () => {
       setCreateMeeting(true);
@@ -71,7 +80,7 @@ function BookDetailsPage(props) {
 
     return (
       <React.Fragment>
-        <MeetingForm book={book} user={user} handleCreateMeeting={newMeeting}/>
+        <MeetingForm book={book} user={user} handleCreateMeeting={newMeeting} />
         <div className='container-book-details'>
           <div className="row">
             <div className="book-details-descr col-5">
@@ -83,7 +92,7 @@ function BookDetailsPage(props) {
             </div>
             <div className="book-details-img col-7 col-md-auto">
               <img src={ book.image_url }/>
-              <BookMeetingDataContainer user={user} book={book} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting}/>
+              <BookMeetingDataContainer user={user} book={book} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting} />
             </div>
           </div>
         </div>
@@ -95,6 +104,7 @@ function BookDetailsPage(props) {
 function BookMeetingDataContainer(props) {
   const { book, user, createMeeting, setCreateMeeting } = props;
   const [meetings, setMeetings] = React.useState([]);
+  
 
   React.useEffect(() => {
     const controller = new AbortController();
@@ -124,7 +134,7 @@ function BookMeetingDataContainer(props) {
   
   React.useEffect(() => {
     if (createMeeting) {
-      // Reset the state to prevent repeated actions
+      // reset the state to prevent repeated actions
       setCreateMeeting(false);
 
       const formInputs = {
@@ -412,6 +422,7 @@ function MeetingForm(props) {
   const { book, user, handleCreateMeeting } = props;
   const errorMessage = "";
   const [expanded, setExpanded] = React.useState(false);
+  const [mediaVisible, setMediaVisible] = React.useState(false);
   const [hideCreateButton, setHideCreateButton] = React.useState(true);
 
   // switching labels on yelp search button
@@ -425,6 +436,12 @@ function MeetingForm(props) {
     env.preventDefault();
     console.log("Yelp form toggled: ", expanded);
     setExpanded(!expanded);
+  };
+
+  const toggleMediaRecorder = (env) => {
+    env.preventDefault();
+    console.log("Media Recorder toggled: ", mediaVisible);
+    setMediaVisible(!mediaVisible);
   };
 
   const yelpError = () => {
@@ -456,14 +473,17 @@ function MeetingForm(props) {
 
   const [zoomMeeting, setZoomMeeting] = React.useState(false);
 
-  
+  const mediaClose = () => {
+    setMediaVisible(false);
+  }
 
+ 
   return (
     <React.Fragment>
       <div className="modal fade hidden" id="meetingForm" tabIndex="-1" role="dialog" aria-labelledby="meetingForm" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content meeting">
-                <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" className="close" data-bs-dismiss="modal" aria-label="Close" onClick={mediaClose}>
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <div className="modal-body meetingFormBody">
@@ -574,6 +594,10 @@ function MeetingForm(props) {
                         </label>
                           <input type="text" id="autocomplete-address"/>
                         </div>
+                        <div>
+                          <button id="open-media-recorder" onClick={toggleMediaRecorder}>Start Video Note</button>
+                        </div>
+                        {mediaVisible && (<VideoRecorder />)}
                         <div>
                           <button id="search-yelp-form" onClick={toggleYelpForm}>Or let's look for a place!</button>
                         </div>
@@ -737,4 +761,94 @@ function YelpRow(props) {
       </div>
     </div>
   </React.Fragment>)
+}
+
+
+function VideoRecorder() {
+  const [recording, setRecording] = React.useState(false);
+  const [videoURL, setVideoURL] = React.useState(null);
+  const [cameraStarted, setCameraStarted] = React.useState(false);
+  const mediaRecorderRef = React.useRef(null);
+  const videoRef = React.useRef(null);
+
+  const mediaStreamConstraints = {
+    audio: true,
+    video: true,
+  };
+
+  const startRecording = () => {
+    if (!cameraStarted) {
+      // camera hasn't started yet, need to start it now
+      navigator.mediaDevices
+        .getUserMedia(mediaStreamConstraints)
+        .then((resultingMediaStream) => {
+          if (videoRef.current && 'srcObject' in videoRef.current) {
+            videoRef.current.srcObject = resultingMediaStream;
+          }
+          setCameraStarted(true);
+        })
+        .catch((error) => {
+          console.error('Error accessing audio and video:', error);
+        });
+        const stopButton = document.getElementById("stop-recording")
+        stopButton.style.display = "inline";
+        document.getElementById("start-recording").innerText = 'Start'
+        
+      } else {
+      // camera has already started, start recording
+      const mediaRecorder = new MediaRecorder(videoRef.current.srcObject);
+      mediaRecorderRef.current = mediaRecorder;
+      const chunks = [];
+
+      mediaRecorder.ondataavailable = (ev) => {
+        chunks.push(ev.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/mp4' });
+        setVideoURL(URL.createObjectURL(blob));
+      };
+
+      mediaRecorder.start();
+      setRecording(true);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setRecording(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const stopButton = document.getElementById("stop-recording")
+    stopButton.style.display = "none";
+
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current = null;
+      }
+      if (videoRef.current && 'srcObject' in videoRef.current) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
+
+  return (
+    <div>
+      <video id="video-block" ref={videoRef} autoPlay controls />
+      <button id="start-recording" onClick={startRecording} disabled={recording}>
+        Start Recording
+      </button>
+      <button id="stop-recording" onClick={stopRecording} disabled={!recording}>
+        Stop
+      </button>
+      {videoURL && (
+        <video id="your-video" src={videoURL} autoPlay controls>
+          Your browser doesn't support video playback.
+        </video>
+      )}
+    </div>
+  );
 }
