@@ -6,16 +6,7 @@ function BookDetailsPage(props) {
     const [user, setUser] = React.useState();
     let book = null;
 
-    // AWS
-    const AWS = window.AWS; // Get the AWS object from the global scope
-
-    // AWS.config.update({
-    //   region: 'your-region', // e.g., 'us-east-1'
-    //   accessKeyId: 'your-access-key-id',
-    //   secretAccessKey: 'your-secret-access-key',
-    // });
-
-    const s3 = new AWS.S3();
+    const [blob, setBlob] = React.useState(null);
 
     // nav bar built in JS updates user info
     window.updateUserOnDetailsPage = (newUser) => {
@@ -59,28 +50,45 @@ function BookDetailsPage(props) {
       setCreateMeeting(true);
     }
 
+    const setVideoBlob = (vblob) => {
+      setBlob(vblob);
+    }
+
     React.useEffect(() => {
       // for aborting fetch requests, when user redirects the page
-      const controller = new AbortController();
-      const signal = controller.signal;
+      const controller1 = new AbortController();
   
-        fetch('/api/get_current_user', {signal: signal })
-          .then(response => response.json())
-          .then(data => {
-            setUser(data)
-          })
-          .catch(error => console.error('Error fetching current user:', error));
-  
-          return () => {
-            // cancel the request before component unmounts
-            controller.abort();
-        };
-  
-      }, []);
+      fetch('/api/get_current_user', {signal: controller1.signal })
+        .then(response => response.json())
+        .then(data => {
+          setUser(data)
+        })
+        .catch(error => console.error('Error fetching current user:', error));
+       
+      if (window.s3 == null) {
+         fetch('/api/get_aws_keys')
+        .then(response => response.json())
+        .then(data => {
+          if (data.status == 'success') {
+   
+            AWS.config.update({
+              region: 'us-east-2',
+              accessKeyId: data.data[0], // 'your-access-key-id',
+              secretAccessKey: data.data[1] //'your-secret-access-key',
+            });
+            window.s3 = new AWS.S3();
+        }})
+        .catch(error => console.error('Error fetching AWS keys:', error));
+      }
+      return () => {
+        // cancel the request before the component unmounts
+        controller1.abort();
+      };
+    }, []);
 
     return (
       <React.Fragment>
-        <MeetingForm book={book} user={user} handleCreateMeeting={newMeeting} />
+        <MeetingForm book={book} user={user} handleCreateMeeting={newMeeting} setVideoBlob={setVideoBlob} />
         <div className='container-book-details'>
           <div className="row">
             <div className="book-details-descr col-5">
@@ -92,7 +100,7 @@ function BookDetailsPage(props) {
             </div>
             <div className="book-details-img col-7 col-md-auto">
               <img src={ book.image_url }/>
-              <BookMeetingDataContainer user={user} book={book} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting} />
+              <BookMeetingDataContainer user={user} book={book} blob={blob} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting} />
             </div>
           </div>
         </div>
@@ -102,9 +110,46 @@ function BookDetailsPage(props) {
   
   // Table to show all upcoming meetings for picked book
 function BookMeetingDataContainer(props) {
-  const { book, user, createMeeting, setCreateMeeting } = props;
+  const { book, user, createMeeting, setCreateMeeting, blob } = props;
   const [meetings, setMeetings] = React.useState([]);
+  const [newMeetingData, setNewMeetingData] = React.useState({});
   
+  React.useEffect(() => {
+    if(user && newMeetingData && blob) { // && blob
+      // checking blob size
+      fetch(blob)
+      .then((response) => response.blob())
+      .then((rblob) => {
+        // Check the size of the Blob
+        const sizeInBytes = rblob.size;
+        const sizeInMB = sizeInBytes / (1024 * 1024); // Convert to megabytes
+        console.log(`Blob size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
+      })
+      .catch((error) => {
+        console.error('Error fetching Blob:', error);
+      });
+      
+    const params = {
+      Bucket: 'readmeet-video',
+      Key: `${user.user_id}/${newMeetingData.id}/video.mp4`, 
+      Body: blob, // Blob data
+      ContentType: 'video/mp4', // content type
+    };
+    console.log(`${user.user_id}/${newMeetingData.id}/video.mp4`)
+    // Upload the Blob to S3
+    window.s3.upload(params, (err, data) => {
+      if (err) {
+        console.error('Error uploading to S3:', err);
+      } else {
+        console.log('Uploaded to S3:', data.Location);
+      }
+    });
+    
+    return () => {
+      setNewMeetingData({});
+    }
+    }
+  }, [newMeetingData])
 
   React.useEffect(() => {
     const controller = new AbortController();
@@ -145,6 +190,7 @@ function BookMeetingDataContainer(props) {
         overview: document.querySelector('#overview').value,
         place: document.querySelector('#autocomplete-address').value,
         max_guests: document.querySelector('#max-guests').value,
+        video_url: blob ? true : null
       };
 
       const resultOfValidForm = isFormValid(formInputs);
@@ -174,6 +220,10 @@ function BookMeetingDataContainer(props) {
                 if (modal) {
                     modal.hide(); // Bootstrap's method
                 }
+                // sending blob to Amazon S3
+                // setSendBlob(true);
+                setNewMeetingData(data["new_meeting"]);
+                console.log("Metting data....", data.new_meeting)
               }
               else {
                 console.log("Error: meeting was not created")
@@ -419,7 +469,7 @@ function Review(props) {
 
 // form for creating a new meeting
 function MeetingForm(props) {
-  const { book, user, handleCreateMeeting } = props;
+  const { book, user, handleCreateMeeting, setVideoBlob } = props;
   const errorMessage = "";
   const [expanded, setExpanded] = React.useState(false);
   const [mediaVisible, setMediaVisible] = React.useState(false);
@@ -597,7 +647,7 @@ function MeetingForm(props) {
                         <div>
                           <button id="open-media-recorder" onClick={toggleMediaRecorder}>Start Video Note</button>
                         </div>
-                        {mediaVisible && (<VideoRecorder />)}
+                        {mediaVisible && (<VideoRecorder setVideoBlob={setVideoBlob}/>)}
                         <div>
                           <button id="search-yelp-form" onClick={toggleYelpForm}>Or let's look for a place!</button>
                         </div>
@@ -764,19 +814,30 @@ function YelpRow(props) {
 }
 
 
-function VideoRecorder() {
+function VideoRecorder(props) {
+  const { setVideoBlob } = props;
+
   const [recording, setRecording] = React.useState(false);
   const [videoURL, setVideoURL] = React.useState(null);
   const [cameraStarted, setCameraStarted] = React.useState(false);
   const mediaRecorderRef = React.useRef(null);
   const videoRef = React.useRef(null);
 
+  React.useEffect(() => {
+    if(videoURL){
+      console.log("New blob was recorded")
+      setVideoBlob(videoURL);
+    }
+  }, [videoURL])
+
   const mediaStreamConstraints = {
     audio: true,
     video: true,
   };
 
-  const startRecording = () => {
+  const startRecording = (ev) => {
+    ev.preventDefault();
+
     if (!cameraStarted) {
       // camera hasn't started yet, need to start it now
       navigator.mediaDevices
@@ -814,7 +875,9 @@ function VideoRecorder() {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = (ev) => {
+    ev.preventDefault();
+
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       setRecording(false);
@@ -826,10 +889,10 @@ function VideoRecorder() {
     stopButton.style.display = "none";
 
     return () => {
-      if (mediaRecorderRef.current) {
+      if (mediaRecorderRef && mediaRecorderRef.current) {
         mediaRecorderRef.current = null;
       }
-      if (videoRef.current && 'srcObject' in videoRef.current) {
+      if (videoRef && videoRef.current && 'srcObject' in videoRef.current) {
         videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
       }
     };

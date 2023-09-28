@@ -10,6 +10,9 @@ import pytz
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_KEY')
 
+KEY_ACCESS = os.environ.get('ACCESS_KEY')
+KEY_ACCESS_ID = os.environ.get('ACCESS_KEY_ID')
+
 
 @app.route("/")
 def homepage():
@@ -354,6 +357,7 @@ def create_meeting():
     place = inputs.get('place')
     max_guests = inputs.get('max_guests')
     overview = inputs.get('overview', None)
+    video_url = inputs.get('video_url', None)
     
     host = crud.get_user_by_id(user_id)
     book = crud.get_book_by_id(book_id)
@@ -375,18 +379,25 @@ def create_meeting():
            
             new_book = Book.create(book_id, isbn, title, authors, subtitle, \
                                     image_url=image_url, description=description) 
-            print(new_book)
+            
             db.session.add(new_book)
             new_meeting = Meeting.create(new_book, day_tz, offline, host, max_guests, overview=overview, place=place, language=language)
             db.session.add(new_meeting)
     else:
         new_meeting = Meeting.create(book, day_tz, offline, host, max_guests, overview=overview, place=place, language=language)
-        print(new_meeting)
         db.session.add(new_meeting)
     
+    print(new_meeting, "video ", video_url)
     db.session.commit()
+    # only after commit, it is possible to get actual meeting_id for storing path to video blob in AWS S3
+    if video_url and new_meeting:
+        new_meeting_id = new_meeting.meeting_id
+        meeting_to_update = crud.get_meeting_by_id(new_meeting_id)
+        meeting_to_update.video_note = f"{user_id}/{new_meeting_id}/video.mp4"
+        db.session.commit()
     
     if new_meeting:
+        # sending respond
         meeting_dict = new_meeting.to_dict()
         list_of_guests = [guest.user_id for guest in new_meeting.attending_guests]
         meeting_dict["guests_count"] = len(new_meeting.attending_guests)
@@ -467,6 +478,14 @@ def check_meetings_for_past_due():
     crud.update_past_meetings()
     # save changes
     db.session.commit()
+
+
+@app.route("/api/get_aws_keys")
+def get_keys():
+    if KEY_ACCESS and KEY_ACCESS_ID:
+        return jsonify({'status': 'success', 'data': [KEY_ACCESS_ID, KEY_ACCESS]})
+    else:
+        return jsonify({'status': 'error'})
 
 
 if __name__ == "__main__":

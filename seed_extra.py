@@ -42,7 +42,7 @@ users = models.User.query.all()
 # creates meetings
 books = models.Book.query.all()
 for index, user in enumerate(users):
-    date_now = datetime.now() + timedelta(days=10) # adding one more day to now
+    date_now = datetime.now() + timedelta(days=random.randint(1, 20)) # adding one more day to now
     nyc = pytz.timezone('America/New_York')
     date_localized = nyc.localize(date_now)
     offline = random.choice([False,True])

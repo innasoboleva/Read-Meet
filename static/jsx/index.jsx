@@ -34,16 +34,8 @@ function IndexPageContainer() {
     }
   }
 
-  React.useEffect(() => {
-    // Clean up timers and messages when the component unmounts
-    return () => {
-      Object.values(timersRef.current).forEach((timer) => {
-        clearTimeout(timer);
-      });
-      timersRef.current = {};
-      setMessages([]);
-    };
-  }, []);
+  // setting up AWS
+  const AWS = window.AWS;
 
   React.useEffect(() => {
     if (meetingToAdd) {
@@ -59,7 +51,10 @@ function IndexPageContainer() {
 
 
   React.useEffect(() => {
-      fetch('/api/get_current_user')
+    const controller1 = new AbortController();
+    const controller2 = new AbortController();
+
+      fetch('/api/get_current_user', {signal: controller1.signal })
         .then(response => response.json())
         .then(data => {
           setUser(data)
@@ -73,6 +68,34 @@ function IndexPageContainer() {
           }
         })
         .catch(error => console.error('Error fetching current user:', error));
+
+      fetch('/api/get_aws_keys', {signal: controller2.signal })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status == 'success') {
+            
+            AWS.config.update({
+              region: 'us-east-2',
+              accessKeyId: data.data[0], // 'your-access-key-id',
+              secretAccessKey: data.data[1] //'your-secret-access-key',
+            });
+            window.s3 = new AWS.S3();
+            console.log("S3 was succesfully set", window.s3)
+          }
+        })
+        .catch(error => console.error('Error fetching AWS keys:', error));
+
+        return () => {
+          // cancel the request before component unmounts
+          controller1.abort();
+          controller2.abort();
+          // Clean up timers and messages when the component unmounts
+          Object.values(timersRef.current).forEach((timer) => {
+            clearTimeout(timer);
+          });
+          timersRef.current = {};
+          setMessages([]);
+      };
     }, []);
 
   const dropMeetingFromGuest = (meeting) => {
@@ -90,9 +113,6 @@ function IndexPageContainer() {
             <div id="background-img">
               <img src="/static/img/house_on_the_hill.png"></img>
             </div>
-            {/* <div id="background2-img">
-              <img src="/static/img/coffee_menu.jpg"></img>
-            </div> */}
             <CarouselDataContainer user={user}/>
             <div id="index-container-tables">
             <div className="column" id="meeting-table-container">
@@ -149,6 +169,11 @@ function MeetingDataContainer(props) {
             })
         .catch(error => console.error('Error fetching meetings:', error));
       }, [user]);
+
+    React.useEffect(() => {
+      const updatedMeetings = meetings.filter(meeting => meeting.id !== meetingToDelete.id);
+      setMeetings(updatedMeetings);
+    }, [meetingToDelete])
       
     return (
       <React.Fragment>
@@ -284,7 +309,7 @@ function MeetingRow(props) {
         <td>{localDateString}</td>
         <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
         <td>{meeting.overview}</td>
-        <td>{meeting.video}</td>
+        <td><div id={`video-${meeting.id}`}>{meeting.video}</div></td>
         <td>{meeting.language}</td>
         <td>{meeting.host_name}</td>
         <td>{meeting.guests_count}/{meeting.max_guests}</td>
@@ -626,4 +651,24 @@ function convertDate(day) {
     return localDateString
   }
   return ""
+}
+
+function fetchVideoBlob(meeting_id, path) {
+ 
+  if (!path) {
+    console.error(`No file found for meeting_id ${meeting_id}`);
+    return;
+  }
+
+  window.s3.getObject({ Bucket: 'readmeet-video', Key: path }, (err, data) => {
+    if (err) {
+      console.error(`Error fetching object for meeting_id ${meeting_id}:`, err);
+      return;
+    }
+
+    const blob = new Blob([data.Body], { type: 'video/mp4' });
+
+    const videoElement = document.getElementById(`video-${meeting_id}`);
+    videoElement.src = URL.createObjectURL(blob);
+  });
 }
