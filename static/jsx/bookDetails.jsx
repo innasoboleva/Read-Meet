@@ -14,7 +14,6 @@ function BookDetailsPage(props) {
       setUser(newUser);
     }
     console.log("State", state);
-    console.log("State book", state.book);
     console.log("Props", props.match.params);
 
     if ((!state || !state.book) && !props.match.params) {
@@ -41,7 +40,6 @@ function BookDetailsPage(props) {
           controller.abort();
       };
     } else {
-      console.log("Book was passes from index page");
       book = state.book;
       console.log("Title", book.title);
     }
@@ -124,26 +122,25 @@ function BookMeetingDataContainer(props) {
         const sizeInBytes = rblob.size;
         const sizeInMB = sizeInBytes / (1024 * 1024); // Convert to megabytes
         console.log(`Blob size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
+
+        const params = {
+          Bucket: 'readmeet-video',
+          Key: `${user.user_id}/${newMeetingData.id}/video.mp4`, 
+          Body: rblob, // Blob data
+          ContentType: 'video/mp4', // content type
+        };
+        // upload the Blob to S3
+        window.s3.upload(params, (err, data) => {
+          if (err) {
+            console.error('Error uploading to S3:', err);
+          } else {
+            console.log('Uploaded to S3:', data.Location);
+          }
+        });
       })
       .catch((error) => {
         console.error('Error fetching Blob:', error);
       });
-      
-    const params = {
-      Bucket: 'readmeet-video',
-      Key: `${user.user_id}/${newMeetingData.id}/video.mp4`, 
-      Body: blob, // Blob data
-      ContentType: 'video/mp4', // content type
-    };
-    console.log(`${user.user_id}/${newMeetingData.id}/video.mp4`)
-    // Upload the Blob to S3
-    window.s3.upload(params, (err, data) => {
-      if (err) {
-        console.error('Error uploading to S3:', err);
-      } else {
-        console.log('Uploaded to S3:', data.Location);
-      }
-    });
     
     return () => {
       setNewMeetingData({});
@@ -220,8 +217,7 @@ function BookMeetingDataContainer(props) {
                 if (modal) {
                     modal.hide(); // Bootstrap's method
                 }
-                // sending blob to Amazon S3
-                // setSendBlob(true);
+                // sending blob to Amazon S3, triggered by setNewMeetingData
                 setNewMeetingData(data["new_meeting"]);
                 console.log("Metting data....", data.new_meeting)
               }
@@ -501,12 +497,11 @@ function MeetingForm(props) {
 
   const updateAddressInForm = (name, address) => {
     document.querySelector('#autocomplete-address').value = `${name}, ${address}`;
-    console.log(address);
     setExpanded(false);
   };
 
   React.useEffect(() => {
-    console.log(user)
+
     if (user && user.user_id != null) {
       setHideCreateButton(false);
     } else {
@@ -517,7 +512,7 @@ function MeetingForm(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+    mediaClose();
     handleCreateMeeting(); 
   };
 
@@ -704,21 +699,14 @@ function YelpSearchForm(props) {
           isScrolling = true;
           const modalContentElement = document.querySelector('.meetingFormBody');
           const modalContentHeight = modalContentElement.scrollHeight;
-          console.log("modalContentHeight:", modalContentHeight)
           const modalContentScrollY = modalContentElement.scrollTop;
-          console.log("modalContentScrollY:", modalContentScrollY)
         if ( // changed logic of if statement to implement for modal popup scroll
           // was modalContentHeight - modalContentScrollY + 300 >= modalContentElement.offsetHeight
           modalContentScrollY + modalContentElement.offsetHeight + 300 >= modalContentHeight
         ) {
-          console.log("PAGE before increment: ", page)
-          console.log("Scrolled ONCE");
-          
+          console.log("Page before increment: ", page, "scrolled 1 time")
           setPage(prevPage => prevPage + 1);
           setIsLoading(true); 
-          
-          console.log("PAGE: ", page)
-          console.log(isLoading)
         }
         isScrolling = false;
       }, 300); // 300ms delay
@@ -728,9 +716,8 @@ function YelpSearchForm(props) {
   const debouncedScrollDown = debounce(scrollDown, 400);
 
   React.useEffect(() => {
-      console.log("EXPANDED: ", expanded);
+      
       if (expanded) {
-          console.log("LISTENER ADDED")
           const modalContentElement = document.querySelector('.meetingFormBody');
           modalContentElement.addEventListener('scroll', debouncedScrollDown);
           return () => modalContentElement.removeEventListener('scroll', debouncedScrollDown);
@@ -740,8 +727,7 @@ function YelpSearchForm(props) {
   React.useEffect(() => {
       const controller = new AbortController();
       const signal = controller.signal;
-      console.log("UseEffect Page: ", page);
-      console.log("UseEffect new search: ", newSearch);
+      console.log("UseEffect new search: ", newSearch, "page: ", page);
       
       fetch("/api/get_yelp_places", {
           signal: signal,
@@ -761,15 +747,12 @@ function YelpSearchForm(props) {
                   setPage(0);
                   setClean(false);
               }
-              console.log("Yelp places are: ", places)
           } else {
-            console.log("Yelp form ERRRROR, toggling... ", expanded);
             yelpError(true);
           }
         })
         .catch((error) => {
           console.error('Error getting businesses from Yelp API:', error)
-          console.log("Yelp form very big ERRRROR, toggling... ", expanded);
           yelpError(true);
         });
   
@@ -827,6 +810,7 @@ function VideoRecorder(props) {
     if(videoURL){
       console.log("New blob was recorded")
       setVideoBlob(videoURL);
+      console.log(videoURL)
     }
   }, [videoURL])
 
@@ -851,9 +835,9 @@ function VideoRecorder(props) {
         .catch((error) => {
           console.error('Error accessing audio and video:', error);
         });
-        const stopButton = document.getElementById("stop-recording")
+        const stopButton = document.getElementById("stop-recording");
         stopButton.style.display = "inline";
-        document.getElementById("start-recording").innerText = 'Start'
+        document.getElementById("start-recording").innerText = 'Start';
         
       } else {
       // camera has already started, start recording
@@ -885,7 +869,7 @@ function VideoRecorder(props) {
   };
 
   React.useEffect(() => {
-    const stopButton = document.getElementById("stop-recording")
+    const stopButton = document.getElementById("stop-recording");
     stopButton.style.display = "none";
 
     return () => {

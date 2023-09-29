@@ -21,7 +21,6 @@ def homepage():
     return render_template("index.html")
 
 
-# @app.route("/books/", strict_slashes=False)
 @app.route("/books")
 def show_books_page():
     """Show page with rendered books."""
@@ -347,7 +346,6 @@ def create_meeting():
     day = datetime.fromisoformat(raw_day)
     tz = pytz.timezone(convert_tz(timezone))
     day_tz = tz.localize(day)
-    print(day_tz)
 
     raw_offline = inputs.get('offline')
     offline = True # check for zoom meeting or in person (offline) meeting
@@ -387,7 +385,7 @@ def create_meeting():
         new_meeting = Meeting.create(book, day_tz, offline, host, max_guests, overview=overview, place=place, language=language)
         db.session.add(new_meeting)
     
-    print(new_meeting, "video ", video_url)
+    print("Video ", video_url, new_meeting)
     db.session.commit()
     # only after commit, it is possible to get actual meeting_id for storing path to video blob in AWS S3
     if video_url and new_meeting:

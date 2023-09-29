@@ -198,7 +198,9 @@ function MeetingDataContainer(props) {
           <tbody><tr><td>No meetings to display.</td></tr></tbody>
         ) : (
             <tbody>
-              { meetings.map((meeting) => (
+              { meetings
+              .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort meetings by date
+              .map((meeting) => (
                 <MeetingRow key={meeting.id} meeting={meeting} user={user} meetingToAdd={meetingToAdd} meetingToDrop={meetingToDrop} setMeetingToAdd={setMeetingToAdd} setMeetingToDrop={setMeetingToDrop} meetingToDropFromGuest={meetingToDropFromGuest}/>
               ))}
             </tbody>
@@ -214,9 +216,7 @@ function MeetingRow(props) {
     const { meeting, user, meetingToAdd, meetingToDrop, setMeetingToAdd, setMeetingToDrop, meetingToDropFromGuest } = props;
     // for correct displaying join meeting button and drop meeting button
     const [hideJoinButton, setHideJoinButton] = React.useState(false);
-
     const [hideDropButton, setHideDropButton] = React.useState(false);
-
     const [guestsCount, setGuestsCount] = React.useState(meeting.guests_count);
 
     React.useEffect(() => {
@@ -249,8 +249,13 @@ function MeetingRow(props) {
       }
     });
 
+    React.useEffect(() => {
+      if (meeting.video) {
+        fetchVideoBlob(meeting.id, meeting.video);
+      }
+    }, [meeting]);
+
     const joinMeeting = () => {
-      
       if (user.user_id && (user.user_id != meeting.host_id)) {
         fetch('/api/join_meeting', {
           method: 'POST',
@@ -268,7 +273,6 @@ function MeetingRow(props) {
                   setHideJoinButton(true);
                   setHideDropButton(false);
                   setGuestsCount(prevGuestsCount => prevGuestsCount + 1);
-                  
                   setMeetingToAdd(meeting);
               }
           })
@@ -309,7 +313,8 @@ function MeetingRow(props) {
         <td>{localDateString}</td>
         <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
         <td>{meeting.overview}</td>
-        <td><div id={`video-${meeting.id}`}>{meeting.video}</div></td>
+        <td>
+        { meeting.video ? (<video className="video-note" id={`video-${meeting.id}`} controls controlsList="nodownload"/>) : ('-')}</td>
         <td>{meeting.language}</td>
         <td>{meeting.host_name}</td>
         <td>{meeting.guests_count}/{meeting.max_guests}</td>
@@ -387,9 +392,7 @@ function CarouselItems(props) {
             pathname: `/books/${book.book_id}`,
             state: { user, book }
             }}>
-                
                 <img src={book.image_url} className="img-fluid" alt={book.title} />
-                {/* <img id="shadow-carousel" src="/static/img/bannershadow.png" /> */}
               </ReactRouterDOM.Link>
             </div>
           ))}
@@ -457,11 +460,9 @@ function UsersHostDataContainer(props) {
     setShowModal(false);
   };
 
-
   React.useEffect(() => {
       console.log("Meetings were updated.");
   }, [meetings]);
-
 
   React.useEffect(() => {
     fetch('/api/get_hosted_meetings_for_user')
@@ -493,7 +494,9 @@ function UsersHostDataContainer(props) {
         <tbody><tr><td>No meetings to display.</td></tr></tbody>
       ) : (
         <tbody>
-          { meetings.map((meeting) => (
+          { meetings
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .map((meeting) => (
             <UserHostMeetingRow key={meeting.id} meeting={meeting} showAlertModal={showAlertModal}/>
           ))}
         </tbody>
@@ -573,7 +576,9 @@ function UsersGuestDataContainer(props) {
         {meetings.length === 0 ? (<tbody><tr><td>No meetings to display.</td></tr></tbody>
           ) : (
             <tbody>
-          { meetings.map((meeting) => (
+          { meetings
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .map((meeting) => (
             <UserGuestMeetingRow key={meeting.id} meeting={meeting} dropMeetingFromGuest={dropMeetingFromGuest}/>
           ))}
           </tbody>
@@ -653,6 +658,7 @@ function convertDate(day) {
   return ""
 }
 
+// function for showing video from AWS S3
 function fetchVideoBlob(meeting_id, path) {
  
   if (!path) {
@@ -665,10 +671,10 @@ function fetchVideoBlob(meeting_id, path) {
       console.error(`Error fetching object for meeting_id ${meeting_id}:`, err);
       return;
     }
-
+    console.log("Video", path, "ID", meeting_id)
     const blob = new Blob([data.Body], { type: 'video/mp4' });
-
     const videoElement = document.getElementById(`video-${meeting_id}`);
     videoElement.src = URL.createObjectURL(blob);
+
   });
 }
