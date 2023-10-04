@@ -2,6 +2,8 @@
 from models import db, User, Meeting, Book, List
 from datetime import datetime
 import pytz
+from apis import *
+from sqlalchemy import not_
 
 # Meetings
 def get_all_meetings():
@@ -98,6 +100,49 @@ def get_popular_books():
     """ Returns list of popular books. """
     day = datetime.today().strftime("%Y-%m")
     return Book.query.filter(Book.popular_book == day).all()
+
+
+def add_new_popular_books_to_db():
+    """
+    Function for checking new books, once every new month and to seed db with popular books for current month.
+    """
+    popular_books = goodreads_api.get_books_for_carousel()
+    status = popular_books.get("status")
+    if status == "success":
+        list_of_titles = popular_books.get("titles")
+        for book in list_of_titles:
+            result_from_book_search = books_api.find_popular_book(book)
+            book_status = result_from_book_search.get("status")
+            if book_status == "success":
+                books = result_from_book_search.get("books")
+                if books:
+                    popular_book = books[0]
+                    book_id = popular_book.get("book_id")
+                    title = popular_book.get("title")
+                    subtitle = popular_book.get("subtitle")
+                    authors = popular_book.get("authors")
+                    description = popular_book.get("description")
+                    books_ISBN = popular_book.get("ISBN")
+                    image = popular_book.get("image_url")
+                    popular_book = datetime.today().strftime("%Y-%m")
+                    new_book = Book.create(book_id=book_id, isbn=books_ISBN, title=title, subtitle=subtitle, authors=authors, \
+                    image_url=image, description=description, popular_book=popular_book)
+                    db.session.add(new_book)
+
+    db.session.commit()
+
+
+def delete_old_unused_books_from_db():
+    """ Function for deleting old unused book from Database """
+    current_day = datetime.today().strftime("%Y-%m")
+    subquery = db.session.query(Meeting.book_id).distinct()
+
+    db.session.query(Book).filter(not_(Book.book_id.in_(subquery))).\
+        filter(Book.popular_book != current_day).\
+        filter(Book.popular_book.isnot(None)).\
+            delete(synchronize_session=False)
+    
+    db.session.commit()
 
 
 # Lists

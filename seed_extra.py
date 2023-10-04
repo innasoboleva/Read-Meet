@@ -1,13 +1,10 @@
 # File for seeding the database
-import os
-import json
 from datetime import datetime, timedelta
 import random
 import string
 import pytz
 
 import models, server
-from apis import books_api, goodreads_api
 import csv
 import sys
 

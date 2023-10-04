@@ -53,12 +53,16 @@
         </form>
       </div>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        
         <li class="nav-item" id="sign-in-nav-link">
           <a class="nav-link" id="user-signin-nav" data-bs-toggle="modal" data-bs-target="#signInOptions">{% if session.get('user_id') is none %}Sign in{% endif %}</a>
         </li>
+        
+       
         <li class="nav-item" id="sign-out-nav-link">
-          <a class="nav-link" id="user-signout">{% if session.get('user_id') is not none %}Sign out{% endif %}</a>
+          <a class="nav-link" id="user-signout"> {% if session.get('user_id') is not none %}Sign out {% endif %}</a>
         </li>
+       
       </ul>
     </div>
   </div>
@@ -211,19 +215,10 @@
 </div>
 
   {% block body %}
-  <!-- <div class="video-block-container">
-    <h1>Media Recorder<h1>
-        <div>
-          <button id="start-recording"> Start video recording </button>
-          <button id="stop-recording" disabled> Stop video recording </button>
-        </div>
-
-        <video id="video-block" autoplay muted>
-          Your browser doesn't support the video tag
-        </video>
-        <video id="your-video" controls></video>
-  </div> -->
+ 
   {% endblock %}
+
+
 
   <!-- Include any page-specific JavaScript using this block. -->
   {% block js %}

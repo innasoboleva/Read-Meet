@@ -133,7 +133,11 @@ function IndexPageContainer() {
                   <div>You will see your personal meetings here if you log in </div>
               )}
             </div>
-            
+            <footer>
+                <div class="footer-content">
+                    <p>&copy; 2023, Inna Soboleva. All rights reserved.</p>
+                </div>
+              </footer>
           </React.Fragment>);
 }
 
@@ -177,7 +181,7 @@ function MeetingDataContainer(props) {
       
     return (
       <React.Fragment>
-        <h2>Upcoming Book Discussions</h2>
+        <h2 id="h2-meeting-table">Upcoming Book Discussions</h2>
         <div id="meeting-table">
           <table className="table table-hover" >
             <thead>
@@ -190,7 +194,6 @@ function MeetingDataContainer(props) {
                 <th scope="col">Lg.</th>
                 <th scope="col">Host</th>
                 <th scope="col"> Guests</th>
-                <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -319,10 +322,8 @@ function MeetingRow(props) {
         <td>{meeting.host_name}</td>
         <td>{meeting.guests_count}/{meeting.max_guests}</td>
         <td>
-            <button id={`button-join-${meeting.id}`} className="btn btn-success" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
-        </td>
-        <td>
-            <button id={`button-drop-${meeting.id}`} className="btn btn-warning" disabled={hideDropButton} onClick={dropMeeting}>Drop</button>
+            <button id={`button-join-${meeting.id}`} className="btn btn-success join" disabled={hideJoinButton} onClick={joinMeeting}>Join</button>
+            <button id={`button-drop-${meeting.id}`} className="btn btn-warning drop" disabled={hideDropButton} onClick={dropMeeting}>Drop</button>
         </td>
       </tr>
       </React.Fragment>
@@ -565,8 +566,7 @@ function UsersGuestDataContainer(props) {
         <thead>
           <tr>
             <th scope="col">Book</th>
-            <th scope="col">Day</th>
-            <th scope="col">Place</th>
+            <th scope="col">Where</th>
             <th scope="col">Host</th>
             <th scope="col"> Guests</th>
             <th scope="col"></th>
@@ -597,8 +597,7 @@ function UserGuestMeetingRow(props) {
   return (<React.Fragment>
     <tr>
       <td>{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
-      <td>{meetingDate}</td>
-      <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
+      <td>{meeting.offline ? meeting.place : 'Zoom'} on {meetingDate}</td>
       <td>{meeting.host_name}</td>
       <td>{meeting.guests_count}/{meeting.max_guests}</td>
       <td>

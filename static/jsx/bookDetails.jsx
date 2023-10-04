@@ -417,7 +417,7 @@ function ReviewsContainer(props) {
         <ul>
           { (noReviewsMessage.length != 0) ? (<div>{ noReviewsMessage }</div>) : 
             reviews.map((review, index) => (
-              <li> <Review key={index} review={review}/></li>
+              <li className="review"> <Review key={index} review={review}/></li>
             ))
           }
         </ul>
@@ -488,6 +488,7 @@ function MeetingForm(props) {
     env.preventDefault();
     console.log("Media Recorder toggled: ", mediaVisible);
     setMediaVisible(!mediaVisible);
+    document.getElementById("open-media-recorder").textContent = mediaVisible ? "Start Recording" : "Cancel Video Recording";
   };
 
   const yelpError = () => {
@@ -520,6 +521,7 @@ function MeetingForm(props) {
 
   const mediaClose = () => {
     setMediaVisible(false);
+    setVideoBlob(null);
   }
 
  
@@ -766,6 +768,7 @@ function YelpSearchForm(props) {
   return (<React.Fragment>
           <div className="yelp-form">
             <div className="element">
+            You can look for a place to meet here:
               <input type="search" id="search-yelp" />
               <button id="search-yelp-button" onClick={handleYelpSearch}>Search</button>
             </div> { places.map((place, index) => (

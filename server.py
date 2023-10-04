@@ -472,7 +472,7 @@ def convert_tz(input):
 
 
 def check_meetings_for_past_due():
-    """ Method for updating past meetings to being inactive and now showing in user's tables. """
+    """ Function for updating past meetings to being inactive and now showing in user's tables. """
     crud.update_past_meetings()
     # save changes
     db.session.commit()
@@ -490,5 +490,10 @@ if __name__ == "__main__":
     connect_to_db(app)
     # updating old meetings to inactive
     check_meetings_for_past_due()
+
+    # every month books needs to be uploaded
+    # crud.delete_old_unused_books_from_db()
+    # crud.add_new_popular_books_to_db()
+    
     app.run(debug=True, host='127.0.0.1') # localhost preferable for video api
     
