@@ -88,7 +88,7 @@ function BookDetailsPage(props) {
       <React.Fragment>
         <MeetingForm book={book} user={user} handleCreateMeeting={newMeeting} setVideoBlob={setVideoBlob} />
         <div className='container-book-details'>
-          <div className="row">
+          <div className="row details-meetings-page">
             <div className="book-details-descr col-5">
               <h2>Details for { book.title }</h2>
                 <span className="subtitle">{ book.subtitle } </span>
@@ -265,14 +265,14 @@ function BookMeetingDataContainer(props) {
       <table className="table table-hover">
         <thead>
           <tr>
-            <th scope="col">Day</th>
-            <th scope="col">Place</th>
+            <th scope="col">Where</th>
             <th scope="col">Host</th>
             <th scope="col">Guests</th>
           </tr>
         </thead>
         <tbody>
-          { meetings.map((meeting) => (
+          { meetings.sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort meetings by date
+          .map((meeting) => (
             <BookMeetingRow key={meeting.id} meeting={meeting} user={user}/>
           ))}
         </tbody>
@@ -363,8 +363,7 @@ function BookMeetingRow(props) {
 
   return (
     <tr>
-      <td>{localDateString}</td>
-      <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
+      <td>{meeting.offline ? meeting.place : 'Zoom'} on {localDateString}</td>
       <td>{meeting.host_name}</td>
       <td>{guestsCount}/{meeting.max_guests}</td>
       <td>

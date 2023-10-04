@@ -21,6 +21,10 @@
 
   <!-- Load custom stylesheet -->
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/index.css">
+  <link rel="stylesheet" href="/static/css/books.css">
+  <link rel="stylesheet" href="/static/css/details.css">
+  <link rel="stylesheet" href="/static/css/new_meeting_form.css">
 </head>
 
 <body>
@@ -86,18 +90,16 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
-              <img src="/static/img/a_girl_standin.png">
+              <img src="/static/img/a-girl.png">
             </div>
             <div class="modal-body">
                 <h5 class="modal-title">Sign in to Read and Meet</h5>
-                <div class="sign-in-apple">sign-in-apple</div>
-                <div class="sign-in-facebook">sign-in-facebook</div>
-                <div class="sign-in-email">or
+                <div class="sign-in-email">
                     <a data-bs-toggle="modal" data-bs-target="#signInWithEmail" onclick="closeModalWithId('signInOptions')">Sign in with email</a>
                 </div>
                 <div class="modal-footer">
                     <span>New to Read and Meet?</span>
-                    <a data-bs-toggle="modal" data-bs-target="#singUpForm" onclick="closeModalWithId('signInOptions')">Sign up</a>
+                    <a class="sign-up" data-bs-toggle="modal" data-bs-target="#singUpForm" onclick="closeModalWithId('signInOptions')">Sign up</a>
                 </div>
             </div>
         </div>
@@ -116,7 +118,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
-              <img src="/static/img/a_girl_standin.png">
+              <img src="/static/img/a-girl.png">
             </div>
             <div class="modal-body">
                
@@ -140,7 +142,7 @@
                 </form>
                 <div class="modal-footer">
                     <span>New to Read and Meet?</span>
-                    <a data-bs-toggle="modal" data-bs-target="#singUpForm" onclick="closeModalWithId('signInWithEmail')">Sign up</a>
+                    <a class="sign-up" data-bs-toggle="modal" data-bs-target="#singUpForm" onclick="closeModalWithId('signInWithEmail')">Sign up</a>
                 </div>
             </div>
         </div>
@@ -159,7 +161,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
-              <img src="/static/img/a_girl_standin.png">
+              <img src="/static/img/a-girl.png">
             </div>
             <div class="modal-body">
                 <h3 class="modal-title">Sign up with email</h3>
@@ -215,10 +217,7 @@
 </div>
 
   {% block body %}
- 
   {% endblock %}
-
-
 
   <!-- Include any page-specific JavaScript using this block. -->
   {% block js %}

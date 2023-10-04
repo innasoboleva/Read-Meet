@@ -181,7 +181,7 @@ function MeetingDataContainer(props) {
       
     return (
       <React.Fragment>
-        <h2 id="h2-meeting-table">Upcoming Book Discussions</h2>
+        <h3 id="h2-meeting-table">Upcoming Book Discussions</h3>
         <div id="meeting-table">
           <table className="table table-hover" >
             <thead>
@@ -312,7 +312,7 @@ function MeetingRow(props) {
 
     return (<React.Fragment>
       <tr>
-        <td>{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
+        <td className="book-title">{meeting.book_title}, <br></br>by {meeting.book_authors}</td>
         <td>{localDateString}</td>
         <td>{meeting.offline ? meeting.place : 'Zoom'}</td>
         <td>{meeting.overview}</td>
@@ -351,9 +351,14 @@ function CarouselDataContainer(props) {
     groupedBooks.push(filteredBooks.slice(i, i + 3));
   }
 
+  const phrases = [ 'Did you read these popular books?', 'Try these popular books!', 'Could this be the next book for you?', 'Judge a book by more than its cover. Try it out.', 'Why not see if one of these books is right for you?']
+  const randomIndex = Math.floor(Math.random() * phrases.length);
+  const popular_book_phrase = phrases[randomIndex];
+
   return (
     <React.Fragment>
     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+    <h2 id="popular-book-title">{popular_book_phrase}</h2>
     {groupedBooks.length === 0 ? (
         <span>No books to display.</span>
       ) : (
@@ -478,7 +483,7 @@ function UsersHostDataContainer(props) {
 
   return (
     <React.Fragment>
-      <h2>Your Hosted Meetings</h2>
+      <h3>Your Hosted Meetings</h3>
        <ModalAlert deleteMeeting={deleteMeeting} cancelDelete={cancelDelete} modalRef={modalRef}/>
        <div id="host-table">
       <table className="table table-hover">
@@ -560,7 +565,7 @@ function UsersGuestDataContainer(props) {
 
   return (
     <React.Fragment>
-      <h2>Your Guest Meetings</h2>
+      <h3>Your Guest Meetings</h3>
       <div id="guest-table">
       <table className="table table-hover">
         <thead>
