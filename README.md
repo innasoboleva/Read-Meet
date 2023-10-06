@@ -27,15 +27,15 @@ Enjoy a user-friendly interface that makes creating and managing meetings a bree
 
 Experience the joy of discussing your favorite books with others who share your enthusiasm. With **Read&Meet**, every book discussion becomes an opportunity for insightful conversations, new friendships, and unforgettable reading experiences. Join us today and let the world of books come alive like never before!
 
-### Data Model
-**Reed&Meet** is using a PostgreSQL database and SQLAlchemy as an ORM.
-![ Detailed data model](https://readmeet-video.s3.us-east-2.amazonaws.com/data_tables.jpg)
-
 ### Project Tech Stack
 Python, JavaScript, HTML5, CSS3, Flask, SQLAlchemy,  PostgreSQL, AJAX, Jinja2, React, Bootstrap, JSON, Pytest
 
 ### APIs Used
 Google Books API, Yelp API, MediaStream API, Selenium, AWS SDK
+
+### Data Model
+**Reed&Meet** is using a PostgreSQL database and SQLAlchemy as an ORM.
+![ Detailed data model](https://readmeet-video.s3.us-east-2.amazonaws.com/data_tables.jpg)
 
 ## Usage
 

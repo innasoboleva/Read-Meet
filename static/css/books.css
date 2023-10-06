@@ -1,0 +1,102 @@
+/* Style for book search page, showing different books */
+
+a {
+    text-decoration: none;
+  }
+  
+  .title {
+    padding: 5px 0px 5px 0px;
+    font-size: 16px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 98px;
+    color: black;
+  
+  }
+  
+  .subtitle {
+    font-size: 13px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    color: black;
+  }
+  
+  .authors {
+    padding: 5px 0px 5px 0px;
+    max-height: 98px;
+    font-size: 15px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    color: #225b53;
+    overflow: hidden;
+  }
+  
+  .text {
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+  }
+  
+  .search-all-books {
+    display: flex;
+    flex-wrap: wrap;
+    font-family: sans-serif;
+  }
+  
+  .search-book-div {
+    width: 240px;
+    margin: 0px 10px 10px 10px;
+    min-width: 150px;
+    min-height: 230px;
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: #c6c6c6;
+    padding: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+    position: relative;
+  }
+  
+  .search-book-div:hover {
+    box-shadow: -5px 0px 6px rgba(185, 185, 185, 0.25), 5px 0px 6px rgba(185, 185, 185, 0.25);
+  }
+  
+  .book-image-background {
+    position: absolute;
+    background-color: rgb(46, 151, 151);
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 30%;
+    max-height: 30%;
+  }
+  
+   .image-block img {
+    box-shadow: 3px 3px 10px rgba(15, 14, 14, 0.25);
+    position: relative;
+    z-index: 2;
+    max-width: 100px;
+    max-height: 200px;
+  }
+  
+  .image-block {
+    height: 180px;
+  }
+  
+  .book-contents {
+    position: relative;
+    display: block;
+    z-index: 2;
+  }
+  
+  .book-details {
+    position: absolute;
+    margin-top: 10px; 
+    padding: 20px;
+    background-color: #f4e7e2;
+    z-index: 3; /* above other books */
+  }
+  

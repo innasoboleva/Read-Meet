@@ -1,0 +1,110 @@
+/* Book details page styling */
+.container-book-details {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .book-details-descr, .reviews {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    word-wrap: break-word;
+  }
+  
+  .book-details-descr .title {
+    font-weight: 800;
+  }
+  
+  .book-details-descr .subtitle {
+    font-weight: 550;
+  }
+  
+  .book-details-descr .authors {
+    color: #225b53;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .book-details-descr .descr {
+    padding: 20px;
+    text-align: justify;
+  }
+  
+  .book-details-img {
+    flex: 0 0 450px; 
+    height: calc(100vh - 100px); 
+    padding: 20px;
+    box-sizing: border-box;
+    position: sticky;
+    top: 20px;
+    right: 0;
+    width: 100%;
+    overflow-y: auto;
+    background-color: rgb(245, 245, 245);
+    border-radius: 20px;
+  }
+  
+  .details-meetings-page {
+    width: 100%;
+  }
+  
+  .book-details-img img {
+    max-height: 200px;
+  }
+  
+  /* Reviews from GOODREADS */
+  .reviews {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 20px;
+    
+  }
+  
+  .review-name {
+    font-weight: 700;
+  }
+  
+  .review-text {
+    padding: 25px;
+    font-size: 12px;
+    font-weight: 300;
+    max-height: 100px;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    background-color: white;
+    border-radius: 10px;
+    padding-bottom: 7px;
+  }
+  
+  .expanded {
+    padding: 20px;
+    font-size: 12px;
+    font-weight: 300;
+    white-space: normal;
+    overflow: hidden;
+    background-color: white;;
+  }
+  
+  .read-more-btn {
+    margin-bottom: 20px;
+    border: none;
+    background: transparent;
+    font-size: 11px;
+    color: rgb(60, 122, 103);
+  }
+  
+  li.review {
+    border-bottom: 1px solid #ccc; /* Line color and style */
+    padding: 10px 0; /* Adjust padding as needed */
+  }
+  
+  li.review:last-child {
+    border-bottom: none;
+  }
+  
+  ul {
+    list-style: none;
+    border-radius: 10px;
+  }

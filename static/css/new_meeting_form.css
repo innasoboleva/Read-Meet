@@ -1,0 +1,147 @@
+/* Form for new meetings  */
+
+.modal-content.meeting {
+    grid-template-columns: 100%;
+    padding-bottom: 50px;
+  }
+  
+  #overview {
+    resize: vertical;
+    overflow-y: auto;
+    width: 100%;
+    height: 150px;
+  }
+  
+  .radio-buttons {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  
+  #autocomplete-address {
+    height: 30px;
+    padding-left: 10px;
+    border-radius: 4px;
+    border: 1px solid rgb(186, 178, 178);
+    box-shadow: 0px 0px 12px #EFEFEF;
+  }
+  
+  button#meeting-create {
+    position: absolute;
+    left: 20%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  button#search-yelp-form, button#meeting-create, button#search-yelp-button, button#open-media-recorder, button#start-recording, button#stop-recording {
+    cursor: pointer;
+    width: 40%;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: 200;
+    background-color: rgb(115, 142, 124);
+    color: white;
+    transition: background-color .1s ease-in-out,color .1s ease-in-out;
+  }
+  
+  button#open-media-recorder, button#start-recording, button#stop-recording {
+    margin-bottom: 15px;
+    margin-top: 5px;
+  }
+  
+  button#start-recording {
+    background-color: #595959;
+  }
+  
+  button#meeting-create:hover, button#search-yelp-form:hover, button#search-yelp-button:hover, button#open-media-recorder:hover, button#start-recording:hover, button#stop-recording:hover {
+    background-color: #445549;
+   }
+  
+  button#start-recording:disabled, button#stop-recording:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed; 
+  }
+  
+  .red-indicator {
+    position: relative;
+    font-size: 9px;
+    color: red;
+    left: 21%;
+  }
+  
+  .form-check-input {
+    margin-right: 5px;
+    margin-left: 20px;
+  }
+  
+  /* Yelp table */
+  
+  .row.yelp-row {
+    padding: 10px;
+    border: black;
+  }
+  
+  .yelp-text {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Take up available vertical space */
+  }
+  
+  .row.yelp-row img {
+    max-height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .square-image {
+    width: 130px;
+    height: 130px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .yelp-name {
+    font-weight: 600;
+  }
+  
+  .yelp-rating {
+    display: inline;
+    padding: 10px;
+    font-size: 14px;
+    color:  rgb(112, 134, 68);
+  }
+  
+  .yelp-address {
+    font-size: 14px;
+  }
+  
+  .yelp-url {
+    color:#225b53;
+    cursor: pointer;
+    font-style: normal;
+    font-size: 10px;
+  }
+  
+  .yelp-url:hover {
+    color:#3e867c;
+  }
+  
+  .yelp-row img, .yelp-name{
+    cursor: pointer;
+  }
+  
+  #search-yelp {
+    margin: 15px 0 10px 0;
+  }
+  
+  #yelp-search-button {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  

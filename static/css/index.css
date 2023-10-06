@@ -1,0 +1,149 @@
+/* CAROUSEL */
+
+#carouselExampleControls {
+    margin-bottom: 30px;
+    padding-right: 50px;
+    padding-left: 50px;
+  }
+
+  #popular-book-title {
+    margin-top: 40px;
+    text-align: right;
+    font-family: Savoye LET;
+    font-size: 50px;
+    font-weight: 900;
+  }
+  
+  .carousel-inner {
+    display: flex;
+    margin-top: 20px;
+    margin-right: 55px;
+    margin-left: 55px;
+    background-color: rgba(255, 255, 255, 0.7); /* transparent for 50% */
+    width: auto;
+    border-radius: 20px;
+    padding: 50px 80px 30px 80px;
+  }
+  
+  .carousel-control-next,
+  .carousel-control-prev {
+      filter: invert(100%);
+  }
+  
+  .carousel-control-prev {
+    left: 50px;
+  }
+  
+  .carousel-control-next {
+    right: 50px;
+  }
+  
+  .carousel-image {
+    padding: 0px 10px 0px 10px;
+    flex: 1;
+    box-sizing: border-box;
+    height: 250px; /* height for the book cover */
+    max-width: 250px;
+    cursor: pointer;
+    position: relative;
+    margin-left: 80px;
+    margin-right: 80px;
+  }
+  
+  .carousel-image img {
+    max-width: 100%;
+    height: 95%;
+    display: block;
+    margin: 0 auto;
+   
+  }
+
+  /* Index page - styling tables */
+
+.book-title {
+    font-weight: 600;
+    
+   }
+   
+   #meeting-table, #host-table, #guest-table {
+     overflow: auto;
+     background-color: #f1efe9;
+     margin: 5px 5px 5px 5px;
+     padding: 5px 5px 5px 5px;
+     border-radius: 20px;
+   }
+   
+   #meeting-table {
+     width: auto;
+     margin-right: 30px;
+     max-height: 1215px;
+   }
+   
+   #host-table, #guest-table {
+     width: 500px;
+     max-height: 600px;
+   }
+   
+   .table {
+     width: 100%;
+   }
+   
+   #background-img {
+     top: -10px;
+     position: absolute;
+     width: 100%;
+     z-index: -1;
+     margin-right: 50px;
+     left: 0;
+     overflow: hidden;
+     opacity: 70%;
+   }
+   
+   #background2-img {
+     position: absolute;
+     z-index: -3;
+     margin-top: 1100px;
+     overflow: hidden;
+   }
+   
+   #index-container-tables {
+     display: flex;
+     justify-content: space-around;
+     overflow: scroll;
+   }
+   
+   .column {
+     flex: 1;
+     overflow-x: auto;
+   }
+   
+   .column:first-child {
+     flex: 2; 
+     overflow-x: auto;
+     max-width: 1100px;
+   }
+   
+   #meeting-table-container {
+     margin-top: 80px;
+     margin-bottom: 130px;
+   
+   }
+   
+   #guest-table-container {
+     margin-top: 50px;
+     margin-bottom: 130px;
+   }
+   
+   .video-note {
+     max-width: 250px;
+   }
+   
+   #h2-meeting-table {
+     color: black;
+   }
+   
+   .join, .drop {
+     width: 60px;
+     margin-top: 6px;
+   }
+
