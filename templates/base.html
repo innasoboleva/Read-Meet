@@ -4,6 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Experience the joy of discussing your favorite books with others who share your enthusiasm. \
+  Schedule meetings for your favorite books,\
+  search for books and read reviews. With Read&Meet, every book discussion \
+  becomes an opportunity for insightful conversations, \
+  new friendships, and unforgettable reading experiences. \
+  Join today and let the world of books come alive like never before!">
   <title>{% block title %}{% endblock %}</title>
 
   <!-- Will load React dependencies on all pages for this app. -->
@@ -32,7 +38,7 @@
 <nav class="navbar navbar-expand-lg navbar-light" id="top-bar">
   <div class="container-fluid">
     <a class="navbar-brand" href="/" id="logo-bar-link" >
-      <img src="static/img/read-meet-logo.png" id="nav-logo" alt="" width="30" height="24" class="d-inline-block align-text-top">
+      <img src="static/img/read-meet-logo.png" id="nav-logo" alt="Logo with people talking" width="30" height="24" class="d-inline-block align-text-top">
       Read & Meet
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +56,7 @@
       </ul>
       <div class="col-8 col-lg-6 search-nav">
         <form class="d-flex" action="/books" method="GET">
-          <input id="nav-search-input" name="search" class="form-control me-2" type="search" placeholder="Search for a book" aria-label="Search">
+          <input id="nav-search-input" name="search" class="form-control me-2" type="search" placeholder="Search for a book" aria-label="Search" alt="search for a book here by providing title or keywords">
           <button id="search-button" class="search-button" type="submit">
             <span class="icon-search"><i class="bi bi-search"></i></span>
         </button>
@@ -90,7 +96,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
-              <img src="/static/img/a-girl.png">
+              <img src="/static/img/a-girl.png" alt="picture of a girl reading">
             </div>
             <div class="modal-body">
                 <h5 class="modal-title">Sign in to Read and Meet</h5>
@@ -118,7 +124,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
-              <img src="/static/img/a-girl.png">
+              <img src="/static/img/a-girl.png" alt="picture of a girl reading">
             </div>
             <div class="modal-body">
                
@@ -129,14 +135,14 @@
                         <label for="email">
                             Email
                         </label>
-                        <input class="input myInput" id="email" name="email" type="email">
+                        <input class="input myInput" id="email" name="email" type="email" alt="put your email here">
                     </div>
         
                     <div class="element">
                         <label for="password">
                             Password
                         </label>
-                        <input class="input myInput" id="password" maxlength="50" name="password" type="password">
+                        <input class="input myInput" id="password" maxlength="50" name="password" type="password" alt="put your password here">
                     </div>
                     <button id="user-signin">Sign in</button>
                 </form>
@@ -161,7 +167,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             <div class="modal-img">
-              <img src="/static/img/a-girl.png">
+              <img src="/static/img/a-girl.png" alt="picture of a girl reading">
             </div>
             <div class="modal-body">
                 <h3 class="modal-title">Sign up with email</h3>
@@ -174,39 +180,39 @@
                         <label for="user_name">
                             Name
                         </label>
-                        <input class="input myInput" id="user_name" maxlength="50" name="user_name" type="text">
+                        <input class="input myInput" id="user_name" maxlength="50" name="user_name" type="text" alt="put your name here">
                     </div>
                     <div class="element">
                         <label for="user_email">
                             Email
                         </label>
-                        <input class="input myInput" id="user_email" name="user_email" type="email">
+                        <input class="input myInput" id="user_email" name="user_email" type="email" alt="put your email here">
                     </div>
         
                     <div class="element">
                         <label for="user_password">
                             Password
                         </label>
-                        <input class="input myInput" id="user_password" maxlength="50" name="user_password" type="password" minlength="10">
+                        <input class="input myInput" id="user_password" maxlength="50" name="user_password" type="password" minlength="10" alt="put your password here">
                         <div class='status' aria-hidden="true">At least 10 characters</div>
                     </div>
                     <div class="element">
                         <label for="user_address">
                             Address
                         </label>
-                        <input class="input myInput" id="user_address" name="user_address" type="text">
+                        <input class="input myInput" id="user_address" name="user_address" type="text" alt="put your address here">
                     </div>
                     <div class="element">
                         <label for="user_zipcode">
                             Zipcode
                         </label>
-                        <input class="input myInput" id="user_zipcode" name="user_zipcode" type="text">
+                        <input class="input myInput" id="user_zipcode" name="user_zipcode" type="text" alt="put your zipcode here">
                     </div>
                     <div class="element">
                         <label for="user_age">
                             Age
                         </label>
-                        <input class="input myInput" id="user_age" name="user_age" type="text">
+                        <input class="input myInput" id="user_age" name="user_age" type="text" alt="put your age here">
                     </div>
                     <button id="user-signup">Sign me up!</button>
                 </form>

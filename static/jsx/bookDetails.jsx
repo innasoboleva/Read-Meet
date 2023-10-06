@@ -97,7 +97,7 @@ function BookDetailsPage(props) {
               <ReviewsContainer book={book} />
             </div>
             <div className="book-details-img col-7 col-md-auto">
-              <img src={ book.image_url }/>
+              <img src={ book.image_url } alt={`Picture cover for ${book.title}`}/>
               <BookMeetingDataContainer user={user} book={book} blob={blob} createMeeting={createMeeting} setCreateMeeting={setCreateMeeting} />
             </div>
           </div>
@@ -547,7 +547,8 @@ function MeetingForm(props) {
                                 type="datetime-local"
                                 id="day"
                                 name="day"
-                                required />
+                                required 
+                                alt="pick a meeting date here"/>
                         </div>
 
                         <div className="element">
@@ -595,12 +596,12 @@ function MeetingForm(props) {
                         </div>
 
                         <div className="radio-buttons">
-                            <input className="form-check-input" type="radio" name="meetingOption" id="zoom" checked={zoomMeeting} onChange={() => setZoomMeeting(true)}/>
+                            <input className="form-check-input" type="radio" name="meetingOption" id="zoom" checked={zoomMeeting} onChange={() => setZoomMeeting(true)} alt="radio button to pick a zoom meeting"/>
                             <label className="form-check-label" htmlFor="zoom">
                               Zoom
                             </label>
                             
-                            <input className="form-check-input" type="radio" name="meetingOption" id="offline" checked={!zoomMeeting} onChange={() => setZoomMeeting(false)}/>
+                            <input className="form-check-input" type="radio" name="meetingOption" id="offline" checked={!zoomMeeting} onChange={() => setZoomMeeting(false)} alt="radio button to pick a real life meeting"/>
                             <label className="form-check-label" htmlFor="offline">
                               Meeting-In-Person <span className="red-indicator">*required</span>
                             </label>
@@ -632,13 +633,13 @@ function MeetingForm(props) {
                         <label htmlFor="max-guests">
                                 Maximum attending guests<span className="red-indicator">*required</span>
                         </label>
-                          <input type="number" id="max-guests" required min="1" step="1" />
+                          <input type="number" id="max-guests" required min="1" step="1" alt="put a number of guests that allowed to come"/>
                         </div>
                         <div className="element">
                         <label htmlFor="place">
                                 Add address and name for a place to meet:{zoomMeeting ? null : <span className='red-indicator'>*required</span>}
                         </label>
-                          <input type="text" id="autocomplete-address"/>
+                          <input type="text" id="autocomplete-address" alt="put a meeting address here or find a place on yelp lower on the form for address autocompletion "/>
                         </div>
                         <div>
                           <button id="open-media-recorder" onClick={toggleMediaRecorder}>Start Video Note</button>
@@ -768,7 +769,7 @@ function YelpSearchForm(props) {
           <div className="yelp-form">
             <div className="element">
             You can look for a place to meet here:
-              <input type="search" id="search-yelp" />
+              <input type="search" id="search-yelp" alt="put a word or phrase for yelp search here for choosing address to meet"/>
               <button id="search-yelp-button" onClick={handleYelpSearch}>Search</button>
             </div> { places.map((place, index) => (
               <div className="container">
@@ -787,7 +788,7 @@ function YelpRow(props) {
   return (<React.Fragment>
     <div className="row yelp-row">
       <div className="col-4 square-image" onClick={() => updateAddressInForm(place.name, place.address)}>
-          <img src={place.image}></img>
+          <img src={place.image} alt="Image for picked place on yelp"></img>
       </div>
       <div className="col-8 d-flex yelp-text">
           <span className="yelp-name" onClick={() => updateAddressInForm(place.name, place.address)}>{index + 1}. {place.name}<p className="yelp-rating">{place.rating}&#9733;</p></span>

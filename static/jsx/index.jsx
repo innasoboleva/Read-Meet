@@ -111,7 +111,7 @@ function IndexPageContainer() {
   return (<React.Fragment>
            <Messages messages={messages}/>
             <div id="background-img">
-              <img src="/static/img/house_on_the_hill.png"></img>
+              <img src="/static/img/house_on_the_hill.png" alt="Background picture with house on the hill"></img>
             </div>
             <CarouselDataContainer user={user}/>
             <div id="index-container-tables">
