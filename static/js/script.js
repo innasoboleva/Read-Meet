@@ -143,11 +143,12 @@ document.querySelector("#user-signout").addEventListener("click", (evt) => {
 
 // for showing and hiding footer
 window.addEventListener("scroll", function() {
-    var distanceToBottom = document.documentElement.offsetHeight - (window.innerHeight + window.scrollY);
-
-    if (distanceToBottom <= 40) {
-        document.querySelector("footer").style.opacity = "1";
+    const footer = document.querySelector("footer");
+    if (footer) {
+        var distanceToBottom = document.documentElement.offsetHeight - (window.innerHeight + window.scrollY);
+        if (distanceToBottom <= 40) {
+        footer.style.opacity = "1";
     } else {
-        document.querySelector("footer").style.opacity = "0";
+        footer.style.opacity = "0";
     }
-});
+}});

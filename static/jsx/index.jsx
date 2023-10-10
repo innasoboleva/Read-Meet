@@ -100,7 +100,6 @@ function IndexPageContainer() {
 
   const dropMeetingFromGuest = (meeting) => {
     setMeetingToDropFromGuest(meeting);
-    addMessageWithTimer(`You dropped from a meeting for "${meeting.book_title}"`);
   }
 
   const deleteMeetingFromMeetingTable = (meeting) => {
@@ -134,7 +133,7 @@ function IndexPageContainer() {
               )}
             </div>
             <footer>
-                <div class="footer-content">
+                <div className="footer-content">
                     <p>&copy; 2023, Inna Soboleva. All rights reserved.</p>
                 </div>
               </footer>

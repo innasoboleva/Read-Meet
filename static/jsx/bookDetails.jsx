@@ -49,6 +49,7 @@ function BookDetailsPage(props) {
     }
 
     const setVideoBlob = (vblob) => {
+      console.log("here is video:", vblob)
       setBlob(vblob);
     }
 
@@ -113,7 +114,7 @@ function BookMeetingDataContainer(props) {
   const [newMeetingData, setNewMeetingData] = React.useState({});
   
   React.useEffect(() => {
-    if(user && newMeetingData && blob) { // && blob
+    if(user && newMeetingData && blob ) { // && blob
       // checking blob size
       fetch(blob)
       .then((response) => response.blob())
@@ -512,8 +513,9 @@ function MeetingForm(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    mediaClose();
-    handleCreateMeeting(); 
+    // mediaClose();
+    handleCreateMeeting();
+    mediaCloseOnSubmit();
   };
 
   const [zoomMeeting, setZoomMeeting] = React.useState(false);
@@ -521,6 +523,10 @@ function MeetingForm(props) {
   const mediaClose = () => {
     setMediaVisible(false);
     setVideoBlob(null);
+  }
+
+  const mediaCloseOnSubmit = () => {
+    setMediaVisible(false);
   }
 
  
@@ -871,19 +877,19 @@ function VideoRecorder(props) {
     }
   };
 
-  React.useEffect(() => {
-    const stopButton = document.getElementById("stop-recording");
-    stopButton.style.display = "none";
+  // React.useEffect(() => {
+  //   const stopButton = document.getElementById("stop-recording");
+  //   stopButton.style.display = "none";
 
-    return () => {
-      if (mediaRecorderRef && mediaRecorderRef.current) {
-        mediaRecorderRef.current = null;
-      }
-      if (videoRef && videoRef.current && 'srcObject' in videoRef.current) {
-        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (mediaRecorderRef && mediaRecorderRef.current) {
+  //       mediaRecorderRef.current = null;
+  //     }
+  //     if (videoRef && videoRef.current && 'srcObject' in videoRef.current) {
+  //       videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+  //     }
+  //   };
+  // }, []);
 
   return (
     <div>

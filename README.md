@@ -9,7 +9,7 @@ Introducing **Read&Meet**: Your Gateway to One-Time Book Clubs! **Read&Meet** is
 Create new user and log in to be able to use this app fully!
 2. _Book Discussion Meetings:_<br>
 Create and host book discussion meetings centered around your favorite books.
-Choose the date, time, and location for your meeting, record a video note for inviting more quests.
+Choose the date, time, and location for your meeting, record a video note for inviting more guests.
 3. _Meeting Discovery:_<br>
 Browse a diverse range of upcoming book discussion meetings created by fellow users for each possible book.
 4. _Book Selection:_<br>

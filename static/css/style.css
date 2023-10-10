@@ -19,7 +19,7 @@ a {
 }
 
 #nav-search-input, #search-yelp {
-  padding: 5px 35px 5px 15px;
+  padding: 5px 45px 5px 15px;
   background-color: white;
   border-radius: 15px;
   border-color: rgb(192, 189, 193);
@@ -30,7 +30,7 @@ a {
 }
 
 .search-button {
-  right: 8%;
+  right: 7%;
   align-self: center;
   position: relative;
   background-color: transparent;
@@ -212,7 +212,7 @@ footer {
   position: fixed;
   bottom: 0;
   width: 100%;
-  margin-top: 50px;
+  margin-top: 150px;
   left:0;
 }
 
