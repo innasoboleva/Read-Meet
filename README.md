@@ -61,10 +61,57 @@ I implemented security methods to ensure that users won’t join same meetings t
 
 Video note is also available for streaming here.
 
-
 Notifications are displayed on top of the screen. 
 Each message is independent and has its own timer set for 15sec.
 ![ Notifications for users ](https://readmeet-video.s3.us-east-2.amazonaws.com/messages.png)
+
+### Installation for local run
+To run Read&Meet on your local computer, follow these steps:
+
+Clone or fork this repo:
+```
+https://github.com/innasoboleva/Read-Meet.git
+```
+
+Create and activate a virtual environment inside your Read-Meet directory:
+```
+virtualenv env
+source env/bin/activate
+```
+
+Install the dependencies:
+```
+pip install -r requirements.txt
+```
+
+Sign up to use Amazon S3, Yelp API, and Google Books API.
+
+Save your API keys in a file called secrets.sh using this format:
+```
+export BOOK_KEY="YOUR_GOOGLE_KEY_HERE"
+export YELP_KEY="YOUR_YELP_KEY_HERE"
+export FLASK_KEY="YOUR_FLASK_KEY_HERE"
+export ACCESS_KEY="YOUR_AMAZON_KEY_HERE"
+export ACCESS_KEY_ID="YOUR_AMAZON_ID_HERE"
+```
+
+Source your keys from your secrets.sh file into your virtual environment:
+```
+source secrets.sh
+```
+
+Set up the database:
+```
+createdb readmeet
+python3 model.py
+```
+
+Run the app:
+```
+python3 server.py
+```
+
+You can now navigate to 'localhost:5000/' to access Read&Meet app.
 
 ### Show Your Support
 Please, :+1: or :star: if it was helpful.
