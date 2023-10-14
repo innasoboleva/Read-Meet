@@ -36,8 +36,8 @@ Google Books API, Yelp API, MediaStream API, Selenium, AWS SDK
 ![ Detailed data model](https://readmeet-video.s3.us-east-2.amazonaws.com/Data_model.png)
 
 ## Features
-On the main page I implemented bootstrap carousel featuring popular books. This information was scraped from blog on GoodReads.
-Also I've implemented sign in and sign up methods.
+On the main page I implemented bootstrap carousel featuring popular books. This information was scraped from blog on GoodReads using Selenium.
+Also I've implemented sign in and sign up methods. If input is not correct, error message is displayed.
 ![ Sign in form](https://readmeet-video.s3.us-east-2.amazonaws.com/sign_in.png)
 
 I integrated Google books api for book search. List of results is shown after processing JSON response.
@@ -47,25 +47,24 @@ After selecting a book, a request is sent for fetching reviews from Goodreads us
 I created a form where users can schedule new meetings. 
 ![ Meeting form and reviews from Goodreads on book details page](https://readmeet-video.s3.us-east-2.amazonaws.com/book_details.png)
 
-For meeting in person address is required. I integrated Yelp API to help search for a place.
+For meeting in person address is required. I integrated Yelp API to help search for a place using user's provided zipcode.
 ![ Meeting form with option to search for place on Yelp](https://readmeet-video.s3.us-east-2.amazonaws.com/yelp.png)
 
 I implemented a Video Recorder using the MediaStream API for creating video notes.
-Before submission video is available for review or re-recording.
+Before submission, video is available for review or re-recording.
 ![ Meeting form with option to record video note](https://readmeet-video.s3.us-east-2.amazonaws.com/video.png)
 
 Different react components on the main page are interconnected and display meetings that users can join, drop from or cancel if already created.
-They are dynamically updated upon receiving JSON success response from server.
+They are dynamically updated upon receiving JSON success response from the server.
 I implemented security methods to ensure that users won’t join same meetings twice.
 ![ Main page with React components](https://readmeet-video.s3.us-east-2.amazonaws.com/react.png)
 
-Video note is also available for streaming here.
+Video note is also available for streaming on main page.
 
-Notifications are displayed on top of the screen. 
-Each message is independent and has its own timer set for 15sec.
+Notifications are displayed on top of the screen. Each message is independent and has its own timer set for 15 sec.
 ![ Notifications for users ](https://readmeet-video.s3.us-east-2.amazonaws.com/messages.png)
 
-### Installation for local run
+### Installation
 To run Read&Meet on your local computer, follow these steps:
 
 Clone or fork this repo:
@@ -84,9 +83,9 @@ Install the dependencies:
 pip install -r requirements.txt
 ```
 
-Sign up to use Amazon S3, Yelp API, and Google Books API.
+Sign up to use Amazon S3, Yelp API, and Google Books API. Generate random secret key for Flask.
 
-Save your API keys in a file called secrets.sh using this format:
+Save your API keys in a file called secrets.sh, using this format:
 ```
 export BOOK_KEY="YOUR_GOOGLE_KEY_HERE"
 export YELP_KEY="YOUR_YELP_KEY_HERE"
