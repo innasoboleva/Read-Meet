@@ -255,7 +255,7 @@ def get_guest_meetings():
         return jsonify({ "status": "error", "message": "You need to log in to see your guest meetings."})
     
 
-@app.route("/api/join_meeting", methods=["POST"])
+@app.route("/api/join_meeting", methods=["UPDATE"])
 def join_meeting():
     """ If user is not host and not a guest, joins the meeting. """
 
@@ -276,7 +276,7 @@ def join_meeting():
     
 
 
-@app.route("/api/drop_meeting", methods=["POST"])
+@app.route("/api/drop_meeting", methods=["UPDATE"])
 def drop_meeting():
     """ Sends request to drop from meeting. """
 
@@ -291,7 +291,7 @@ def drop_meeting():
     return jsonify(message)
 
 
-@app.route("/api/delete_meeting", methods=["POST"])
+@app.route("/api/delete_meeting", methods=["DELETE"])
 def delete_meeting():
     """ Sends request to delete meeting. """
 

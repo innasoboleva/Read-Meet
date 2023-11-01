@@ -260,7 +260,7 @@ function MeetingRow(props) {
     const joinMeeting = () => {
       if (user.user_id && (user.user_id != meeting.host_id)) {
         fetch('/api/join_meeting', {
-          method: 'POST',
+          method: 'UPDATE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ "meeting_id": meeting.id, "user_id": user.user_id }),
         })
@@ -285,7 +285,7 @@ function MeetingRow(props) {
       const dropMeeting = () => {
         if (user.user_id && (user.user_id != meeting.host_id) && meeting.guests.includes(user.user_id)) {
           fetch('/api/drop_meeting', {
-            method: 'POST',
+            method: 'UPDATE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ "meeting_id": meeting.id, "user_id": user.user_id }),
           })
@@ -444,7 +444,7 @@ function UsersHostDataContainer(props) {
     setShowModal(false);
 
     fetch('/api/delete_meeting', {
-      method: 'POST',
+      method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "meeting_id": meetingToDelete.id, "user_id": user.user_id }),
     })

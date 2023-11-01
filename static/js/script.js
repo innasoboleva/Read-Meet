@@ -4,15 +4,15 @@ const signoutLink = document.getElementById("sign-out-nav-link");
 
 
 window.userIsLoggedIn = function () {
-    document.getElementById("user-signout").innerText = "Sign out"
-    console.log("User is logged IN")
+    document.getElementById("user-signout").innerText = "Sign out";
+    console.log("User is logged IN");
     signinLink.style.display = "none";
     signoutLink.style.display = "block";
 }
 
 window.userIsLoggedOut = function () {
-    document.getElementById("user-signin-nav").innerText = "Sign in"
-    console.log("User is logged OUT")
+    document.getElementById("user-signin-nav").innerText = "Sign in";
+    console.log("User is logged OUT");
     signinLink.style.display = "block";
     signoutLink.style.display = "none";
 }
@@ -37,12 +37,12 @@ document.querySelector("#user-signup").addEventListener("click", (evt) => {
         user_zipcode: document.querySelector('#user_zipcode').value,
         user_age: document.querySelector('#user_age').value,
       };
-    const correct_form = isFormValid(formInputs)
+    const correct_form = isFormValid(formInputs);
 
-    console.log(correct_form)
+    console.log(correct_form);
 
     if (correct_form.status == "success") {
-        console.log("Sending request to server to create new user...")
+        console.log("Sending request to server to create new user...");
         fetch("/api/create_new_user", {
             method: "POST",
             body: JSON.stringify(formInputs),
@@ -51,7 +51,7 @@ document.querySelector("#user-signup").addEventListener("click", (evt) => {
             .then((response) => response.json())
             .then((data) => {
                 if (data["status"] == "error") {
-                    console.log(`${data['message']}`)
+                    console.log(`${data['message']}`);
                     document.querySelector('#error-message-signup').innerText = data['message']; // displays error message
                 } else {
                     userIsLoggedIn();
@@ -68,7 +68,7 @@ document.querySelector("#user-signup").addEventListener("click", (evt) => {
 function isFormValid(formInputs) {
 
     let re = /^[\w\.-]+@[\w\.-]+\.\w+$/;
-    console.log("Email check...")
+    console.log("Email check...");
     if (!(re.test(formInputs.user_email))) {
         return { "status": "error", "message": "Wrong input for email" }
     }

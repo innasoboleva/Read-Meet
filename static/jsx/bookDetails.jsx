@@ -318,7 +318,7 @@ function BookMeetingRow(props) {
     console.log(`${meeting.id}`)
     if (user.user_id && (user.user_id != meeting.host_id)) {
       fetch('/api/join_meeting', {
-        method: 'POST',
+        method: 'UPDATE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ "meeting_id": meeting.id, "user_id": user.user_id }),
       })
@@ -338,7 +338,7 @@ function BookMeetingRow(props) {
     const dropMeeting = () => {
       if (user.user_id && (user.user_id != meeting.host_id)) {
         fetch('/api/drop_meeting', {
-          method: 'POST',
+          method: 'UPDATE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ "meeting_id": meeting.id, "user_id": user.user_id }),
         })
@@ -876,20 +876,6 @@ function VideoRecorder(props) {
       setRecording(false);
     }
   };
-
-  // React.useEffect(() => {
-  //   const stopButton = document.getElementById("stop-recording");
-  //   stopButton.style.display = "none";
-
-  //   return () => {
-  //     if (mediaRecorderRef && mediaRecorderRef.current) {
-  //       mediaRecorderRef.current = null;
-  //     }
-  //     if (videoRef && videoRef.current && 'srcObject' in videoRef.current) {
-  //       videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-  //     }
-  //   };
-  // }, []);
 
   return (
     <div>

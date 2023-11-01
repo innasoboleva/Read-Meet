@@ -106,6 +106,15 @@ def add_new_popular_books_to_db():
     """
     Function for checking new books, once every new month and to seed db with popular books for current month.
     """
+    previous_popular_books = Book.query.filter(Book.popular_book != None).all()
+
+    def book_in_a_list(title):
+        """Checks if book in a list of previous popular books."""
+        for book in previous_popular_books:
+            if book.title == title:
+                return True
+        return False
+    
     popular_books = goodreads_api.get_books_for_carousel()
     status = popular_books.get("status")
     if status == "success":
@@ -117,8 +126,10 @@ def add_new_popular_books_to_db():
                 books = result_from_book_search.get("books")
                 if books:
                     popular_book = books[0]
-                    book_id = popular_book.get("book_id")
                     title = popular_book.get("title")
+                    if book_in_a_list(title):
+                        continue
+                    book_id = popular_book.get("book_id")
                     subtitle = popular_book.get("subtitle")
                     authors = popular_book.get("authors")
                     description = popular_book.get("description")
