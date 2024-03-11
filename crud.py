@@ -107,11 +107,11 @@ def add_new_popular_books_to_db():
     Function for checking new books, once every new month and to seed db with popular books for current month.
     """
     previous_popular_books = Book.query.filter(Book.popular_book != None).all()
-
-    def book_in_a_list(title):
+    added = set()
+    def book_in_a_list(title, id):
         """Checks if book in a list of previous popular books."""
         for book in previous_popular_books:
-            if book.title == title:
+            if book.title == title or book.book_id == id:
                 return True
         return False
     
@@ -120,6 +120,7 @@ def add_new_popular_books_to_db():
     if status == "success":
         list_of_titles = popular_books.get("titles")
         for book in list_of_titles:
+            print(list_of_titles)
             result_from_book_search = books_api.find_popular_book(book)
             book_status = result_from_book_search.get("status")
             if book_status == "success":
@@ -127,18 +128,21 @@ def add_new_popular_books_to_db():
                 if books:
                     popular_book = books[0]
                     title = popular_book.get("title")
-                    if book_in_a_list(title):
+                    book_id = popular_book.get("book_id")
+                    if book_in_a_list(title, book_id) or book_id in added:
                         continue
+                    books_ISBN = popular_book.get("ISBN")
                     book_id = popular_book.get("book_id")
                     subtitle = popular_book.get("subtitle")
                     authors = popular_book.get("authors")
                     description = popular_book.get("description")
-                    books_ISBN = popular_book.get("ISBN")
+                    
                     image = popular_book.get("image_url")
                     popular_book = datetime.today().strftime("%Y-%m")
                     new_book = Book.create(book_id=book_id, isbn=books_ISBN, title=title, subtitle=subtitle, authors=authors, \
                     image_url=image, description=description, popular_book=popular_book)
                     db.session.add(new_book)
+                    added.add(book_id)
 
     db.session.commit()
 
