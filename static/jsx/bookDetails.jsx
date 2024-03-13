@@ -48,10 +48,10 @@ function BookDetailsPage(props) {
       setCreateMeeting(true);
     }
 
-    const setVideoBlob = (vblob) => {
-      console.log("here is video:", vblob)
-      setBlob(vblob);
-    }
+    // const setVideoBlob = (vblob) => {
+    //   console.log("here is video:", vblob)
+    //   setBlob(vblob);
+    // }
 
     React.useEffect(() => {
       // for aborting fetch requests, when user redirects the page
@@ -64,21 +64,21 @@ function BookDetailsPage(props) {
         })
         .catch(error => console.error('Error fetching current user:', error));
        
-      if (window.s3 == null) {
-         fetch('/api/get_aws_keys')
-        .then(response => response.json())
-        .then(data => {
-          if (data.status == 'success') {
+      // if (window.s3 == null) {
+      //    fetch('/api/get_aws_keys')
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     if (data.status == 'success') {
    
-            AWS.config.update({
-              region: 'us-east-2',
-              accessKeyId: data.data[0], // 'your-access-key-id',
-              secretAccessKey: data.data[1] //'your-secret-access-key',
-            });
-            window.s3 = new AWS.S3();
-        }})
-        .catch(error => console.error('Error fetching AWS keys:', error));
-      }
+      //       AWS.config.update({
+      //         region: 'us-east-2',
+      //         accessKeyId: data.data[0], // 'your-access-key-id',
+      //         secretAccessKey: data.data[1] //'your-secret-access-key',
+      //       });
+      //       window.s3 = new AWS.S3();
+      //   }})
+      //   .catch(error => console.error('Error fetching AWS keys:', error));
+      // }
       return () => {
         // cancel the request before the component unmounts
         controller1.abort();
@@ -111,43 +111,43 @@ function BookDetailsPage(props) {
 function BookMeetingDataContainer(props) {
   const { book, user, createMeeting, setCreateMeeting, blob } = props;
   const [meetings, setMeetings] = React.useState([]);
-  const [newMeetingData, setNewMeetingData] = React.useState({});
+  // const [newMeetingData, setNewMeetingData] = React.useState({});
   
-  React.useEffect(() => {
-    if(user && newMeetingData && blob ) { // && blob
-      // checking blob size
-      fetch(blob)
-      .then((response) => response.blob())
-      .then((rblob) => {
-        // Check the size of the Blob
-        const sizeInBytes = rblob.size;
-        const sizeInMB = sizeInBytes / (1024 * 1024); // Convert to megabytes
-        console.log(`Blob size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
+  // React.useEffect(() => {
+  //   if(user && newMeetingData && blob ) { // && blob
+  //     // checking blob size
+  //     fetch(blob)
+  //     .then((response) => response.blob())
+  //     .then((rblob) => {
+  //       // Check the size of the Blob
+  //       const sizeInBytes = rblob.size;
+  //       const sizeInMB = sizeInBytes / (1024 * 1024); // Convert to megabytes
+  //       console.log(`Blob size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
 
-        const params = {
-          Bucket: 'readmeet-video',
-          Key: `${user.user_id}/${newMeetingData.id}/video.mp4`, 
-          Body: rblob, // Blob data
-          ContentType: 'video/mp4', // content type
-        };
-        // upload the Blob to S3
-        window.s3.upload(params, (err, data) => {
-          if (err) {
-            console.error('Error uploading to S3:', err);
-          } else {
-            console.log('Uploaded to S3:', data.Location);
-          }
-        });
-      })
-      .catch((error) => {
-        console.error('Error fetching Blob:', error);
-      });
+  //       const params = {
+  //         Bucket: 'readmeet-video',
+  //         Key: `${user.user_id}/${newMeetingData.id}/video.mp4`, 
+  //         Body: rblob, // Blob data
+  //         ContentType: 'video/mp4', // content type
+  //       };
+  //       // upload the Blob to S3
+  //       window.s3.upload(params, (err, data) => {
+  //         if (err) {
+  //           console.error('Error uploading to S3:', err);
+  //         } else {
+  //           console.log('Uploaded to S3:', data.Location);
+  //         }
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching Blob:', error);
+  //     });
     
-    return () => {
-      setNewMeetingData({});
-    }
-    }
-  }, [newMeetingData])
+  //   return () => {
+  //     setNewMeetingData({});
+  //   }
+  //   }
+  // }, [newMeetingData])
 
   React.useEffect(() => {
     const controller = new AbortController();

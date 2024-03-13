@@ -69,21 +69,21 @@ function IndexPageContainer() {
         })
         .catch(error => console.error('Error fetching current user:', error));
 
-      fetch('/api/get_aws_keys', {signal: controller2.signal })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status == 'success') {
+      // fetch('/api/get_aws_keys', {signal: controller2.signal })
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     if (data.status == 'success') {
             
-            AWS.config.update({
-              region: 'us-east-2',
-              accessKeyId: data.data[0], // 'your-access-key-id',
-              secretAccessKey: data.data[1] //'your-secret-access-key',
-            });
-            window.s3 = new AWS.S3();
-            console.log("S3 was succesfully set", window.s3)
-          }
-        })
-        .catch(error => console.error('Error fetching AWS keys:', error));
+      //       AWS.config.update({
+      //         region: 'us-east-2',
+      //         accessKeyId: data.data[0], // 'your-access-key-id',
+      //         secretAccessKey: data.data[1] //'your-secret-access-key',
+      //       });
+      //       window.s3 = new AWS.S3();
+      //       console.log("S3 was succesfully set", window.s3)
+      //     }
+      //   })
+      //   .catch(error => console.error('Error fetching AWS keys:', error));
 
         return () => {
           // cancel the request before component unmounts
@@ -251,11 +251,11 @@ function MeetingRow(props) {
       }
     });
 
-    React.useEffect(() => {
-      if (meeting.video) {
-        fetchVideoBlob(meeting.id, meeting.video);
-      }
-    }, [meeting]);
+    // React.useEffect(() => {
+    //   if (meeting.video) {
+    //     fetchVideoBlob(meeting.id, meeting.video);
+    //   }
+    // }, [meeting]);
 
     const joinMeeting = () => {
       if (user.user_id && (user.user_id != meeting.host_id)) {
