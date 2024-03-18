@@ -10,7 +10,7 @@ import pytz
 app = Flask(__name__)
 with app.app_context():
     # This should work because we are in an app context.
-    connect_to_db()
+    connect_to_db(app)
 
 # app.app_context().push()
 app.secret_key = os.environ.get('FLASK_KEY')
