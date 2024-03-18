@@ -36,6 +36,8 @@ def _get_search_result_for_params(param, page=0, on_page=None):
     book_key_param = f'&key={book_key}'
     book_search_url = book_url + search_param + max_results + star_index + book_key_param
     response = requests.get(book_search_url)
+    print(book_search_url)
+    print(response)
     if (response.status_code == 200):
         return { "status": "success", "response": response.json(), "on_page": on_page }
     else:

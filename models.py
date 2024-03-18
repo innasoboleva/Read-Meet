@@ -154,10 +154,13 @@ class BookList(db.Model):
     list_id = db.Column(db.Integer, db.ForeignKey("lists.list_id"), nullable=False)
 
 
-def connect_to_db(flask_app, db_uri="postgresql:///readmeet", echo=False):
-   
+def connect_to_db(flask_app):
+    # import os
+    # db_admin_password = os.environ.get('DB_ADMIN')
+    # db_uri=f"postgresql://{db_admin_password}/readmeet"
+    db_uri = "postgresql:///readmeet"
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-    flask_app.config["SQLALCHEMY_ECHO"] = echo
+    flask_app.config["SQLALCHEMY_ECHO"] = False
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # with flask_app.app_context():
