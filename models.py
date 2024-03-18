@@ -157,7 +157,7 @@ class BookList(db.Model):
 def connect_to_db(flask_app):
     import os
     db_admin_password = os.environ.get('DB_ADMIN')
-    db_uri=f"postgresql://{db_admin_password}/readmeet"
+    db_uri=f"postgresql://admin:{db_admin_password}/readmeet"
     # db_uri = "postgresql:///readmeet"
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = False
