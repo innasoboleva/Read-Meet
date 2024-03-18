@@ -16,6 +16,7 @@ KEY_ACCESS_ID = os.environ.get('ACCESS_KEY_ID')
 with app.app_context():
     connect_to_db(app)
     db.create_all()
+    crud.add_new_popular_books_to_db()
 
 
 @app.route("/")
@@ -502,4 +503,4 @@ if __name__ == "__main__":
     app.run(debug=True) # localhost preferable for video api (debug=True, host='127.0.0.1')
 
 
-crud.add_new_popular_books_to_db()
+
