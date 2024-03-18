@@ -8,14 +8,11 @@ import pytz
 
 
 app = Flask(__name__)
-# Production block
-connect_to_db(app)
-crud.add_new_popular_books_to_db()
-
 app.secret_key = os.environ.get('FLASK_KEY')
-
 KEY_ACCESS = os.environ.get('ACCESS_KEY')
 KEY_ACCESS_ID = os.environ.get('ACCESS_KEY_ID')
+
+
 
 
 @app.route("/")
@@ -501,3 +498,7 @@ if __name__ == "__main__":
     
     app.run(debug=False) # localhost preferable for video api (debug=True, host='127.0.0.1')
     
+
+# Production block
+connect_to_db(app)
+crud.add_new_popular_books_to_db()
