@@ -13,6 +13,10 @@ app.secret_key = os.environ.get('FLASK_KEY')
 KEY_ACCESS = os.environ.get('ACCESS_KEY')
 KEY_ACCESS_ID = os.environ.get('ACCESS_KEY_ID')
 
+with app.app_context():
+    connect_to_db(app)
+    db.create_all()
+
 
 @app.route("/")
 def homepage():
@@ -487,16 +491,15 @@ def get_keys():
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        connect_to_db(app)
-        db.create_all()
-    # connect_to_db(app)
+    connect_to_db(app)
     # updating old meetings to inactive
     # check_meetings_for_past_due()
 
     # every month books needs to be uploaded
     # crud.delete_old_unused_books_from_db()
-    crud.add_new_popular_books_to_db()
+    # crud.add_new_popular_books_to_db()
     
     app.run(debug=True) # localhost preferable for video api (debug=True, host='127.0.0.1')
-    
+
+
+crud.add_new_popular_books_to_db()
