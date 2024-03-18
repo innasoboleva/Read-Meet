@@ -8,6 +8,10 @@ import pytz
 
 
 app = Flask(__name__)
+# Production block
+connect_to_db(app)
+crud.add_new_popular_books_to_db()
+
 app.secret_key = os.environ.get('FLASK_KEY')
 
 KEY_ACCESS = os.environ.get('ACCESS_KEY')
