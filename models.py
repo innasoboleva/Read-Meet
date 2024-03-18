@@ -169,5 +169,5 @@ if __name__ == "__main__":
     connect_to_db(app)
 
 # production block
-from server import app
-connect_to_db(app)
+# from server import app
+# connect_to_db(app)
