@@ -8,9 +8,7 @@ import pytz
 
 
 app = Flask(__name__)
-with app.app_context():
-    connect_to_db(app)
-    db.create_all()
+
 
 # app.app_context().push()
 app.secret_key = os.environ.get('FLASK_KEY')
