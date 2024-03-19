@@ -18,7 +18,14 @@ def _find_page_selenium(isbn):
     Gets Goodreads page and makes search for the book by it's isbn. If book exists, method returns dict with key 'url' that has local Goodreads ID.
     If book doesn't exist, method returns dict with status = error.
     """
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--remote-debugging-port=9222')
+    driver = webdriver.Chrome(options=options)
+    
     # searching for book by it's isbn, passing query parameter in url
     base_url = book_page + isbn
     driver.get(base_url)
@@ -56,7 +63,14 @@ def _find_reviews_selenium(data, occurance=1):
     """
     goodreads_book_id = data.get('goodreads_book_id', None)
     if goodreads_book_id:
-        driver = webdriver.Chrome()
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        options.add_argument('--disable-infobars')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--remote-debugging-port=9222')
+        driver = webdriver.Chrome(options=options)
+       
         
         driver.get(book_reviews.format(goodreads_book_id))
         try:
@@ -152,7 +166,14 @@ def _get_popular_books(current_date):
     
     """
     base_url = new_books.format(current_date[0], current_date[1])
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--remote-debugging-port=9222')
+    driver = webdriver.Chrome(options=options)
+   
     # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     driver.get(base_url)
     titles = []
