@@ -48,10 +48,10 @@ function BookDetailsPage(props) {
       setCreateMeeting(true);
     }
 
-    // const setVideoBlob = (vblob) => {
-    //   console.log("here is video:", vblob)
-    //   setBlob(vblob);
-    // }
+    const setVideoBlob = (vblob) => {
+      // console.log("here is video:", vblob)
+      // setBlob(vblob);
+    }
 
     React.useEffect(() => {
       // for aborting fetch requests, when user redirects the page
