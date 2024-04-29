@@ -121,8 +121,8 @@ function BookMeetingDataContainer(props) {
   //     .then((rblob) => {
   //       // Check the size of the Blob
   //       const sizeInBytes = rblob.size;
-  //       const sizeInMB = sizeInBytes / (1024 * 1024); // Convert to megabytes
-  //       console.log(`Blob size: ${sizeInBytes} bytes (${sizeInMB} MB)`);
+  //       const sizeInMB = sizeInBytes / (640 * 640); // Convert to megabytes
+  //       console.log(`Blob size: ${sizeInBytes} bytes now (${sizeInMB} MB)`);
 
   //       const params = {
   //         Bucket: 'readmeet-video',
