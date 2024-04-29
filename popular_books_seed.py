@@ -3,7 +3,6 @@ import crud
 from server import app
 
 with app.app_context():
-    connect_to_db(app)
     # every month in prod
     crud.add_new_popular_books_to_db()
     # updating old meetings to inactive
